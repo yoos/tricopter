@@ -1,27 +1,9 @@
 
+Code for Seeeduino-based tricopter.
 
 
 need to install pyserial and pygame modules.
 
+seeeduino should keep a logfile.
 
 
-
-seeed should keep a logfile.
-
-
-
-
-
-Trunk contains a directory named "tricopter" inside of which is a symlink to main.cpp named "tricopter.pde". This is to satisfy Arduino IDE requirements.
-
-Trunk also contains
-
-
-
-
-
-
-
-GUI
-
-Different joysticks selectable with calibration.
