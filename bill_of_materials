@@ -1,0 +1,59 @@
+Ad astra / 955 / Soo-Hyun Yoo
+
+#############################################################################################################
+
+    <Part>                                          <Weight>   <Price>   <Qty>   <Approx>   <Vendor>
+
+# Material
+    3/4 inch sq. 36 inch long balsa stick               22.5?    10.00?      2         10   ?
+    1/4 inch thick balsa sheet                          10.0?    10.00?      1         10   ?
+
+# Mechanical
+    TGY AerodriveXp 25 SK Series 35-42 1000Kv / 605w   142.0     17.51       3         54   HobbyKing
+    Mystery 40A Brushless Speed Controller              30.0     23.79       3         72   HobbyKing
+    12x4.5 counter rotating props (pair)                 1.0?     7.95       2         16   Amazon
+    Prop Saver w/ Band 4mm (10pcs)                       2.5      4.18       1          4   HobbyKing
+    Power HD High-Torque Servo 1501MG                   60.0     13.30       1         13   Value Hobby
+
+# Control
+    Seeeduino Mega (16 MHz)                              3.0?    49.50       1         50   Seeedstudio
+    MODULE 802.15.4 1MW W/WIRE ANT                       5.0?    19.00       2         38   Digi-Key
+    XBee Explorer Regulated                              3.0?     9.95       2         10   Sparkfun
+    XBee Explorer USB                                    N/A     24.95       1         25   Sparkfun
+
+# Sensors
+    Triple-Axis Digital-Output Gyro ITG-3200 Breakout    5.0?    49.95       1         50   Sparkfun
+    Triple Axis Accelerometer Breakout - BMA180          5.0?    29.95       1         30   Sparkfun
+
+# Power
+    Turnigy 5000mAh 4S 25C Lipo Pack                   552.0     39.99       1         40   HobbyKing
+    Turnigy Accucel-6 50W 6A Balancer/Charger w/ acc.    N/A     22.99       1         23   HobbyKing
+    Turnigy Watt Meter and power Analyzer                N/A     23.95       1         24   HobbyKing
+
+# Misc
+    Indicator LEDs                                       0.0         0      15          0   Own
+    Logitech Extreme 3D Pro Joystick                     N/A     22.31       1         22   Amazon
+    Wires                                               10.0?        0     N/A          0   Own
+    Screws/nuts (2-56)                                  10.0?        0     N/A          0   Own
+    Mini USB Cable 150cm                                 N/A      2.00       1          2   Seeedstudio
+    Heat shrink                                                   3.83                  4   Digi-Key
+
+# Tools
+    Stahl Tools STSSVT Variable Temp. Soldering Station  N/A     14.98       1         15   Amazon
+    Desoldering Wick, 25' Med. .075 No Clean             N/A      7.95       1          8   Amazon
+    Diagonal Cutters                                     N/A      1.95       1          2   Sparkfun
+
+#############################################################################################################
+
+# Spendings
+    ?            - $20  + $0
+    HobbyKing    - $217 + $36.79
+#   Value Hobby  - $13  + $3.99
+    Sparkfun     - $117 + $4.75
+#   Digi-Key     - $42  + $9.35
+#   Seeedstudio  - $52  + $0
+#   Amazon       - $61  + $8.48
+
+Cost: $522 + $63.36 = $585.36
+Weight: 1242g
+
