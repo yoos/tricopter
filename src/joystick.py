@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import roslib; roslib.load_manifest("tricopter")
 import sys
+import rospy
+from std_msgs.msg import String
 import threading
 from PyQt4 import Qt
 import serial
@@ -9,6 +12,14 @@ import pygame
 
 ardport = "/dev/ttyUSB0"
 dogbone = chr(255) # Feed watchdog
+
+def callback(data):
+    rospy.loginfo(rospy.get_name()+"I heard %s",data.data)
+
+def listener():
+    rospy.init_node('listener', anonymous=True)
+    rospy.Subscriber("chatter", String, callback)
+    rospy.spin()
 
 def init():
     # Find Arduino
@@ -27,7 +38,6 @@ def init():
         print "Joystick:", stick.get_name()
     except:
         print "No joysticks found. Aborting..."
-
 
 def sendData(*args):
     try:
@@ -76,5 +86,6 @@ class CtrlButton(Qt.QPushButton):
 if __name__ == "__main__" :
     init()
     joyGetEvent()
+    listener()
     #mainwin.show()
 
