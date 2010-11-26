@@ -8,8 +8,8 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/tricopter</url>
-  <depend package="roscpp"/>
   <depend package="rospy"/>
+  <depend package="rosrt"/>
   <depend package="joy"/>
 
 </package>
