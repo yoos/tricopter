@@ -15,11 +15,10 @@ rospy.init_node("tric_listener", anonymous=True)
 
 # Comm values
 serialPort = "/dev/ttyUSB0"
-baudRate = 9600
-freq = 10 # rospy.Rate(10) # 50 Hz
+baudRate = 57600
+freq = 10   # Frequency of watchdog update in Hz
 dogBone = chr(255) # Feed watchdog
-
-time = rospy.get_time()
+logOn = False
 
 # Variables
 xAxis = 0
@@ -31,40 +30,38 @@ try:
     ser = serial.Serial(serialPort, baudRate)
     rospy.loginfo("Arduino at %s", serialPort)
 except:
-    rospy.loginfo("No Arduino!")
+    rospy.logerr("No Arduino!")
+
+################################### Watchdog ##################################
 
 def feedDog():
     try:
         ser.write(dogBone)
         rospy.loginfo("Dog fed")
     except:
-        rospy.loginfo("Unable to feed dog!")
-
-def watchdogFeeder():
-    global time
-    if rospy.get_time() - time > 1/freq:
-        feedDog()
-        time = rospy.get_time()
-        rospy.loginfo("ROSTime: %s", time)
+        if logOn: rospy.logerr("Unable to feed dog!")
 
 ############################ ROS get joystick input ###########################
 
 def callback(myJoy):
-    xAxisValue = int(255*(myJoy.axes[xAxis]+1)/2) # Range 0-255 in order to send as char value
+    xAxisValue = int(255*(myJoy.axes[xAxis]+1)/2)   # Range 0-255 in order to send as char value
     yAxisValue = int(255*(myJoy.axes[yAxis]+1)/2)
-    rospy.loginfo("Axis 0: %s (%s)   Axis 1: %s (%s)", xAxisValue, chr(xAxisValue), yAxisValue, chr(yAxisValue))
-    rospy.loginfo("Axis 0: %s   Axis 1: %s", myJoy.axes[xAxis], myJoy.axes[yAxis])
+    if logOn: rospy.loginfo("Axis 0: %s (%s)   Axis 1: %s (%s)", xAxisValue, chr(xAxisValue), yAxisValue, chr(yAxisValue))
+    if logOn: rospy.loginfo("Axis 0: %s   Axis 1: %s", myJoy.axes[xAxis], myJoy.axes[yAxis])
     try:
-        ser.write(chr(yAxisValue))
+        ser.write(chr(yAxisValue))   # Testing. Need to try out ESC control.
     except:
-        rospy.loginfo("ERROR: Unable to send data. Check connection.")
+        if logOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
 def listener():
-    while not rospy.is_shutdown(): # TODO: make feedDog() loop at 50 Hz but not the callback.
-        #rospy.Subscriber("joy", Joy, callback)
-
-        watchdogFeeder()
-        #freq.sleep()
+    timeLast = rospy.Time.now()
+    while not rospy.is_shutdown():
+        if rospy.Time.now() - timeLast > rospy.Duration(1.0/freq):   # Time - Time = Duration
+            rospy.Subscriber("joy", Joy, callback)
+            feedDog()
+            timeLast = rospy.Time.now() # Update time
+            if logOn: rospy.loginfo("ROSTime: %s", timeLast)
+            #freq.sleep()   # Maybe? Right now the manual time checks work.
 
 #################################### Qt GUI ###################################
 

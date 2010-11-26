@@ -1,0 +1,3 @@
+# Nov. 26, 2010
+15:41 Spent unnecessarily long time implementing timer because I didn't realize Python int/int = int, not a float.
+
