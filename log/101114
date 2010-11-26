@@ -1,0 +1,5 @@
+# Nov. 14, 2010
+01:02 Manually edited symlink /usr/bin/python -> python3 to /usr/bin/python -> python2
+01:08 Manually created symlink /usr/lib/libdb-4.8.so -> libdb-5.1.so
+01:48 Tested joystick with turtle_teleop_joy. Code copied to tricopter/src/joystick.cpp.
+

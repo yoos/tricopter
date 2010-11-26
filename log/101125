@@ -1,0 +1,2 @@
+21:47 Arduino 0021 using gcc-avr-4.5.1-2 and avr-libc-1.7.0-1 failed to compile with an error mentioning pgmspace.h. Fixed by downgrading to Arduino 0018 and avr-libc-1.6.8-1.
+
