@@ -111,7 +111,7 @@ CXXTUNING = -fno-exceptions -ffunction-sections -fdata-sections
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
 
 CFLAGS = $(CDEBUG) -O$(OPT) $(CWARN) $(CTUNING) $(CDEFS) $(CINCS) $(CSTANDARD) $(CEXTRA)
-CXXFLAGS = $(CDEBUG) -O$(OPT) $(CWARN) $(CXXTUNING) $(CDEFS) $(CINCS)
+CXXFLAGS = -I. $(CDEBUG) -O$(OPT) $(CWARN) $(CXXTUNING) $(CDEFS) $(CINCS)
 #ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
 LDFLAGS = -O$(OPT) -lm -Wl,--gc-sections
 
