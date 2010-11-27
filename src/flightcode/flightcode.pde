@@ -1,5 +1,4 @@
 #include "globals.h"
-#include "watchdog.h"
 #include "watchdog.cpp"
 
 void setup() {
