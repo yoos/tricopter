@@ -169,8 +169,8 @@ applet/$(TARGET).cpp: $(TARGET).pde
 	# Not the original .pde file you actually edit...
 	test -d applet || mkdir applet
 	echo '#include "WProgram.h"' > applet/$(TARGET).cpp
-	echo 'void setup();' >> applet/$(TARGET).cpp
-	echo 'void loop();' >> applet/$(TARGET).cpp
+#	echo 'void setup();' >> applet/$(TARGET).cpp
+#	echo 'void loop();' >> applet/$(TARGET).cpp
 	cat $(TARGET).pde >> applet/$(TARGET).cpp
 
 elf: applet/$(TARGET).elf

@@ -2,6 +2,8 @@
 #include "watchdog.cpp"
 
 void setup() {
+    Serial.begin(9600);
+    Serial.println("Antares starting!");
 }
 
 void loop() {

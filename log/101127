@@ -3,4 +3,10 @@
 02:04 Makefile downloaded from here: http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1265576847
 02:04 This one works! Need to manually reset and run 'make upload' at the same time. Automatic reset not working for now. Will take care of later.
 02:28 Added an include option to CXXFLAGS in Makefile to include libraries in directories of choice.
+10:54 When I add Serial to the sketch code, the rest of the sketch will not work. It's a Linux problem? http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1276727004
+11:14: Aha. Bug identified: http://andybrown.me.uk/ws/2010/10/24/the-major-global-constructor-bug-in-avr-gcc/
+14:35 GCC Bugzilla report: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=44617
+14:36 Rebuilding GCC 4.5.1 with patch: http://gcc.gnu.org/bugzilla/attachment.cgi?id=21461&action=diff
+14:51 Serial bug with atmega1280 (Mega) is not present with atmega328p (Duemilanove).
+14:56 Patch works! Yes!
 
