@@ -1,26 +1,26 @@
 #include "globals.h"
+#include "watchdog.h"
+#include "watchdog.cpp"
 
+void setup() {
+}
 
-void setup()  { 
-  // nothing happens in setup 
-} 
-
-void loop()  { 
-  // fade in from min to max in increments of 5 points:
-  for(int fadeValue = 0 ; fadeValue <= 255; fadeValue +=5) { 
-    // sets the value (range from 0 to 255):
-    analogWrite(MOTOR_TEST_PIN, fadeValue);         
-    // wait for 30 milliseconds to see the dimming effect    
-    delay(10);                            
-  } 
-
-  // fade out from max to min in increments of 5 points:
-  for(int fadeValue = 255 ; fadeValue >= 0; fadeValue -=5) { 
-    // sets the value (range from 0 to 255):
-    analogWrite(MOTOR_TEST_PIN, fadeValue);         
-    // wait for 30 milliseconds to see the dimming effect    
-    delay(10);                            
-  } 
+void loop() {
+    Watchdog Jasper(3000, DOGBONE);
+    while (Jasper.isAlive) {
+        Jasper.watch();
+        for(int fadeValue = 0 ; fadeValue <= 255; fadeValue +=5) { 
+            analogWrite(MOTOR_TEST_PIN, fadeValue);         
+            delay(10);                            
+        } 
+        for(int fadeValue = 255 ; fadeValue >= 0; fadeValue -=5) { 
+            analogWrite(MOTOR_TEST_PIN, fadeValue);         
+            delay(10);                            
+        } 
+    }
+    while (!Jasper.isAlive) {
+        analogWrite(MOTOR_TEST_PIN, 255);
+    }
 }
 
 

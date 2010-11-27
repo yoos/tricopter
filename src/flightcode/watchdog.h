@@ -4,12 +4,13 @@
 class Watchdog {
     int time;
     int dogLife;
-    bool isAlive;
+    char dogBone;
 
 public:
-    Watchdog(int);
+    Watchdog(int, char);
     void watch();
     void feed(char);
+    bool isAlive;
 };
 
 #endif

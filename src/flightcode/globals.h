@@ -4,11 +4,12 @@
 
 // Configurables
 
-#define IMU_SAMPLE_INTERVAL 10 // In milliseconds
+#define IMU_SAMPLE_INTERVAL 10   // In milliseconds
 #define GYRO_VREF 1
 #define ACCEL_VREF 1
 
-#define DOGBONE chr(255)
+#define DOGBONE char(255)
+#define DOGLIFE 500   // Watchdog life in milliseconds
 
 #define MOTOR_TEST_PIN 13
 
