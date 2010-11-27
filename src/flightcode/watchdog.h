@@ -7,9 +7,10 @@ class Watchdog {
     bool isAlive;
 
 public:
-    Watchdog();
-    void watch(int);
+    Watchdog(int);
+    void watch();
     void feed(char);
+};
 
 #endif
 

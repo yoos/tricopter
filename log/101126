@@ -1,3 +1,5 @@
 # Nov. 26, 2010
 15:41 Spent unnecessarily long time implementing timer because I didn't realize Python int/int = int, not a float.
+16:46 I can build sketch from command line with arscons: http://code.google.com/p/arscons/
+18:58 Added upload.verbose=true to Arduino IDE preferences.txt and copied hex file upload command to SConstruct. I can now upload to Arduino from command line!
 

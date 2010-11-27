@@ -16,16 +16,6 @@
 // These constants won't change.  They're used to give names
 // to the pins used:
 
-#include <WProgram.h>
-
-int main() {
-    init();
-    setup();
-    for(;;)
-        loop();
-    return 0;
-}
-
 const int lowestPin = 2;
 const int highestPin = 13;
 
