@@ -1,0 +1,5 @@
+# Nov. 27, 2010
+02:04 arscons did not work as intended. Final compiled hex file was larger than the one compiled by the Arduino IDE, so I'm guessing the build process was different and incorrect.
+02:04 Makefile downloaded from here: http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1265576847
+02:04 This one works! Need to manually reset and run 'make upload' at the same time. Automatic reset not working for now. Will take care of later.
+
