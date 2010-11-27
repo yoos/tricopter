@@ -1,46 +1,43 @@
 /*
-  Mega analogWrite() test
- 	
-  This sketch fades LEDs up and down one at a time on digital pins 2 through 13.  
-  This sketch was written for the Arduino Mega, and will not work on previous boards.
- 	
-  The circuit:
-  * LEDs attached from pins 2 through 13 to ground.
-
-  created 8 Feb 2009
-  by Tom Igoe
-  
-  This example code is in the public domain.
-  
+ Fading
+ 
+ This example shows how to fade an LED using the analogWrite() function.
+ 
+ The circuit:
+ * LED attached from digital pin 9 to ground.
+ 
+ Created 1 Nov 2008
+ By David A. Mellis
+ Modified 17 June 2009
+ By Tom Igoe
+ 
+ http://arduino.cc/en/Tutorial/Fading
+ 
  */
-// These constants won't change.  They're used to give names
-// to the pins used:
-
-const int lowestPin = 2;
-const int highestPin = 13;
 
 
-void setup() {
-  // set pins 2 through 13 as outputs:
-  for (int thisPin =lowestPin; thisPin <= highestPin; thisPin++) { 
-    pinMode(thisPin, OUTPUT); 
-  }
+int ledPin = 13;    // LED connected to digital pin 9
+
+void setup()  { 
+  // nothing happens in setup 
+} 
+
+void loop()  { 
+  // fade in from min to max in increments of 5 points:
+  for(int fadeValue = 0 ; fadeValue <= 255; fadeValue +=5) { 
+    // sets the value (range from 0 to 255):
+    analogWrite(ledPin, fadeValue);         
+    // wait for 30 milliseconds to see the dimming effect    
+    delay(30);                            
+  } 
+
+  // fade out from max to min in increments of 5 points:
+  for(int fadeValue = 255 ; fadeValue >= 0; fadeValue -=5) { 
+    // sets the value (range from 0 to 255):
+    analogWrite(ledPin, fadeValue);         
+    // wait for 30 milliseconds to see the dimming effect    
+    delay(30);                            
+  } 
 }
 
-void loop() {
-  // iterate over the pins:
-  for (int thisPin =lowestPin; thisPin <= highestPin; thisPin++) { 
-    // fade the LED on thisPin from off to brightest:
-    for (int brightness = 0; brightness < 255; brightness++) {
-      analogWrite(thisPin, brightness);
-      delay(2);
-    } 
-    // fade the LED on thisPin from brithstest to off:
-    for (int brightness = 255; brightness >= 0; brightness--) {
-      analogWrite(thisPin, brightness);
-      delay(2);
-    } 
-    // pause between LEDs:
-    delay(100);
-  }
-}
+

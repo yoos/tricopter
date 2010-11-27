@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef GLOBALS_H
+#define GLOBALS_H
 
 
 // Configurables
@@ -8,7 +8,9 @@
 #define GYRO_VREF 1
 #define ACCEL_VREF 1
 
+#define DOGBONE chr(255)
 
+#define MOTOR_TEST_PIN 13
 
 // Flight modes
 
@@ -53,5 +55,5 @@
 
 
 
-#endif
+#endif // GLOBALS_H
 
