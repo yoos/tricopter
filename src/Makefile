@@ -62,7 +62,7 @@
 
 PORT = /dev/ttyUSB0
 TARGET = main
-ARDUINO = /home/yoos/apps/arduino-0021/hardware/arduino/cores/arduino
+ARDUINO = /home/yoos/apps/arduino-0018/hardware/arduino/cores/arduino
 
 SRC = $(ARDUINO)/pins_arduino.c $(ARDUINO)/wiring.c \
 $(ARDUINO)/wiring_analog.c $(ARDUINO)/wiring_digital.c \
@@ -75,7 +75,7 @@ main.cpp
 MCU = atmega1280
 F_CPU = 16000000
 FORMAT = ihex
-UPLOAD_RATE = 19200
+UPLOAD_RATE = 57600
 
 # Name of this Makefile (used for "make depend").
 MAKEFILE = Makefile

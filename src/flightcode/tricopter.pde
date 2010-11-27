@@ -1,11 +1,11 @@
 #include <WProgram.h>
-//#include "control.h"
-//#include "watchdog.h"
-//#include "gyro.h"
-//#include "accelerometer.h"
-//#include "imu.h"
-//#include "pilot.h"
-//#include "globals.h"
+#include "control.h"
+#include "watchdog.h"
+#include "gyro.h"
+#include "accelerometer.h"
+#include "imu.h"
+#include "pilot.h"
+#include "globals.h"
 
 int flightMode = OFF;
 
