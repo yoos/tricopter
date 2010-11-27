@@ -16,7 +16,7 @@ rospy.init_node("tric_listener", anonymous=True)
 # Comm values
 serialPort = "/dev/ttyUSB0"
 baudRate = 57600
-freq = 10   # Frequency of watchdog update in Hz
+feedInterval = 0.1   # How often to feed watchdog in seconds
 dogBone = chr(255) # Feed watchdog
 logOn = False
 
@@ -56,12 +56,12 @@ def callback(myJoy):
 def listener():
     timeLast = rospy.Time.now()
     while not rospy.is_shutdown():
-        if rospy.Time.now() - timeLast > rospy.Duration(1.0/freq):   # Time - Time = Duration
+        if rospy.Time.now() - timeLast > rospy.Duration(feedInterval):   # Time - Time = Duration
             rospy.Subscriber("joy", Joy, callback)
             feedDog()
             timeLast = rospy.Time.now() # Update time
             if logOn: rospy.loginfo("ROSTime: %s", timeLast)
-            #freq.sleep()   # Maybe? Right now the manual time checks work.
+            #feedInterval.sleep()   # Maybe? Right now the manual time checks work.
 
 #################################### Qt GUI ###################################
 
