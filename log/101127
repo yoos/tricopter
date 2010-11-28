@@ -9,4 +9,8 @@
 14:36 Rebuilding GCC 4.5.1 with patch: http://gcc.gnu.org/bugzilla/attachment.cgi?id=21461&action=diff
 14:51 Serial bug with atmega1280 (Mega) is not present with atmega328p (Duemilanove).
 14:56 Patch works! Yes!
+22:43 XBee config:
+22:43 Network ID: 1071
+22:43 Baudrate 57600
+22:43 Communicated wirelessly with Seeeduino! However, the TX/RX lights on the Seeeduino do not light up as I had hoped.
 
