@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/171/trunk/arduino/Tricopter
+END
+Telemetry.pde
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/171/trunk/arduino/Tricopter/Telemetry.pde
+END
+Tricopter.pde
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/171/trunk/arduino/Tricopter/Tricopter.pde
+END
+Sensors.pde
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/171/trunk/arduino/Tricopter/Sensors.pde
+END
+PID.pde
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/171/trunk/arduino/Tricopter/PID.pde
+END
+Util.pde
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/171/trunk/arduino/Tricopter/Util.pde
+END
+Input.pde
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/171/trunk/arduino/Tricopter/Input.pde
+END
+Motors.pde
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/171/trunk/arduino/Tricopter/Motors.pde
+END
+Axis.pde
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/171/trunk/arduino/Tricopter/Axis.pde
+END
