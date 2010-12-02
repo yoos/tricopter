@@ -12,6 +12,7 @@
 #define DOGLIFE 500   // Watchdog life in milliseconds
 
 #define MOTOR_TEST_PIN 13
+#define MTP2 12
 
 // Flight modes
 
@@ -24,11 +25,11 @@
 
 // Digital pins
 
-#define MOTOR_L 10 // Left motor
-#define MOTOR_R 11 // Right motor
-#define MOTOR_T 12 // Tail motor
+#define MOTOR_L 10 // Left motor PWM
+#define MOTOR_R 11 // Right motor PWM
+#define MOTOR_T 12 // Tail motor PWM
 
-#define SERVO_T 13 // Tail servo for yaw control
+#define SERVO_T 13 // Tail servo PWM for yaw control
 
 
 

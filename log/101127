@@ -13,4 +13,5 @@
 22:43 Network ID: 1071
 22:43 Baudrate 57600
 22:43 Communicated wirelessly with Seeeduino! However, the TX/RX lights on the Seeeduino do not light up as I had hoped.
+23:14 Also, something I did must have fixed the auto/manual reset problem. I can now upload without having to press the reset button manually.
 
