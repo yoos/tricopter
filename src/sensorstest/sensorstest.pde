@@ -1,6 +1,7 @@
 #include <Wire.h> // I2C library, gyroscope
+#include <Wire.cpp>
 
-#define GYRO_ADDR 0x69 // gyro address, binary = 11101001
+#define GYRO_ADDR 0x68 // gyro address, binary = 11101001
 #define SMPLRT_DIV 0x15
 #define DLPF_FS 0x16
 #define INT_CFG 0x17
