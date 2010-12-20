@@ -1,3 +1,4 @@
 # Dec. 20, 2010
 02:42 Defined ARDUINO_LIBS in Makefile to include Arduino default libraries.
+03:46 Code from http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1278367409/15 successfully reports gyro data but can only be compiled through the Arduino IDE. Commandline compilation has trouble referencing the Wire library.
 

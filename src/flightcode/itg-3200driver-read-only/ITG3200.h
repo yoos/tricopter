@@ -30,7 +30,7 @@
 
 #include "WProgram.h"
 
-#define ITG3200_DEFAULT_ADDR	0x69   //0x69 AD0=1 default I2C address
+#define ITG3200_DEFAULT_ADDR	0x68   //0x69 AD0=1 default I2C address
 // "The LSB bit of the 7 bit address is determined by the logic level on pin 9. 
 // This allows two ITG-3200 devices to be connected to the same I2C bus.
 // One device should have pin9 (or bit0) LOW and the other should be HIGH." source: ITGsheet
