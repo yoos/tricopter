@@ -48,6 +48,7 @@ F_CPU = 16000000
 
 VERSION=18
 ARDUINO = $(INSTALL_DIR)/hardware/arduino/cores/arduino
+ARDUINO_LIBS = $(INSTALL_DIR)/libraries/Servo
 #AVR_TOOLS_PATH = $(INSTALL_DIR)/hardware/tools/avr/bin
 AVR_TOOLS_PATH = /usr/bin
 AVRDUDE_PATH = $(INSTALL_DIR)/hardware/tools
@@ -92,8 +93,8 @@ CDEFS = -DF_CPU=$(F_CPU)L -DARDUINO=$(VERSION)
 CXXDEFS = -DF_CPU=$(F_CPU)L -DARDUINO=$(VERSION)
 
 # Place -I options here
-CINCS = -I$(ARDUINO) -I`pwd`
-CXXINCS = -I$(ARDUINO) -I`pwd`
+CINCS = -I$(ARDUINO) -I$(ARDUINO_LIBS) -I`pwd`
+CXXINCS = -I$(ARDUINO) -I$(ARDUINO_LIBS) -I`pwd`
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C

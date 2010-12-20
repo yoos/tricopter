@@ -1,3 +1,4 @@
+#include <Servo.h>
 #include "globals.h"
 #include "watchdog.cpp"
 
