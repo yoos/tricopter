@@ -35,7 +35,7 @@
 # $Id$
 
 TARGET = $(notdir $(CURDIR))
-INSTALL_DIR = $(HOME)/apps/arduino-0021
+INSTALL_DIR = $(HOME)/apps/arduino-0018
 PORT = /dev/ttyUSB*
 UPLOAD_RATE = 57600
 AVRDUDE_PROGRAMMER = stk500v1
@@ -46,9 +46,10 @@ F_CPU = 16000000
 ############################################################################
 # Below here nothing should be changed...
 
-VERSION=21
+VERSION=18
 ARDUINO = $(INSTALL_DIR)/hardware/arduino/cores/arduino
-ARDUINO_LIBS = $(INSTALL_DIR)/libraries/{EEPROM,Ethernet,Firmata,LquidCrystal,Matrix,Servo,SoftwareSerial,Sprite,Stepper,Wire}
+ARDUINO_LIBS = $(INSTALL_DIR)/libraries/{EEPROM,Ethernet,Firmata,LiquidCrystal,Matrix,Servo,SoftwareSerial,Sprite,Stepper,Wire}
+
 #AVR_TOOLS_PATH = $(INSTALL_DIR)/hardware/tools/avr/bin
 AVR_TOOLS_PATH = /usr/bin
 AVRDUDE_PATH = $(INSTALL_DIR)/hardware/tools
