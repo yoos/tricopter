@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.1 - November 2010
+  AeroQuad v2.1 Beta - December 2010
   www.AeroQuad.com
   Copyright (c) 2010 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -63,7 +63,7 @@ void flightControl(void) {
   // ***************************** Update Yaw ***************************
   #ifndef AeroQuad_v18
   if (headingHoldConfig == ON) {
-    gyro.calculateHeading();
+    //gyro.calculateHeading();
 
     #if defined(HeadingMagHold) || defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
       heading = compass.getHeading();

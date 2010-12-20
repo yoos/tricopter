@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.1 - November 2010
+  AeroQuad v2.1 Beta - December 2010
   www.AeroQuad.com
   Copyright (c) 2010 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -25,16 +25,17 @@ public:
   float rawAltitude;
   int accelChannel[3];
   #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-  float accelZero[3];
+    float accelZero[3];
   #else
-  int accelZero[3];
+    int accelZero[3];
   #endif
   int accelData[3];
-  float accelADC[3];
+  int accelADC[3];
   int sign[3];
   float accelOneG, zAxis;
   byte rollChannel, pitchChannel, zAxisChannel;
-  unsigned long currentTime, previousTime;
+  unsigned long currentAccelTime, previousAccelTime;
+  
   Accel(void) {
     sign[ROLL] = 1;
     sign[PITCH] = 1;
@@ -65,6 +66,8 @@ public:
     accelZero[PITCH] = readFloat(LEVELPITCHCAL_ADR);
     accelZero[ZAXIS] = readFloat(LEVELZCAL_ADR);
     accelOneG = readFloat(ACCEL1G_ADR);
+    currentAccelTime = micros();
+    previousAccelTime = currentAccelTime;
   }
   
   const int getRaw(byte axis) {
@@ -118,11 +121,12 @@ public:
   }
   
   const int getZaxis() {
-    currentTime = micros();
-    zAxis = smooth(getFlightData(ZAXIS), zAxis, 0.25, ((currentTime - previousTime) / 5000.0)); //expect 5ms = 5000Ã‚Âµs = (current-previous) / 5000.0 to get around 1
-    previousTime = currentTime;
+    currentAccelTime = micros();
+    zAxis = smoothWithTime(getFlightData(ZAXIS), zAxis, 0.25, ((currentTime - previousTime) / 5000.0)); //expect 5ms = 5000Ã‚Âµs = (current-previous) / 5000.0 to get around 1
+    previousAccelTime = currentAccelTime;
     return zAxis;
   }
+  
   #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM) 
   void calculateAltitude() {
     currentTime = micros();
@@ -156,7 +160,6 @@ public:
 #if defined(AeroQuad_v1) || defined(AeroQuadMega_v1)
 class Accel_AeroQuad_v1 : public Accel {
 private:
-  int findZero[FINDZERO];
   
 public:
   Accel_AeroQuad_v1() : Accel(){
@@ -182,7 +185,7 @@ public:
     currentTime = micros();
     for (axis = ROLL; axis < LASTAXIS; axis++) {
       accelADC[axis] = analogRead(accelChannel[axis]) - accelZero[axis];
-      accelData[axis] = smooth(accelADC[axis], accelData[axis], smoothFactor, ((currentTime - previousTime) / 5000.0)); //to get around 1, 5000/5000=1
+      accelData[axis] = smooth(accelADC[axis], accelData[axis], smoothFactor);
     }
     previousTime = currentTime;
   }
@@ -193,6 +196,8 @@ public:
   
   // Allows user to zero accelerometers on command
   void calibrate(void) {
+    int findZero[FINDZERO];
+
     for (byte calAxis = ROLL; calAxis < LASTAXIS; calAxis++) {
       for (int i=0; i<FINDZERO; i++)
         findZero[i] = analogRead(accelChannel[calAxis]);
@@ -218,11 +223,8 @@ public:
 #if defined(AeroQuad_v18) || defined(AeroQuadMega_v2)
 class Accel_AeroQuadMega_v2 : public Accel {
 private:
-  int findZero[FINDZERO];
   int accelAddress;
-  int data[2];
-  int rawData[3];
-  byte select; // use to select which axis is being read
+  int xdata[2];
   
 public:
   Accel_AeroQuadMega_v2() : Accel(){
@@ -233,12 +235,13 @@ public:
   }
   
   void initialize(void) {
-    accelZero[ROLL] = readFloat(LEVELROLLCAL_ADR);
+    byte data;
+  
+	  accelZero[ROLL] = readFloat(LEVELROLLCAL_ADR);
     accelZero[PITCH] = readFloat(LEVELPITCHCAL_ADR);
     accelZero[ZAXIS] = readFloat(LEVELZCAL_ADR);
     accelOneG = readFloat(ACCEL1G_ADR);
     smoothFactor = readFloat(ACCSMOOTH_ADR);
-    select = PITCH;
     
     // Check if accel is connected
     if (readWhoI2C(accelAddress) != 0x03) // page 52 of datasheet
@@ -254,8 +257,8 @@ public:
     // Range settings is page 28
     updateRegisterI2C(accelAddress, 0x0D, 0x10); //enable writing to control registers
     sendByteI2C(accelAddress, 0x20); // register bw_tcs (bits 4-7)
-    data[0] = readByteI2C(accelAddress); // get current register value
-    updateRegisterI2C(accelAddress, 0x20, data[0] & 0x0F); // set low pass filter to 10Hz (value = 0000xxxx)
+    data = readByteI2C(accelAddress); // get current register value
+    updateRegisterI2C(accelAddress, 0x20, data & 0x0F); // set low pass filter to 10Hz (value = 0000xxxx)
 
     // From page 27 of BMA180 Datasheet
     //  1.0g = 0.13 mg/LSB
@@ -266,30 +269,30 @@ public:
     //  8.0g = 0.99 mg/LSB
     // 16.0g = 1.98 mg/LSB
     sendByteI2C(accelAddress, 0x35); // register offset_lsb1 (bits 1-3)
-    data[0] = readByteI2C(accelAddress);
+    data = readByteI2C(accelAddress);
     //Serial.println(data[0], HEX);
-    data[0] &= 0xF1;
-    //data[0] |= 1<<1;
-    updateRegisterI2C(accelAddress, 0x35, data[0]); // set range to +/-1.0g (value = xxxx000x)
+    data &= 0xF1;
+    //data |= 1<<1;
+    updateRegisterI2C(accelAddress, 0x35, data); // set range to +/-1.0g (value = xxxx000x)
     //sendByteI2C(accelAddress, 0x35); // register offset_lsb1 (bits 1-3)
-    //data[0] = readByteI2C(accelAddress);
-    //Serial.println(data[0], HEX);    
+    //data = readByteI2C(accelAddress);
+    //Serial.println((int)data, HEX);    
   }
   
   void measure(void) {
-    currentTime = micros();
-    // round robin between each axis so that I2C blocking time is low
-    if (select == ROLL) sendByteI2C(accelAddress, 0x04);
-    if (select == PITCH) sendByteI2C(accelAddress, 0x02);
-    if (select == ZAXIS) sendByteI2C(accelAddress, 0x06);
-    rawData[select] = readReverseWordI2C(accelAddress) >> 2; // last 2 bits are not part of measurement
-    accelADC[select] = rawData[select] - accelZero[select]; // center accel data around zero
-    accelData[select] = smooth(accelADC[select], accelData[select], smoothFactor, ((currentTime - previousTime) / 5000.0)); //to get around 1, 5000/5000=1
-     #ifndef AeroQuad_v18
-    if (select == ZAXIS) calculateAltitude();
-     #endif
-    if (++select == LASTAXIS) select = ROLL; // go to next axis, reset to ROLL if past ZAXIS
-     previousTime = currentTime;
+    int rawData[3];
+
+    Wire.beginTransmission(accelAddress);
+    Wire.send(0x02);
+    Wire.endTransmission();
+    Wire.requestFrom(accelAddress, 6);
+    rawData[PITCH] = (Wire.receive()| (Wire.receive() << 8)) >> 2; // last 2 bits are not part of measurement
+    rawData[ROLL] = (Wire.receive()| (Wire.receive() << 8)) >> 2; // last 2 bits are not part of measurement
+    rawData[ZAXIS] = (Wire.receive()| (Wire.receive() << 8)) >> 2; // last 2 bits are not part of measurement
+    for (axis = ROLL; axis < LASTAXIS; axis++) {
+      accelADC[axis] = rawData[axis] - accelZero[axis]; // center accel data around zero
+      accelData[axis] = smooth(accelADC[axis], accelData[axis], smoothFactor);
+    }
   }
 
   const int getFlightData(byte axis) {
@@ -298,6 +301,7 @@ public:
   
   // Allows user to zero accelerometers on command
   void calibrate(void) {  
+    int findZero[FINDZERO];
     int dataAddress;
     
     for (byte calAxis = ROLL; calAxis < ZAXIS; calAxis++) {
@@ -325,6 +329,7 @@ public:
   }
 };
 #endif
+
 /******************************************************/
 /*********** ArduCopter ADC Accelerometer *************/
 /******************************************************/
@@ -393,7 +398,6 @@ public:
 #if defined(AeroQuad_Wii) || defined(AeroQuadMega_Wii)
 class Accel_Wii : public Accel {
 private:
-  int findZero[FINDZERO];
 
 public:
   Accel_Wii() : Accel(){
@@ -414,7 +418,7 @@ public:
     // We just update the appropriate variables here
     for (axis = ROLL; axis < LASTAXIS; axis++) {
       accelADC[axis] = NWMP_acc[axis] - accelZero[axis];
-      accelData[axis] = smooth(accelADC[axis], accelData[axis], smoothFactor, ((currentTime - previousTime) / 5000.0));
+      accelData[axis] = smoothWithTime(accelADC[axis], accelData[axis], smoothFactor, ((currentTime - previousTime) / 5000.0));
     }
     previousTime = currentTime;
   }
@@ -425,6 +429,8 @@ public:
  
   // Allows user to zero accelerometers on command
   void calibrate(void) {
+    int findZero[FINDZERO];
+
     for(byte calAxis = ROLL; calAxis < LASTAXIS; calAxis++) {
       for (int i=0; i<FINDZERO; i++) {
         updateControls();
@@ -473,9 +479,9 @@ public:
       accelADC[YAXIS] = chr6dm.data.ay - accelZero[YAXIS];
       accelADC[ZAXIS] = chr6dm.data.az - accelOneG;
 
-      accelData[XAXIS] = smooth(accelADC[XAXIS], accelData[XAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0)); //to get around 1
-      accelData[YAXIS] = smooth(accelADC[YAXIS], accelData[YAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
-      accelData[ZAXIS] = smooth(accelADC[ZAXIS], accelData[ZAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
+      accelData[XAXIS] = smoothWithTime(accelADC[XAXIS], accelData[XAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0)); //to get around 1
+      accelData[YAXIS] = smoothWithTime(accelADC[YAXIS], accelData[YAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
+      accelData[ZAXIS] = smoothWithTime(accelADC[ZAXIS], accelData[ZAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
     previousTime = currentTime;
   }    
 
@@ -597,7 +603,6 @@ public:
 #if defined(Multipilot) || defined(MultipilotI2C)
 class Accel_Multipilot : public Accel {
 private:
-  int findZero[FINDZERO];
   
 public:
   Accel_Multipilot() : Accel(){
@@ -638,6 +643,7 @@ public:
   
   // Allows user to zero accelerometers on command
   void calibrate(void) {
+    int findZero[FINDZERO];
     for (byte calAxis = ROLL; calAxis < LASTAXIS; calAxis++) {
       for (int i=0; i<FINDZERO; i++)
         findZero[i] = analogRead(accelChannel[calAxis]);
