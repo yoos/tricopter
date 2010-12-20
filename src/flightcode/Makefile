@@ -48,7 +48,7 @@ F_CPU = 16000000
 
 VERSION=18
 ARDUINO = $(INSTALL_DIR)/hardware/arduino/cores/arduino
-ARDUINO_LIBS = $(INSTALL_DIR)/libraries/Servo
+ARDUINO_LIBS = $(INSTALL_DIR)/libraries/{EEPROM,Ethernet,Firmata,LquidCrystal,Matrix,Servo,SoftwareSerial,Sprite,Stepper,Wire}
 #AVR_TOOLS_PATH = $(INSTALL_DIR)/hardware/tools/avr/bin
 AVR_TOOLS_PATH = /usr/bin
 AVRDUDE_PATH = $(INSTALL_DIR)/hardware/tools

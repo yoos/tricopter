@@ -1,0 +1,3 @@
+# Dec. 20, 2010
+02:42 Defined ARDUINO_LIBS in Makefile to include Arduino default libraries.
+
