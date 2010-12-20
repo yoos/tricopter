@@ -1,0 +1,6 @@
+# Dec. 18, 2010
+23:31 Messing around with code from this Arduino forum thread: http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1278367409
+23:41 ITG-3200 wired per datasheet. Digital pin 23 wired to gyro INT.
+23:43 Code provided by jeffreydavid2003 in thread works if Gyro_Init() is called after Wire.begin().
+23:44 Gyro reports X as always zero. Hmm.
+

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 21
+/svn/!svn/ver/2/trunk
+END
+COPYING.LESSER
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/!svn/ver/2/trunk/COPYING.LESSER
+END
+COPYING
+K 25
+svn:wc:ra_dav:version-url
+V 29
+/svn/!svn/ver/2/trunk/COPYING
+END
+ITG3200.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/!svn/ver/2/trunk/ITG3200.cpp
+END
+ITG3200.h
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/!svn/ver/2/trunk/ITG3200.h
+END
