@@ -9,6 +9,8 @@
 #define INT_CFG 0x17
 #define PWR_MGM 0x3E
 
+byte gyroBuffer[32];
+
 //initializes the gyroscope
 void initGyro()
 {
@@ -25,6 +27,10 @@ void initGyro()
     *    no interrupt
     ******************************************/
     writeTo(GYRO_ADDR, PWR_MGM, 0x00, error);
+    readFrom(GYRO_ADDR, 0x00, 1, gyroBuffer, error);
+    Serial.print("Gyro Id = ");
+    Serial.println(gyroBuffer[0]);
+
     writeTo(GYRO_ADDR, PWR_MGM, 0xFF, error); // EB, 50, 80, 7F, DE, 23, 20, FF
     writeTo(GYRO_ADDR, PWR_MGM, 0x1E, error); // +/- 2000 dgrs/sec, 1KHz, 1E, 19
     writeTo(GYRO_ADDR, PWR_MGM, 0x00, error);

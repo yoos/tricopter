@@ -6,17 +6,17 @@
 #define ACCEL_ADDR 0x40   // BMA180 device address
 #define TO_READ 6   //num of bytes we are going to read each time (two bytes for each axis)
 
-byte buff[TO_READ] ;    //6 bytes buffer for saving data read from the device
-char str[512];                      //string buffer to transform data before sending it to the serial port
+byte accelBuffer[TO_READ] ;    //6 bytes accelBufferer for saving data read from the device
+char str[512];                      //string accelBufferer to transform data before sending it to the serial port
 
 void initAccel()
 {
     int error = 0;
-    readFrom(ACCEL_ADDR, 0x00, 1, buff, error);
+    readFrom(ACCEL_ADDR, 0x00, 1, accelBuffer, error);
     Serial.print("Accelerometer Id = ");
-    Serial.println(buff[0]);
+    Serial.println(accelBuffer[0]);
 
-    if (buff[0] == 3)
+    if (accelBuffer[0] == 3)
     {
         writeTo(ACCEL_ADDR, 0x0D, B0001, error);
         writeTo(ACCEL_ADDR, 0x20, B00001000, error);
@@ -35,11 +35,11 @@ void readAccel()
     int regAddress = 0x02;
     int x, y, z;
     
-    readFrom(ACCEL_ADDR, regAddress, TO_READ, buff, error);   // Read acceleration data
+    readFrom(ACCEL_ADDR, regAddress, TO_READ, accelBuffer, error);   // Read acceleration data
     
-    x = (((int)buff[1]) << 8) | buff[0];   
-    y = (((int)buff[3])<< 8) | buff[2];
-    z = (((int)buff[5]) << 8) | buff[4];
+    x = (((int)accelBuffer[1]) << 8) | accelBuffer[0];   
+    y = (((int)accelBuffer[3])<< 8) | accelBuffer[2];
+    z = (((int)accelBuffer[5]) << 8) | accelBuffer[4];
     
     sprintf(str, "AX: %d   AY: %d   AZ: %d", x, y, z);  
     Serial.print(str);
