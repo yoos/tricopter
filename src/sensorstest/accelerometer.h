@@ -4,10 +4,10 @@
 #include "i2c.h"
 
 #define ACCEL_ADDR 0x40   // BMA180 device address
-#define TO_READ 6   //num of bytes we are going to read each time (two bytes for each axis)
+#define READ_SIZE 6   //num of bytes we are going to read each time (two bytes for each axis)
 
-byte accelBuffer[TO_READ] ;    //6 bytes accelBufferer for saving data read from the device
-char str[512];                      //string accelBufferer to transform data before sending it to the serial port
+byte accelBuffer[READ_SIZE] ;    //6 bytes buffer for saving data read from the device
+char str[512];                      //string buffer to transform data before sending it to the serial port
 
 void initAccel()
 {
@@ -27,21 +27,25 @@ void initAccel()
     {
         Serial.println("BMA180 successfully initialized!");
     }
+
+    for (int i; i<READ_SIZE; i++) {
+        accelBuffer[i] = 0;
+    }
 }
 
 void readAccel()
 {
     int error = 0;
     int regAddress = 0x02;
-    int x, y, z;
+    int ax, ay, az;
     
-    readI2C(ACCEL_ADDR, regAddress, TO_READ, accelBuffer, error);   // Read acceleration data
+    readI2C(ACCEL_ADDR, regAddress, READ_SIZE, accelBuffer, error);   // Read acceleration data
     
-    x = (((int)accelBuffer[1]) << 8) | accelBuffer[0];   
-    y = (((int)accelBuffer[3])<< 8) | accelBuffer[2];
-    z = (((int)accelBuffer[5]) << 8) | accelBuffer[4];
+    ax = (((int)accelBuffer[1]) << 8) | accelBuffer[0];   
+    ay = (((int)accelBuffer[3]) << 8) | accelBuffer[2];
+    az = (((int)accelBuffer[5]) << 8) | accelBuffer[4];
     
-    sprintf(str, "AX: %d   AY: %d   AZ: %d", x, y, z);  
+    sprintf(str, "AX: %d   AY: %d   AZ: %d", ax, ay, az);  
     Serial.print(str);
     Serial.print(10, BYTE);
 }

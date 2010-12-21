@@ -9,7 +9,10 @@
 #define INT_CFG 0x17
 #define PWR_MGM 0x3E
 
-byte gyroBuffer[32];
+#define READ_SIZE 6
+
+byte gyroBuffer[BUFFER_SIZE];
+char str[512];
 
 //initializes the gyroscope
 void initGyro()
@@ -39,13 +42,17 @@ void initGyro()
     {
         Serial.println("ITG-3200 successfully initialized!");
     }
+
+    for (int i; i<READ_SIZE; i++) {
+        gyroBuffer[i] = 0;
+    }
 }
 
 void readGyro()
 {
-    int gyro, error = 0;
-    byte msb[1];
-    byte lsb[1];
+    int error = 0;
+    int regAddress = 0x1D;
+    int gx, gy, gz;
     /**************************************
         Gyro ITG-3200 I2C
         registers:
@@ -54,37 +61,15 @@ void readGyro()
         z axis MSB = 21, z axis LSB = 22
     **************************************/
     // Arduino Wire library (I2C)
-    readI2C(GYRO_ADDR, 0x1D, 1, msb, error);   // MSB x axis
-    readI2C(GYRO_ADDR, 0x1E, 1, lsb, error);   // LSB x axis
+    readI2C(GYRO_ADDR, regAddress, READ_SIZE, gyroBuffer, error);
 
-    // calculate total x axis
-    gyro = (( msb[0] << 8) | lsb[0]);
-    Serial.print("GX: "); Serial.print(gyro);
-
-    // clear variables
-    msb[0] = 0;
-    lsb[0] = 0;
-    gyro = 0;
-
-    readI2C(GYRO_ADDR, 0x1F, 1, msb, error);   // MSB y axis
-    readI2C(GYRO_ADDR, 0x20, 1, lsb, error);   // LSB y axis
-
-    // calculate total y axis
-    gyro = (( msb[0] << 8) | lsb[0]);
-    Serial.print("   GY: "); Serial.print(gyro);
-
-    // clear variables
-    msb[0] = 0;
-    lsb[0] = 0;
-    gyro = 0;
-
-    readI2C(GYRO_ADDR, 0x21, 1, msb, error);   // MSB z axis
-    readI2C(GYRO_ADDR, 0x22, 1, lsb, error);   // LSB z axis
-
-    // calculate z axis
-    gyro = (( msb[0] << 8) | lsb[0]);
-    Serial.print("   GZ: "); Serial.println(gyro);
-
+    gx = ((gyroBuffer[0] << 8) | gyroBuffer[1]);
+    gy = ((gyroBuffer[2] << 8) | gyroBuffer[3]);
+    gz = ((gyroBuffer[4] << 8) | gyroBuffer[5]);
+    
+    sprintf(str, "GX: %d   GY: %d   GZ: %d", gx, gy, gz);
+    Serial.print(str);
+    Serial.print(10, BYTE);
 }
 
 #endif // GYRO_H
