@@ -3,8 +3,7 @@
 
 #include <Wire.cpp>
 
-//---------------- Functions
-//Writes val to address register on device
+// Writes val to address register on device
 void writeTo(int device, byte address, byte val) {
    Wire.beginTransmission(device); //start transmission to device 
    Wire.send(address);        // send register address
@@ -12,7 +11,7 @@ void writeTo(int device, byte address, byte val) {
    Wire.endTransmission(); //end transmission
 }
 
-//reads num bytes starting from address register on device in to buff array
+// Reads num bytes starting from address register on device in to buff array
 void readFrom(int device, byte address, int num, byte buff[]) {
   Wire.beginTransmission(device); //start transmission to device 
   Wire.send(address);        //sends address to read from
