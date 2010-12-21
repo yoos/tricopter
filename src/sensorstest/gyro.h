@@ -11,8 +11,8 @@
 
 #define READ_SIZE 6
 
-byte gyroBuffer[BUFFER_SIZE];
-char str[512];
+byte gyroBuffer[READ_SIZE];
+char gyroStr[512];
 
 //initializes the gyroscope
 void initGyro()
@@ -67,8 +67,8 @@ void readGyro()
     gy = ((gyroBuffer[2] << 8) | gyroBuffer[3]);
     gz = ((gyroBuffer[4] << 8) | gyroBuffer[5]);
     
-    sprintf(str, "GX: %d   GY: %d   GZ: %d", gx, gy, gz);
-    Serial.print(str);
+    sprintf(gyroStr, "GX: %d   GY: %d   GZ: %d", gx, gy, gz);
+    Serial.print(gyroStr);
     Serial.print(10, BYTE);
 }
 

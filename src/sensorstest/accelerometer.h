@@ -7,7 +7,7 @@
 #define READ_SIZE 6   //num of bytes we are going to read each time (two bytes for each axis)
 
 byte accelBuffer[READ_SIZE] ;    //6 bytes buffer for saving data read from the device
-char str[512];                      //string buffer to transform data before sending it to the serial port
+char accelStr[512];                      //string buffer to transform data before sending it to the serial port
 
 void initAccel()
 {
@@ -45,8 +45,8 @@ void readAccel()
     ay = (((int)accelBuffer[3]) << 8) | accelBuffer[2];
     az = (((int)accelBuffer[5]) << 8) | accelBuffer[4];
     
-    sprintf(str, "AX: %d   AY: %d   AZ: %d", ax, ay, az);  
-    Serial.print(str);
+    sprintf(accelStr, "AX: %d   AY: %d   AZ: %d", ax, ay, az);  
+    Serial.print(accelStr);
     Serial.print(10, BYTE);
 }
 
