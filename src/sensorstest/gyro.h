@@ -26,14 +26,14 @@ void initGyro()
     *    low pass filter = 5Hz
     *    no interrupt
     ******************************************/
-    writeTo(GYRO_ADDR, PWR_MGM, 0x00, error);
-    readFrom(GYRO_ADDR, 0x00, 1, gyroBuffer, error);
+    sendI2C(GYRO_ADDR, PWR_MGM, 0x00, error);
+    readI2C(GYRO_ADDR, 0x00, 1, gyroBuffer, error);
     Serial.print("Gyro Id = ");
     Serial.println(gyroBuffer[0]);
 
-    writeTo(GYRO_ADDR, PWR_MGM, 0xFF, error); // EB, 50, 80, 7F, DE, 23, 20, FF
-    writeTo(GYRO_ADDR, PWR_MGM, 0x1E, error); // +/- 2000 dgrs/sec, 1KHz, 1E, 19
-    writeTo(GYRO_ADDR, PWR_MGM, 0x00, error);
+    sendI2C(GYRO_ADDR, PWR_MGM, 0xFF, error); // EB, 50, 80, 7F, DE, 23, 20, FF
+    sendI2C(GYRO_ADDR, PWR_MGM, 0x1E, error); // +/- 2000 dgrs/sec, 1KHz, 1E, 19
+    sendI2C(GYRO_ADDR, PWR_MGM, 0x00, error);
 
     if (error == 0)
     {
@@ -54,8 +54,8 @@ void readGyro()
         z axis MSB = 21, z axis LSB = 22
     **************************************/
     // Arduino Wire library (I2C)
-    readFrom(GYRO_ADDR, 0x1D, 1, msb, error);   // MSB x axis
-    readFrom(GYRO_ADDR, 0x1E, 1, lsb, error);   // LSB x axis
+    readI2C(GYRO_ADDR, 0x1D, 1, msb, error);   // MSB x axis
+    readI2C(GYRO_ADDR, 0x1E, 1, lsb, error);   // LSB x axis
 
     // calculate total x axis
     gyro = (( msb[0] << 8) | lsb[0]);
@@ -66,8 +66,8 @@ void readGyro()
     lsb[0] = 0;
     gyro = 0;
 
-    readFrom(GYRO_ADDR, 0x1F, 1, msb, error);   // MSB y axis
-    readFrom(GYRO_ADDR, 0x20, 1, lsb, error);   // LSB y axis
+    readI2C(GYRO_ADDR, 0x1F, 1, msb, error);   // MSB y axis
+    readI2C(GYRO_ADDR, 0x20, 1, lsb, error);   // LSB y axis
 
     // calculate total y axis
     gyro = (( msb[0] << 8) | lsb[0]);
@@ -78,8 +78,8 @@ void readGyro()
     lsb[0] = 0;
     gyro = 0;
 
-    readFrom(GYRO_ADDR, 0x21, 1, msb, error);   // MSB z axis
-    readFrom(GYRO_ADDR, 0x22, 1, lsb, error);   // LSB z axis
+    readI2C(GYRO_ADDR, 0x21, 1, msb, error);   // MSB z axis
+    readI2C(GYRO_ADDR, 0x22, 1, lsb, error);   // LSB z axis
 
     // calculate z axis
     gyro = (( msb[0] << 8) | lsb[0]);

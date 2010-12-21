@@ -12,15 +12,15 @@ char str[512];                      //string accelBufferer to transform data bef
 void initAccel()
 {
     int error = 0;
-    readFrom(ACCEL_ADDR, 0x00, 1, accelBuffer, error);
+    readI2C(ACCEL_ADDR, 0x00, 1, accelBuffer, error);
     Serial.print("Accelerometer Id = ");
     Serial.println(accelBuffer[0]);
 
     if (accelBuffer[0] == 3)
     {
-        writeTo(ACCEL_ADDR, 0x0D, B0001, error);
-        writeTo(ACCEL_ADDR, 0x20, B00001000, error);
-        writeTo(ACCEL_ADDR, 0x35, B0100, error);
+        sendI2C(ACCEL_ADDR, 0x0D, B0001, error);
+        sendI2C(ACCEL_ADDR, 0x20, B00001000, error);
+        sendI2C(ACCEL_ADDR, 0x35, B0100, error);
     }
 
     if (error == 0)
@@ -35,7 +35,7 @@ void readAccel()
     int regAddress = 0x02;
     int x, y, z;
     
-    readFrom(ACCEL_ADDR, regAddress, TO_READ, accelBuffer, error);   // Read acceleration data
+    readI2C(ACCEL_ADDR, regAddress, TO_READ, accelBuffer, error);   // Read acceleration data
     
     x = (((int)accelBuffer[1]) << 8) | accelBuffer[0];   
     y = (((int)accelBuffer[3])<< 8) | accelBuffer[2];

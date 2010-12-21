@@ -3,26 +3,27 @@
 
 #include <Wire.cpp>
 
-// Writes val to address register on device
-void writeTo(int device, byte address, byte val, int error) {
-   Wire.beginTransmission(device); //start transmission to device 
-   Wire.send(address);        // send register address
-   Wire.send(val);        // send value to write
-   error = Wire.endTransmission(); //end transmission
+void sendI2C(int device, byte address, byte val, int error) {
+   Wire.beginTransmission(device);
+   Wire.send(address);
+   Wire.send(val);
+   error = Wire.endTransmission();
 }
 
-// Reads num bytes starting from address register on device in to buff array
-void readFrom(int device, byte address, int num, byte buff[], int error) {
-    Wire.beginTransmission(device); //start transmission to device 
-    Wire.send(address);        //sends address to read from
-    Wire.requestFrom(device, num);    // request 6 bytes from device
+void readI2C(int device, byte address, int num, byte buff[], int error) {
+    Wire.beginTransmission(device);
+    Wire.send(address);
+    error = Wire.endTransmission();
+
+    Wire.beginTransmission(device);
+    Wire.requestFrom(device, num);
     int i = 0;
-    while(Wire.available())    //device may send less than requested (abnormal)
+    while(Wire.available())   //device may send less than requested (abnormal)
     {   
-        buff[i] = Wire.receive(); // receive a byte
+        buff[i] = Wire.receive();   // receive a byte
         i++;
     }
-    error = Wire.endTransmission(); //end transmission
+    error = Wire.endTransmission();
 }
 
 #endif // I2C_H
