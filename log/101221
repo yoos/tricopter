@@ -1,0 +1,3 @@
+# Dec. 21, 2010
+03:35 Changed gyro read code to be more like the accelerometer read code (multiple byte read). Now the numbers makes sense!
+
