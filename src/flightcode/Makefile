@@ -69,6 +69,7 @@ $(ARDUINO)/main.cpp \
 $(ARDUINO)/WMath.cpp \
 $(ARDUINO)/Print.cpp \
 $(ARDUINO)/HardwareSerial.cpp \
+#$(ARDUINO)/WString.cpp \
 # end of CXX_MODULES
 
 CXX_APP = applet/$(TARGET).cpp

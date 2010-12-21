@@ -3,34 +3,34 @@
 // for writeMicroseconds, use a value like 1500
 // for 0019 and later
 
-String readString;
-#include <Servo.h>
-Servo myservo;  // create servo object to control a servo
+#include <Servo.cpp>
+
+char input[1024];
+Servo myServo;  // create servo object to control a servo
 
 void setup() {
-  Serial.begin(9600);
-  myservo.attach(9);
+    Serial.begin(9600);
+    myServo.attach(9);
 }
 
 void loop() {
-
-  while (Serial.available()) {
-    delay(10);  
-    if (Serial.available() >0) {
-	char c = Serial.read();  //gets one byte from serial buffer
-	readString += c;  //makes the string readString
+    int i = 0;
+    while (Serial.available()) {
+        delay(10);
+        if (Serial.available() > 0) {
+    	    char c = Serial.read();  //gets one byte from serial buffer
+    	    input[i] = c;  //makes the string input
+            i++;
+        }
     }
-  }
 
-  if (readString.length() >0) {
-    Serial.println(readString);
-    int n;
-    char carray[6];
-    readString.toCharArray(carray, sizeof(carray));
-    n = atoi(carray);
-    myservo.writeMicroseconds(n);
-    //myservo.write(n);
-    readString="";
-  }
+    if (i > 0) {
+        Serial.println(input);
+//      myServo.writeMicroseconds(atoi(input));
+        myServo.write(atoi(input));
+        for (int i; i<1024; i++) {
+            input[i] = 0;
+        }
+    }
 }
 
