@@ -1,11 +1,10 @@
-#include <Servo.h>
-#include <Wire.h>
+#include <Servo.cpp>
 #include <Wire.cpp>
 #include "globals.h"
 #include "watchdog.cpp"
 
 void setup() {
-    Serial.begin(57600);
+    Serial.begin(9600);
     Serial.println("Antares starting!");
     Wire.begin();
 }
