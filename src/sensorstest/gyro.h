@@ -1,4 +1,4 @@
-#include <Wire.cpp> // I2C library, gyroscope
+#include "i2c.h"
 
 #define GYRO_ADDR 0x69 // gyro address, binary = 11101001
 #define SMPLRT_DIV 0x15
@@ -20,29 +20,16 @@ void initGyro()
 	*	low pass filter = 5Hz
 	*	no interrupt
 	******************************************/
-	Wire.beginTransmission(GYRO_ADDR);
-	Wire.send(PWR_MGM);
-	Wire.send(0x00);
-	Wire.endTransmission();
-
-	Wire.beginTransmission(GYRO_ADDR);
-	Wire.send(SMPLRT_DIV);
-	Wire.send(0xFF); // EB, 50, 80, 7F, DE, 23, 20, FF
-	Wire.endTransmission();
-
-	Wire.beginTransmission(GYRO_ADDR);
-	Wire.send(DLPF_FS);
-	Wire.send(0x1E); // +/- 2000 dgrs/sec, 1KHz, 1E, 19
-	Wire.endTransmission();
-
-	Wire.beginTransmission(GYRO_ADDR);
-	Wire.send(INT_CFG);
-	Wire.send(0x00);
-	Wire.endTransmission();
+    writeTo(GYRO_ADDR, PWR_MGM, 0x00);
+    writeTo(GYRO_ADDR, PWR_MGM, 0xFF); // EB, 50, 80, 7F, DE, 23, 20, FF
+    writeTo(GYRO_ADDR, PWR_MGM, 0x1E); // +/- 2000 dgrs/sec, 1KHz, 1E, 19
+    writeTo(GYRO_ADDR, PWR_MGM, 0x00);
 }
 void getGyroscopeData()
 {
 	int gyro = 0;
+    byte msb[1];
+    byte lsb[1];
 	/**************************************
 		Gyro ITG-3200 I2C
 		registers:
@@ -51,93 +38,35 @@ void getGyroscopeData()
 		z axis MSB = 21, z axis LSB = 22
 	**************************************/
 	// Arduino Wire library (I2C)
-	Wire.beginTransmission(GYRO_ADDR);
-	Wire.send(0x1D); // MSB x axis
-	Wire.endTransmission();
-	Wire.requestFrom(GYRO_ADDR, 1); // one byte
-	byte msb = 0;
-	byte lsb = 0;
-	while(!Wire.available())
-	{
-		// wait for data to be available
-	};
-		msb = Wire.receive();
-
-	Wire.beginTransmission(GYRO_ADDR);
-	Wire.send(0x1E); // LSB x axis
-	Wire.endTransmission();
-	Wire.requestFrom(GYRO_ADDR, 1); // one byte
-
-	while(!Wire.available())
-	{
-		// wait for data to be available
-	};
-		 lsb = Wire.receive();
+    readFrom(GYRO_ADDR, 0x1D, 1, msb);   // MSB x axis
+    readFrom(GYRO_ADDR, 0x1E, 1, lsb);   // LSB x axis
 
 	// calculate total x axis
-	gyro = (( msb << 8) | lsb);
+	gyro = (( msb[0] << 8) | lsb[0]);
 	Serial.print(" gyroX= "); Serial.print(gyro);
 
 	// clear variables
-	msb = 0;
-	lsb = 0;
+	msb[0] = 0;
+	lsb[0] = 0;
 	gyro = 0;
 
-	Wire.beginTransmission(GYRO_ADDR);
-	Wire.send(0x1F); // MSB y axis
-	Wire.endTransmission();
-	Wire.requestFrom(GYRO_ADDR, 1); // one byte
-
-	while(!Wire.available())
-	{
-		// wait for data to be available
-	};
-		 msb = Wire.receive();
-
-	Wire.beginTransmission(GYRO_ADDR);
-	Wire.send(0x20); // LSB y axis
-	Wire.endTransmission();
-	Wire.requestFrom(GYRO_ADDR, 1); // one byte
-
-	while(!Wire.available())
-	{
-		// wait!
-	};
-		 lsb = Wire.receive();
+    readFrom(GYRO_ADDR, 0x1F, 1, msb);   // MSB y axis
+    readFrom(GYRO_ADDR, 0x20, 1, lsb);   // LSB y axis
 
 	// calculate total y axis
-	gyro = (( msb << 8) | lsb);
+	gyro = (( msb[0] << 8) | lsb[0]);
 	Serial.print(" gyroX= "); Serial.print(gyro);
 
 	// clear variables
-	msb = 0;
-	lsb = 0;
+	msb[0] = 0;
+	lsb[0] = 0;
 	gyro = 0;
 
-	Wire.beginTransmission(GYRO_ADDR);
-	Wire.send(0x21); // MSB z axis
-	Wire.endTransmission();
-	Wire.requestFrom(GYRO_ADDR, 1); // one byte
-
-	while(!Wire.available())
-	{
-		// wait...
-	};
-		 msb = Wire.receive();
-
-	Wire.beginTransmission(GYRO_ADDR);
-	Wire.send(0x22); // LSB z axis
-	Wire.endTransmission();
-	Wire.requestFrom(GYRO_ADDR, 1); // one byte
-
-	while(!Wire.available())
-	{
-		// ...
-	};
-		 lsb = Wire.receive();
+    readFrom(GYRO_ADDR, 0x21, 1, msb);   // MSB z axis
+    readFrom(GYRO_ADDR, 0x22, 1, lsb);   // LSB z axis
 
 	// calculate z axis
-	gyro = (( msb << 8) | lsb);
+	gyro = (( msb[0] << 8) | lsb[0]);
 	Serial.print(" gyroZ= "); Serial.println(gyro);
 
 }
