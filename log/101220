@@ -6,4 +6,7 @@
 15:40 After many more attempts to find a more elegant solution, I am giving up. Makefile commmitted.
 18:33 TODO: establish error codes and apply them everywhere. Integrate with watchdog function.
 19:03 Got BMA180 more or less working accurately with help from code provided in this Arduino forum thread: http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1276427322
+21:14 ESC test code works with servo. Tried giving the ESC a servo position of 20 deg made it beep a few times. Giving it 180 and back to 0 then 50 made it spin, but I dropped the power cables.
+21:41 Minimum throttle seems to be 16 deg servo position. The motor spins at its lowest RPM at 22 deg servo position and at its highest RPM at 180 deg servo position.
+22:04 ALWAYS DISCONNECT MOTOR FROM POWER BEFORE DISCONNECTING SIGNAL! Random spinups can cause injury. I just had a sharp edge of the motor cut into the base of my thumb. Fortunately the motor disconnected itself because I wasn't using terminals, but it took out a piece of flesh even at a relatively low RPM.
 
