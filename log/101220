@@ -4,4 +4,6 @@
 04:11 Tried build script provided at http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1253788114, but it was written for Arduino 0017 and changing pathnames was not enough.
 10:20 Successfully built sensorstest.pde from command line by changing #include "twi.h" to #include #include "utility/twi.c".
 15:40 After many more attempts to find a more elegant solution, I am giving up. Makefile commmitted.
+18:33 TODO: establish error codes and apply them everywhere. Integrate with watchdog function.
+19:03 Got BMA180 more or less working accurately with help from code provided in this Arduino forum thread: http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1276427322
 

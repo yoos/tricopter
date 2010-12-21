@@ -12,6 +12,7 @@
 //initializes the gyroscope
 void initGyro()
 {
+    int error = 0;
     /*****************************************
     *    ITG 3200
     *    power management set to:
@@ -23,14 +24,20 @@ void initGyro()
     *    low pass filter = 5Hz
     *    no interrupt
     ******************************************/
-    writeTo(GYRO_ADDR, PWR_MGM, 0x00);
-    writeTo(GYRO_ADDR, PWR_MGM, 0xFF); // EB, 50, 80, 7F, DE, 23, 20, FF
-    writeTo(GYRO_ADDR, PWR_MGM, 0x1E); // +/- 2000 dgrs/sec, 1KHz, 1E, 19
-    writeTo(GYRO_ADDR, PWR_MGM, 0x00);
+    writeTo(GYRO_ADDR, PWR_MGM, 0x00, error);
+    writeTo(GYRO_ADDR, PWR_MGM, 0xFF, error); // EB, 50, 80, 7F, DE, 23, 20, FF
+    writeTo(GYRO_ADDR, PWR_MGM, 0x1E, error); // +/- 2000 dgrs/sec, 1KHz, 1E, 19
+    writeTo(GYRO_ADDR, PWR_MGM, 0x00, error);
+
+    if (error == 0)
+    {
+        Serial.println("ITG-3200 successfully initialized!");
+    }
 }
-void getGyroscopeData()
+
+void readGyro()
 {
-    int gyro = 0;
+    int gyro, error = 0;
     byte msb[1];
     byte lsb[1];
     /**************************************
@@ -41,8 +48,8 @@ void getGyroscopeData()
         z axis MSB = 21, z axis LSB = 22
     **************************************/
     // Arduino Wire library (I2C)
-    readFrom(GYRO_ADDR, 0x1D, 1, msb);   // MSB x axis
-    readFrom(GYRO_ADDR, 0x1E, 1, lsb);   // LSB x axis
+    readFrom(GYRO_ADDR, 0x1D, 1, msb, error);   // MSB x axis
+    readFrom(GYRO_ADDR, 0x1E, 1, lsb, error);   // LSB x axis
 
     // calculate total x axis
     gyro = (( msb[0] << 8) | lsb[0]);
@@ -53,8 +60,8 @@ void getGyroscopeData()
     lsb[0] = 0;
     gyro = 0;
 
-    readFrom(GYRO_ADDR, 0x1F, 1, msb);   // MSB y axis
-    readFrom(GYRO_ADDR, 0x20, 1, lsb);   // LSB y axis
+    readFrom(GYRO_ADDR, 0x1F, 1, msb, error);   // MSB y axis
+    readFrom(GYRO_ADDR, 0x20, 1, lsb, error);   // LSB y axis
 
     // calculate total y axis
     gyro = (( msb[0] << 8) | lsb[0]);
@@ -65,8 +72,8 @@ void getGyroscopeData()
     lsb[0] = 0;
     gyro = 0;
 
-    readFrom(GYRO_ADDR, 0x21, 1, msb);   // MSB z axis
-    readFrom(GYRO_ADDR, 0x22, 1, lsb);   // LSB z axis
+    readFrom(GYRO_ADDR, 0x21, 1, msb, error);   // MSB z axis
+    readFrom(GYRO_ADDR, 0x22, 1, lsb, error);   // LSB z axis
 
     // calculate z axis
     gyro = (( msb[0] << 8) | lsb[0]);

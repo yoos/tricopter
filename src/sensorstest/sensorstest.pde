@@ -6,13 +6,13 @@ void setup()
     Serial.begin(9600);
     Wire.begin();
     initGyro();
-    initAccelerometer();
+    initAccel();
 }
 
 void loop()
 {
-    getGyroscopeData();
-    getAccelerometerData();
+    readGyro();
+    readAccel();
     delay(500);
 }
 
