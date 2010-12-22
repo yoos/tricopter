@@ -12,12 +12,12 @@ class BMA180 {
     byte aBuffer[READ_SIZE];   // Buffer to which we save data read from device
     char aString[512];   // String buffer to organize data before sending to serial line
     int eCode;
-    int ax, ay, az;
+    double aVal[3];
     
 public:
     BMA180();
     void Poll();
-    double Get();
+    double* Get();
     double Get(int);
 
 };

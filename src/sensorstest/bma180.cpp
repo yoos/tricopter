@@ -22,23 +22,23 @@ BMA180::BMA180() {
 
 void BMA180::Poll() {
     eCode = readI2C(DEVICE, REG_ADDR, READ_SIZE, aBuffer);   // Read acceleration data
-    ax = ((aBuffer[1]) << 8) | aBuffer[0];
-    ay = ((aBuffer[3]) << 8) | aBuffer[2];
-    az = ((aBuffer[5]) << 8) | aBuffer[4];
+    aVal[0] = ((aBuffer[1]) << 8) | aBuffer[0];
+    aVal[1] = ((aBuffer[3]) << 8) | aBuffer[2];
+    aVal[2] = ((aBuffer[5]) << 8) | aBuffer[4];
 
     #ifdef DEBUG
-        sprintf(aString, "AX: %d   AY: %d   AZ: %d", ax, ay, ax);
+        sprintf(aString, "AX: %d   AY: %d   AZ: %d", aVal[0], aVal[1], aVal[2]);
         Serial.print(aString);
         Serial.print(10, BYTE);
     #endif
 }
 
-double BMA180::Get() {
-
+double* BMA180::Get() {
+    return aVal;
 }
 
 double BMA180::Get(int axis) {
-
+    return aVal[axis];
 }
 
 
