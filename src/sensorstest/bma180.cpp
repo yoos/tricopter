@@ -42,11 +42,12 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
 void BMA180::Poll() {
     readI2C(ACCADDR, REGADDR, READ_SIZE, aBuffer);   // Read acceleration data
 
-    aRaw[0] = (((uint16_t) (aBuffer[1] << 8) | (uint16_t) (aBuffer[0])) >> 2);
-    aRaw[1] = (((uint16_t) (aBuffer[3] << 8) | (uint16_t) (aBuffer[2])) >> 2);
-    aRaw[2] = (((uint16_t) (aBuffer[5] << 8) | (uint16_t) (aBuffer[4])) >> 2);
+    aRaw[0] = (((aBuffer[1] << 8) | aBuffer[0]) >> 2);
+    aRaw[1] = (((aBuffer[3] << 8) | aBuffer[2]) >> 2);
+    aRaw[2] = (((aBuffer[5] << 8) | aBuffer[4]) >> 2);
 
     for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
+        float tmp;
         if (aRaw[i] < 0x2000)   // If zero to negative accel.: 0 to 2^13-1...
             tmp = -((signed) aRaw[i]);   // ...negate after casting as signed int
         else   // If zero to positive accel.: 2^14-1 to 2^13...

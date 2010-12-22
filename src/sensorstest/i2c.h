@@ -10,7 +10,7 @@ int sendI2C(int device, uint8_t address, uint8_t val) {
    return Wire.endTransmission();
 }
 
-int readI2C(int device, uint8_t address, int num, uint8_t buff[]) {
+int readI2C(int device, uint8_t address, int num, uint16_t buff[]) {
     int eCode;
 
     Wire.beginTransmission(device);

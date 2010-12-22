@@ -5,7 +5,7 @@
 #include "globals.h"
 
 #define ACCADDR 0x40   // BMA180 device address
-#define READ_SIZE 6   //num of bytes we are going to read each time (two bytes for each axis)
+#define READ_SIZE 6   // Number of bytes to read at a time
 #define REGADDR ACCXLSB
 
 // BMA180 address defines
@@ -34,7 +34,7 @@
 
 
 class BMA180 {
-    uint8_t aBuffer[READ_SIZE];   // Buffer to which we save data read from device
+    uint16_t aBuffer[READ_SIZE];   // Buffer to which we save data read from device
     char aStr[512];   // String buffer to organize data before sending to serial line
     uint16_t aRaw[3];
     float aVal[3];

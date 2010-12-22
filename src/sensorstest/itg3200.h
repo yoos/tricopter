@@ -10,8 +10,7 @@
 #define INT_CFG 0x17
 #define PWR_MGM 0x3E
 
-#define READ_SIZE 6
-
+#define READ_SIZE 6   // Number of bytes to read each time
 #define REGADDR 0x1D
 
 class ITG3200 {
@@ -27,4 +26,6 @@ public:
     float* Get();
     float Get(int);
 };
+
+#endif // GYRO_H
 
