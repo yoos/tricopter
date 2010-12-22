@@ -47,20 +47,21 @@ void BMA180::Poll() {
     aRaw[2] = (((uint16_t) (aBuffer[5] << 8) | (uint16_t) (aBuffer[4])) >> 2);
 
     for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
-        float tmp;
-        if (int(aRaw[i]) < 8192)   // If zero to negative accel.: 0 to 2^13-1...
-            tmp = -aRaw[i];   // ...simply negate
+        float tmp = 0;
+        if (aRaw[i] < 0x2000)   // If zero to negative accel.: 0 to 2^13-1...
+            tmp = -((signed) aRaw[i]);   // ...negate after casting as signed int
         else   // If zero to positive accel.: 2^14-1 to 2^13...
-            tmp = 16384 - aRaw[i];   // ...subtract from 2^14
-        aVal[i] = tmp/8192;
+            tmp = 0x4000 - aRaw[i];   // ...subtract from 2^14
+        aVal[i] = tmp/0x2000;   // Divide by maximum magnitude.
     }
 
 //  Serial.println(aVal[0]);
     #ifdef DEBUG
-//      sprintf(aStr, "AX: %5u  AY: %5u  AZ: %5u", aRaw[0], aRaw[1], aRaw[2]);   // Interpret aRaw as unsigned int.
+//      sprintf(aStr, "AX: %5f  AY: %5f  AZ: %5f", aVal[0], aVal[1], aVal[2]);   // Interpret aRaw as unsigned int.
 //      Serial.println(aStr);
-        sprintf(aStr, "AX: %5f  AY: %5f  AZ: %5f", aVal[0], aVal[1], aVal[2]);   // Interpret aRaw as unsigned int.
-        Serial.println(aStr);
+        Serial.print("AX: "); Serial.print(aVal[0]);
+        Serial.print("   AY: "); Serial.print(aVal[1]);
+        Serial.print("   AZ: "); Serial.println(aVal[2]);
     #endif
 }
 
