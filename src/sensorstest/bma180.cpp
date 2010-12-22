@@ -27,8 +27,8 @@ void BMA180::Poll() {
     aVal[2] = ((aBuffer[5]) << 8) | aBuffer[4];
 
     #ifdef DEBUG
-        sprintf(aString, "AX: %d   AY: %d   AZ: %d", aVal[0], aVal[1], aVal[2]);
-        Serial.print(aString);
+        sprintf(accelStr, "AX: %d   AY: %d   AZ: %d", aVal[0], aVal[1], aVal[2]);
+        Serial.print(accelStr);
         Serial.print(10, BYTE);
     #endif
 }

@@ -2,6 +2,7 @@
 #define GYRO_H
 
 #include "i2c.h"
+#include "globals.h"
 
 #define GYRO_ADDR 0x69 // gyro address, binary = 11101001
 #define SMPLRT_DIV 0x15
