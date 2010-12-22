@@ -4,9 +4,9 @@
 #include "i2c.h"
 #include "globals.h"
 
-#define DEVICE 0x40   // BMA180 device address
+#define ACCADDR 0x40   // BMA180 device address
 #define READ_SIZE 6   //num of bytes we are going to read each time (two bytes for each axis)
-#define REG_ADDR ACCXLSB
+#define REGADDR ACCXLSB
 
 // BMA180 address defines
 #define ID 0x00
@@ -25,15 +25,11 @@
 #define CTRLREG0 0x0D
 #define CTRLREG1 0x0E
 #define CTRLREG2 0x0F
-
 #define BWTCS 0x20
 #define CTRLREG3 0x21
-
 #define LOWTH 0x29
-
 #define tco_y 0x2F
 #define tco_z 0x30
-
 #define OLSB1 0x35
 
 
@@ -41,13 +37,13 @@ class BMA180 {
     byte aBuffer[READ_SIZE];   // Buffer to which we save data read from device
     char accelStr[512];   // String buffer to organize data before sending to serial line
     int eCode;
-    double aVal[3];
+    uint16_t aVal[3];
     
 public:
     BMA180(uint8_t, uint8_t);
     void Poll();
-    double* Get();
-    double Get(int);
+    uint16_t* Get();
+    uint16_t Get(int);
 
 };
 

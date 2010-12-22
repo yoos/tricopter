@@ -18,10 +18,8 @@
 
 
 // BMA180 config
-#define RANGESHIFT 1
 #define RANGEMASK 0x0E
 #define BWMASK 0xF0
-#define BWSHIFT 4
 
 
 // Flight modes

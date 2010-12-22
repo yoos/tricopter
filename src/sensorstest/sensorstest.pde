@@ -8,14 +8,12 @@ int main(void) {
 
     Serial.begin(9600);
     Wire.begin();
-    BMA180 myAccel(0x01, 0x00);
+    BMA180 myAccel(0x04, 0x02);   // range, bandwidth: DS p. 27
     initGyro();
 
-    while (true) {
-        readGyro();
+    for (;;) {
+//      readGyro();
         myAccel.Poll();
-        sprintf(genStr, "AX: %d   AY: %d   AZ: %d", myAccel.Get(0), myAccel.Get(1), myAccel.Get(2));
-        Serial.println(genStr);
         delay(100);
     }
 
