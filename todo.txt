@@ -1,2 +1,3 @@
 101221 21:29 Use the interrupt pins on the sensors to synchronize data communication. Read datasheets for details.
+101222 00:56 Set up CMake build process using directions here: http://www.arduino.cc/en/Hacking/BuildProcess
 

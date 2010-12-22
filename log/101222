@@ -1,0 +1,3 @@
+# Dec. 22, 2010
+01:01 Arduino's default main() function is in /path/to/arduino/hardware/arduino/cores/arduino/main.cpp. From that I found that I must run init(); in order to use my own main().
+

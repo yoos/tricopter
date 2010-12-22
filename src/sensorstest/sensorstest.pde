@@ -3,23 +3,22 @@
 
 char genStr[512];
 
-//int main(void)
-void setup() {
+int main(void) {
+    init();   // For Arduino.
+
     Serial.begin(9600);
     Wire.begin();
-    initGyro();
     BMA180 myAccel(0x01, 0x00);
-}
+    initGyro();
 
-void loop() {
-//    while (true) {
+    while (true) {
         readGyro();
-//        myAccel.Poll();
-//        sprintf(genStr, "AX: %d   AY: %d   AZ: %d", myAccel.Get(0), myAccel.Get(1), myAccel.Get(2));
-//        Serial.println(genStr);
+        myAccel.Poll();
+        sprintf(genStr, "AX: %d   AY: %d   AZ: %d", myAccel.Get(0), myAccel.Get(1), myAccel.Get(2));
+        Serial.println(genStr);
         delay(100);
-//    }
+    }
 
-//    return 0;
+    return 0;
 }
 
