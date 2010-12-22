@@ -19,25 +19,16 @@ char gyroStr[512];
 void initGyro()
 {
     int error = 0;
-    /*****************************************
-    *    ITG 3200
-    *    power management set to:
-    *    clock select = internal oscillator
-    *         no reset, no sleep mode
-    *        no standby mode
-    *    sample rate to = 3Hz
-    *    parameter to +/- 2000 degrees/sec
-    *    low pass filter = 5Hz
-    *    no interrupt
-    ******************************************/
-    error = sendI2C(GYRO_ADDR, PWR_MGM, 0x00);
-    error = readI2C(GYRO_ADDR, 0x00, 1, gyroBuffer);
+    
+    readI2C(GYRO_ADDR, 0x00, 1, gyroBuffer);   // Who am I?
     Serial.print("Gyro Id = ");
     Serial.println(gyroBuffer[0]);
 
-    error = sendI2C(GYRO_ADDR, PWR_MGM, 0xFF); // EB, 50, 80, 7F, DE, 23, 20, FF
-    error = sendI2C(GYRO_ADDR, PWR_MGM, 0x1E); // +/- 2000 dgrs/sec, 1KHz, 1E, 19
-    error = sendI2C(GYRO_ADDR, PWR_MGM, 0x00);
+    // Configure ITG-3200
+    // Refer to datasheet Section 8: Register Description.
+    sendI2C(GYRO_ADDR, 0x15, 0x18);   // 00011000 -- Sample rate divider is 24(+1)
+    sendI2C(GYRO_ADDR, 0x16, 0x1A);   // 00011010 -- Internal sample rate is 1 kHz
+                                      // 02, 0A, 12, 1A
 
     if (error == 0)
     {
@@ -64,7 +55,7 @@ void readGyro()
     // Arduino Wire library (I2C)
     error = readI2C(GYRO_ADDR, regAddress, READ_SIZE, gyroBuffer);
 
-    gx = ((gyroBuffer[0] << 8) | gyroBuffer[1]);
+    gx = ((gyroBuffer[0] << 8) | gyroBuffer[1]);   // Shift high byte to be high 8 bits and append with low byte.
     gy = ((gyroBuffer[2] << 8) | gyroBuffer[3]);
     gz = ((gyroBuffer[4] << 8) | gyroBuffer[5]);
     
