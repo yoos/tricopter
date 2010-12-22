@@ -32,12 +32,17 @@ void ITG3200::Poll() {
     gRaw[2] = ((gBuffer[4] << 8) | gBuffer[5]);
 
     for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
+        float tmp;
+        if (gRaw[i] >= 0x8000)   // If zero to negative rot. vel.: 2^16-1 to 2^15...
+            tmp = -((signed) (0xFFFF - gRaw[i]));   // ...subtract from 2^16-1.
+        gVal[i] = tmp/0x8000;   // Divide by maximum magnitude.
+            
     }
 
     #ifdef DEBUG
-        Serial.print("GX: "); Serial.print(gRaw[0]);
-        Serial.print("   GY: "); Serial.print(gRaw[1]);
-        Serial.print("   GZ: "); Serial.println(gRaw[2]);
+        Serial.print("GX: "); Serial.print(gVal[0]);
+        Serial.print("   GY: "); Serial.print(gVal[1]);
+        Serial.print("   GZ: "); Serial.println(gVal[2]);
     #endif
 }
 

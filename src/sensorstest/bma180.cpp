@@ -49,9 +49,9 @@ void BMA180::Poll() {
     for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
         float tmp;
         if (aRaw[i] < 0x2000)   // If zero to negative accel.: 0 to 2^13-1...
-            tmp = -((signed) aRaw[i]);   // ...negate after casting as signed int
+            tmp = -((signed) aRaw[i]);   // ...negate after casting as signed int.
         else   // If zero to positive accel.: 2^14-1 to 2^13...
-            tmp = 0x4000 - aRaw[i];   // ...subtract from 2^14
+            tmp = 0x3FFF - aRaw[i];   // ...subtract from 2^14-1.
         aVal[i] = tmp/0x2000;   // Divide by maximum magnitude.
     }
 
