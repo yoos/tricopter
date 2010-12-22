@@ -34,19 +34,32 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
     sendI2C(ACCADDR, OLSB1, aBuffer[0]);   // Write new range data, keep other bits the same.
 
     // Zero buffer.
-    for (int i; i<READ_SIZE; i++) {
+    for (int i=0; i<READ_SIZE; i++) {
         aBuffer[i] = 0;
     }
 }
 
 void BMA180::Poll() {
     readI2C(ACCADDR, REGADDR, READ_SIZE, aBuffer);   // Read acceleration data
-    aRaw[0] = (((uint16_t) (aBuffer[1] << 6)) | ((uint16_t) (aBuffer[0] >> 2)));
-    aRaw[1] = (((uint16_t) (aBuffer[3] << 6)) | ((uint16_t) (aBuffer[2] >> 2)));
-    aRaw[2] = (((uint16_t) (aBuffer[5] << 6)) | ((uint16_t) (aBuffer[4] >> 2)));
 
+    aRaw[0] = (((uint16_t) (aBuffer[1] << 8) | (uint16_t) (aBuffer[0])) >> 2);
+    aRaw[1] = (((uint16_t) (aBuffer[3] << 8) | (uint16_t) (aBuffer[2])) >> 2);
+    aRaw[2] = (((uint16_t) (aBuffer[5] << 8) | (uint16_t) (aBuffer[4])) >> 2);
+
+    for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
+        float tmp;
+        if (int(aRaw[i]) < 8192)   // If zero to negative accel.: 0 to 2^13-1...
+            tmp = -aRaw[i];   // ...simply negate
+        else   // If zero to positive accel.: 2^14-1 to 2^13...
+            tmp = 16384 - aRaw[i];   // ...subtract from 2^14
+        aVal[i] = tmp/8192;
+    }
+
+//  Serial.println(aVal[0]);
     #ifdef DEBUG
-        sprintf(aStr, "AX: %5u  AY: %5u  AZ: %5u", aRaw[0], aRaw[1], aRaw[2]);   // Interpret aRaw as unsigned int.
+//      sprintf(aStr, "AX: %5u  AY: %5u  AZ: %5u", aRaw[0], aRaw[1], aRaw[2]);   // Interpret aRaw as unsigned int.
+//      Serial.println(aStr);
+        sprintf(aStr, "AX: %5f  AY: %5f  AZ: %5f", aVal[0], aVal[1], aVal[2]);   // Interpret aRaw as unsigned int.
         Serial.println(aStr);
     #endif
 }
@@ -59,7 +72,4 @@ float BMA180::Get(int axis) {
     return aVal[axis];
 }
 
-float aConvert(uint16_t rawInput) {
-
-}
 

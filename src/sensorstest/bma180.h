@@ -39,8 +39,6 @@ class BMA180 {
     uint16_t aRaw[3];
     float aVal[3];
 
-    float aConvert(uint16_t);
-    
 public:
     BMA180(uint8_t, uint8_t);
     void Poll();
