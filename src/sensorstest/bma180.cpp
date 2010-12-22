@@ -46,16 +46,13 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
 }
 
 void BMA180::Poll() {
-    readI2C(ACCADDR, REGADDR, 2, aBuffer);   // Read acceleration data
-    Serial.println((uint16_t) (aBuffer[1] << 6));
-    Serial.println((uint16_t) (aBuffer[0] >> 2));
+    readI2C(ACCADDR, REGADDR, READ_SIZE, aBuffer);   // Read acceleration data
     aVal[0] = (((uint16_t) (aBuffer[1] << 6)) | ((uint16_t) (aBuffer[0] >> 2)));
-//  aVal[1] = ((aBuffer[3] << 8) | (aBuffer[2])) >> 2;
-//  aVal[2] = ((aBuffer[5] << 8) | (aBuffer[4])) >> 2;
+    aVal[1] = (((uint16_t) (aBuffer[3] << 6)) | ((uint16_t) (aBuffer[2] >> 2)));
+    aVal[2] = (((uint16_t) (aBuffer[5] << 6)) | ((uint16_t) (aBuffer[4] >> 2)));
     
     #ifdef DEBUG
-//      sprintf(accelStr, "AX: %d   AY: %d   AZ: %d", aVal[0], aVal[1], aVal[2]);
-        sprintf(accelStr, "AX: %i", aVal[0]);
+        sprintf(accelStr, "AX: %6u AY: %6u AZ: %6u", aVal[0], aVal[1], aVal[2]);   // Interpret aVal as unsigned int.
         Serial.print(accelStr);
         Serial.print(10, BYTE);
     #endif

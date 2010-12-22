@@ -34,7 +34,7 @@
 
 
 class BMA180 {
-    byte aBuffer[READ_SIZE];   // Buffer to which we save data read from device
+    uint8_t aBuffer[READ_SIZE];   // Buffer to which we save data read from device
     char accelStr[512];   // String buffer to organize data before sending to serial line
     int eCode;
     uint16_t aVal[3];
