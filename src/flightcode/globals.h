@@ -16,6 +16,14 @@
 #define MOTOR_TEST_PIN 13
 #define MTP2 12
 
+
+// BMA180 config
+#define RANGESHIFT 1
+#define RANGEMASK 0x0E
+#define BWMASK 0xF0
+#define BWSHIFT 4
+
+
 // Flight modes
 
 #define OFF 0

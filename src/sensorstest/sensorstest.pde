@@ -8,7 +8,7 @@ void setup() {
     Serial.begin(9600);
     Wire.begin();
     initGyro();
-    BMA180 myAccel;
+    BMA180 myAccel(0x01, 0x00);
 }
 
 void loop() {

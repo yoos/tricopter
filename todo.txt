@@ -1,0 +1,2 @@
+101221 21:29 Use the interrupt pins on the sensors to synchronize data communication. Read datasheets for details.
+

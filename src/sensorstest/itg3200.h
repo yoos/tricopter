@@ -28,7 +28,7 @@ void initGyro()
     // Refer to datasheet Section 8: Register Description.
     sendI2C(GYRO_ADDR, 0x15, 0x18);   // 00011000 -- Sample rate divider is 24(+1)
     sendI2C(GYRO_ADDR, 0x16, 0x1A);   // 00011010 -- Internal sample rate is 1 kHz
-                                      // 02, 0A, 12, 1A
+                                      // 02, 0A, 12, 1A are Reserved, Reserved, Reserved, and 2000 deg/s
 
     if (error == 0)
     {
