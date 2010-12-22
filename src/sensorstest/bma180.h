@@ -35,15 +35,17 @@
 
 class BMA180 {
     uint8_t aBuffer[READ_SIZE];   // Buffer to which we save data read from device
-    char accelStr[512];   // String buffer to organize data before sending to serial line
-    int eCode;
-    uint16_t aVal[3];
+    char aStr[512];   // String buffer to organize data before sending to serial line
+    uint16_t aRaw[3];
+    float aVal[3];
+
+    float aConvert(uint16_t);
     
 public:
     BMA180(uint8_t, uint8_t);
     void Poll();
-    uint16_t* Get();
-    uint16_t Get(int);
+    float* Get();
+    float Get(int);
 
 };
 

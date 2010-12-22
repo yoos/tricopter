@@ -14,7 +14,7 @@ int main(void) {
     for (;;) {
 //      readGyro();
         myAccel.Poll();
-        delay(100);
+        delay(25);
     }
 
     return 0;

@@ -33,12 +33,6 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
     aBuffer[0] |= aBuffer[1];
     sendI2C(ACCADDR, OLSB1, aBuffer[0]);   // Write new range data, keep other bits the same.
 
-//  if (aBuffer[0] == 3) {
-//      eCode = sendI2C(ACCADDR, 0x0D, B0001);
-//      eCode = sendI2C(ACCADDR, 0x20, B00001000);
-//      eCode = sendI2C(ACCADDR, 0x35, B0100);
-//  }
-
     // Zero buffer.
     for (int i; i<READ_SIZE; i++) {
         aBuffer[i] = 0;
@@ -47,23 +41,25 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
 
 void BMA180::Poll() {
     readI2C(ACCADDR, REGADDR, READ_SIZE, aBuffer);   // Read acceleration data
-    aVal[0] = (((uint16_t) (aBuffer[1] << 6)) | ((uint16_t) (aBuffer[0] >> 2)));
-    aVal[1] = (((uint16_t) (aBuffer[3] << 6)) | ((uint16_t) (aBuffer[2] >> 2)));
-    aVal[2] = (((uint16_t) (aBuffer[5] << 6)) | ((uint16_t) (aBuffer[4] >> 2)));
-    
+    aRaw[0] = (((uint16_t) (aBuffer[1] << 6)) | ((uint16_t) (aBuffer[0] >> 2)));
+    aRaw[1] = (((uint16_t) (aBuffer[3] << 6)) | ((uint16_t) (aBuffer[2] >> 2)));
+    aRaw[2] = (((uint16_t) (aBuffer[5] << 6)) | ((uint16_t) (aBuffer[4] >> 2)));
+
     #ifdef DEBUG
-        sprintf(accelStr, "AX: %6u AY: %6u AZ: %6u", aVal[0], aVal[1], aVal[2]);   // Interpret aVal as unsigned int.
-        Serial.print(accelStr);
-        Serial.print(10, BYTE);
+        sprintf(aStr, "AX: %5u  AY: %5u  AZ: %5u", aRaw[0], aRaw[1], aRaw[2]);   // Interpret aRaw as unsigned int.
+        Serial.println(aStr);
     #endif
 }
 
-uint16_t* BMA180::Get() {
+float* BMA180::Get() {
     return aVal;
 }
 
-uint16_t BMA180::Get(int axis) {
+float BMA180::Get(int axis) {
     return aVal[axis];
 }
 
+float aConvert(uint16_t rawInput) {
+
+}
 
