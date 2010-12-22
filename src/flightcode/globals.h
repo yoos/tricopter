@@ -4,6 +4,8 @@
 
 // Configurables
 
+#define DEBUG
+
 #define IMU_SAMPLE_INTERVAL 10   // In milliseconds
 #define GYRO_VREF 1
 #define ACCEL_VREF 1
@@ -30,20 +32,6 @@
 #define MOTOR_T 12 // Tail motor PWM
 
 #define SERVO_T 13 // Tail servo PWM for yaw control
-
-
-
-
-// Analog pins
-
-#define GYRO_X 0
-#define GYRO_Y 1
-#define GYRO_Z 2
-#define ACCEL_X 3
-#define ACCEL_Y 4
-#define ACCEL_Z 5
-
-
 
 
 

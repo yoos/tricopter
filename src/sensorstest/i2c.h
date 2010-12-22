@@ -3,17 +3,19 @@
 
 #include <Wire.cpp>
 
-void sendI2C(int device, byte address, byte val, int error) {
+int sendI2C(int device, byte address, byte val) {
    Wire.beginTransmission(device);
    Wire.send(address);
    Wire.send(val);
-   error = Wire.endTransmission();
+   return Wire.endTransmission();
 }
 
-void readI2C(int device, byte address, int num, byte buff[], int error) {
+int readI2C(int device, byte address, int num, byte buff[]) {
+    int eCode;
+
     Wire.beginTransmission(device);
     Wire.send(address);
-    error = Wire.endTransmission();
+    eCode = Wire.endTransmission();
 
     Wire.beginTransmission(device);
     Wire.requestFrom(device, num);
@@ -23,7 +25,9 @@ void readI2C(int device, byte address, int num, byte buff[], int error) {
         buff[i] = Wire.receive();   // receive a byte
         i++;
     }
-    error = Wire.endTransmission();
+    eCode = Wire.endTransmission();
+
+    return eCode;
 }
 
 #endif // I2C_H

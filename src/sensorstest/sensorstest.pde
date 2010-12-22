@@ -1,18 +1,17 @@
-#include "gyro.h"
-#include "accelerometer.h"
+#include "itg3200.cpp"
+#include "bma180.cpp"
 
-void setup()
+int main()
 {
     Serial.begin(9600);
     Wire.begin();
     initGyro();
-    initAccel();
-}
+    BMA180 myAccel;
 
-void loop()
-{
-    readGyro();
-    readAccel();
-    delay(500);
+    while (true) {
+        readGyro();
+        myAccel.Poll();
+        delay(500);
+    }
 }
 

@@ -29,14 +29,14 @@ void initGyro()
     *    low pass filter = 5Hz
     *    no interrupt
     ******************************************/
-    sendI2C(GYRO_ADDR, PWR_MGM, 0x00, error);
-    readI2C(GYRO_ADDR, 0x00, 1, gyroBuffer, error);
+    error = sendI2C(GYRO_ADDR, PWR_MGM, 0x00);
+    error = readI2C(GYRO_ADDR, 0x00, 1, gyroBuffer);
     Serial.print("Gyro Id = ");
     Serial.println(gyroBuffer[0]);
 
-    sendI2C(GYRO_ADDR, PWR_MGM, 0xFF, error); // EB, 50, 80, 7F, DE, 23, 20, FF
-    sendI2C(GYRO_ADDR, PWR_MGM, 0x1E, error); // +/- 2000 dgrs/sec, 1KHz, 1E, 19
-    sendI2C(GYRO_ADDR, PWR_MGM, 0x00, error);
+    error = sendI2C(GYRO_ADDR, PWR_MGM, 0xFF); // EB, 50, 80, 7F, DE, 23, 20, FF
+    error = sendI2C(GYRO_ADDR, PWR_MGM, 0x1E); // +/- 2000 dgrs/sec, 1KHz, 1E, 19
+    error = sendI2C(GYRO_ADDR, PWR_MGM, 0x00);
 
     if (error == 0)
     {
@@ -61,7 +61,7 @@ void readGyro()
         z axis MSB = 21, z axis LSB = 22
     **************************************/
     // Arduino Wire library (I2C)
-    readI2C(GYRO_ADDR, regAddress, READ_SIZE, gyroBuffer, error);
+    error = readI2C(GYRO_ADDR, regAddress, READ_SIZE, gyroBuffer);
 
     gx = ((gyroBuffer[0] << 8) | gyroBuffer[1]);
     gy = ((gyroBuffer[2] << 8) | gyroBuffer[3]);
