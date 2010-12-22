@@ -47,7 +47,6 @@ void BMA180::Poll() {
     aRaw[2] = (((uint16_t) (aBuffer[5] << 8) | (uint16_t) (aBuffer[4])) >> 2);
 
     for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
-        float tmp = 0;
         if (aRaw[i] < 0x2000)   // If zero to negative accel.: 0 to 2^13-1...
             tmp = -((signed) aRaw[i]);   // ...negate after casting as signed int
         else   // If zero to positive accel.: 2^14-1 to 2^13...
@@ -72,5 +71,4 @@ float* BMA180::Get() {
 float BMA180::Get(int axis) {
     return aVal[axis];
 }
-
 

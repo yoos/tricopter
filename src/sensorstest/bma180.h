@@ -44,7 +44,6 @@ public:
     void Poll();
     float* Get();
     float Get(int);
-
 };
 
 #endif // BMA180_H
