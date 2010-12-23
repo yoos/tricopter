@@ -23,41 +23,37 @@ int main(void) {
     // Attach motors.
     myServo.attach(MOTOR_L);
 
-    char motorInput[32];
+    uint8_t motorInput[2];
     for (;;) {
 //      while (Jasper.isAlive) {
+        Jasper.isAlive = true;
         while (true) {
             Jasper.Watch();
 //          myGyr.Poll();
 //          myAcc.Poll();
 
 
-            char myChr[2];
+            char myChr;
             if (Serial.available()) {
-                myChr[0] = Serial.read();
-                myChr[1] = Serial.read();
-            }
-
-            if (myChr[0] == myChr[1]) {
-                if (myChr[0] == DOGBONE) {
+                myChr = Serial.read();
+                if (myChr == DOGBONE) {
                     Jasper.Feed();
-                    Alice.Send("Thanks for the bone!");
+                    Alice.Send("Dogbone received!");
                 }
-
-                else if (myChr[0] == SERHEAD) {
-                    Alice.Send("Command received!");
-                    while (Serial.available() > 0) {
-                        for (int i=0; i<2; i++) {
-                         motorInput[i] = Serial.read();
-                        }
+    
+                else if (myChr == SERHEAD) {
+                    Alice.Send("Header received!");
+                    for (int i=0; i<2; i++) {
+                        motorInput[i] = Serial.read();
                     }
+                    Serial.print((char) motorInput[0]);
                     Serial.println((int) motorInput[0]);
-                    myServo.write(128*(myAcc.Get(0)+1));
+                    myServo.write(motorInput[0] * 180/250);
                 }
-
+    
                 else
                     break;
-                delay(10);
+                delay(50);
             }
         }
         while (!Jasper.isAlive) {

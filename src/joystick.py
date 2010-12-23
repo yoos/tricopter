@@ -38,7 +38,7 @@ except:
 
 def feedDog():
     try:
-        ser.write(dogBone + dogBone)
+        ser.write(dogBone)
         if logOn: rospy.loginfo("Dog fed")
     except:
         if logOn: rospy.logerr("Unable to feed dog!")
@@ -49,7 +49,7 @@ def callback(myJoy):
     global timeLast
     if rospy.Time.now() - timeLast > rospy.Duration(feedInterval):   # Time - Time = Duration
         # Take care of the dog.
-        feedDog()
+#       feedDog()
         timeLast = rospy.Time.now() # Update time
         if logOn: rospy.loginfo("ROSTime: %s", timeLast)
 
@@ -61,7 +61,7 @@ def callback(myJoy):
 
         # Write to serial.
         try:
-            ser.write(serHeader + serHeader + chr(xAxisValue) + chr(yAxisValue))   # Testing. Need to try out ESC control.
+            ser.write(serHeader + chr(xAxisValue) + chr(yAxisValue))   # Testing. Need to try out ESC control.
         except:
             if logOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
