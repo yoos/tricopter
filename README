@@ -7,3 +7,8 @@ need to install pyserial and pygame modules.
 seeeduino should keep a logfile.
 
 
+Calculations are done at 40 Hz.
+Watchdog is fed at 10 Hz.
+Controls are sent at 20 Hz?
+
+

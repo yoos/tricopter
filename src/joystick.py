@@ -15,7 +15,7 @@ rospy.init_node("tric_listener", anonymous=True)
 
 # Comm values
 serialPort = "/dev/ttyUSB0"
-baudRate = 57600
+baudRate = 9600
 feedInterval = 0.1   # How often to feed watchdog in seconds
 serHeader = chr(255)
 dogBone = chr(254) # Feed watchdog
