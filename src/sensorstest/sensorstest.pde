@@ -8,11 +8,11 @@ int main(void) {
 
     Serial.begin(9600);
     Wire.begin();
-    BMA180 myAccel(0x04, 0x02);   // range, bandwidth: DS p. 27
-    ITG3200 myGyro;
+    BMA180 myAccel(4, 2);   // range, bandwidth: DS p. 27
+    ITG3200 myGyro(2);   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, and 2000 deg/s
 
     for (;;) {
-//      myAccel.Poll();
+        myAccel.Poll();
         myGyro.Poll();
 
         delay(250);

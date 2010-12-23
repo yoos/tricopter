@@ -21,7 +21,7 @@ class ITG3200 {
     float gVal[3];
 
 public:
-    ITG3200();
+    ITG3200(uint8_t);
     void Poll();
     float* Get();
     float Get(int);

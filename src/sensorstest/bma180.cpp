@@ -4,14 +4,10 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
     readI2C(ACCADDR, 0x00, 1, aBuffer);
     
     #ifdef DEBUG
-        Serial.print("Accelerometer ID = ");
+        Serial.print("BMA180 ID = ");
         Serial.println((int) aBuffer[0]);
     #endif
     
-    if (aBuffer[0] == 3) {
-        Serial.println("BMA180 successfully initialized!");
-    }
-
     // Set ee_w bit
     readI2C(ACCADDR, CTRLREG0, 1, aBuffer);
     aBuffer[0] |= 0x10;   // Bitwise OR operator to set ee_w bit.
@@ -32,6 +28,10 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
     aBuffer[0] &= (~RANGEMASK);
     aBuffer[0] |= aBuffer[1];
     sendI2C(ACCADDR, OLSB1, aBuffer[0]);   // Write new range data, keep other bits the same.
+
+    #ifdef DEBUG
+        Serial.println("BMA180 configured!");
+    #endif
 
     // Zero buffer.
     for (int i=0; i<READ_SIZE; i++) {

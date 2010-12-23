@@ -1,21 +1,26 @@
 #include "itg3200.h"
 
-ITG3200::ITG3200() {
+ITG3200::ITG3200(uint8_t range) {
     readI2C(GYRADDR, 0x00, 1, gBuffer);   // Who am I?
     
     #ifdef DEBUG
-        Serial.print("Gyro ID = ");
-        Serial.println(gBuffer[0]);
+        Serial.print("ITG-3200 ID = ");
+        Serial.println((int) gBuffer[0]);
     #endif
 
     // Configure ITG-3200
     // Refer to DS Section 8: Register Description.
-    sendI2C(GYRADDR, 0x15, 0x18);   // 00011000 -- Sample rate divider is 24(+1)
-    sendI2C(GYRADDR, 0x16, 0x1A);   // 00011010 -- Internal sample rate is 1 kHz
-                                      // 02, 0A, 12, 1A are Reserved, Reserved, Reserved, and 2000 deg/s
+    sendI2C(GYRADDR, 0x15, 0x18);   // 00011000 -- Sample rate divider is 24(+1), so 40 Hz
+
+    // Set Range
+    readI2C(GYRADDR, 0x16, 1, gBuffer);
+    gBuffer[1] = range;
+    gBuffer[1] = (gBuffer[1] << 3);   // See DS.
+    gBuffer[0] |= gBuffer[1];
+    sendI2C(GYRADDR, 0x16, gBuffer[0]);
 
     #ifdef DEBUG
-        Serial.println("ITG-320 successfully initialized!");
+        Serial.println("ITG-3200 configured!");
     #endif
 
     // Zero buffer.
@@ -36,7 +41,6 @@ void ITG3200::Poll() {
         if (gRaw[i] >= 0x8000)   // If zero to negative rot. vel.: 2^16-1 to 2^15...
             tmp = -((signed) (0xFFFF - gRaw[i]));   // ...subtract from 2^16-1.
         gVal[i] = tmp/0x8000;   // Divide by maximum magnitude.
-            
     }
 
     #ifdef DEBUG
