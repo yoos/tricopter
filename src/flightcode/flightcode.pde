@@ -1,47 +1,56 @@
 #include <Servo.h>
 #include <Wire.h>
 #include "globals.h"
+#include "comm.cpp"
 #include "watchdog.cpp"
 #include "itg3200.cpp"
 #include "bma180.cpp"
-
-char motorInput[32];
 
 int main(void) {
     init();   // For Arduino.
  
     // Begin Arduino services.
-    Serial.begin(9600);
     Wire.begin();
     
     // Begin system services.
-    Serial.println("Antares starting!");
+    Communicator Alice;
+    Alice.Send("Antares starting!");
     Watchdog Jasper(3000, DOGBONE);   // Timeout in ms.
     BMA180 myAcc(4, 2);   // range, bandwidth: DS p. 27
     ITG3200 myGyr(2);   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s.
     Servo myServo;
 
     // Attach motors.
-    myServo.attach(9);
+    myServo.attach(MOTOR_L);
 
+    char motorInput[32];
     for (;;) {
-        while (Jasper.isAlive) {
-            Jasper.watch();
-            myGyr.Poll();
-            myAcc.Poll();
+//      while (Jasper.isAlive) {
+        while (true) {
+            Jasper.Watch();
+//          myGyr.Poll();
+//          myAcc.Poll();
 
-            int i = 0;
-            while (Serial.available() > 0) {
-                motorInput[i] = Serial.read();
-                i++;
+
+            char myChr;
+            if (Serial.available()) {
+                myChr = Serial.read();
             }
-            if (i > 0) {
-                Serial.println(motorInput);
-                myServo.write(atoi(motorInput));
-                for (int i=0; i<32; i++) {
-                    motorInput[i] = 0;
+
+            if (myChr == DOGBONE) {
+                Jasper.Feed();
+            }
+
+            if (myChr == SERHEAD) {
+                while (Serial.available() > 0) {
+                    for (int i=0; i<2; i++) {
+                        motorInput[i] = Serial.read();
+                    }
                 }
+                Serial.println(motorInput);
+                myServo.write(motorInput[0]);
             }
+            delay(100);
         }
         while (!Jasper.isAlive) {
         }

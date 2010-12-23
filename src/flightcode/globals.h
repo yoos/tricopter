@@ -6,15 +6,14 @@
 
 #define DEBUG
 
-#define IMU_SAMPLE_INTERVAL 10   // In milliseconds
+#define BAUDRATE 9600
+#define IMU_SAMPLE_INTERVAL 25   // In milliseconds
 #define GYRO_VREF 1
 #define ACCEL_VREF 1
 
-#define DOGBONE char(255)
-#define DOGLIFE 500   // Watchdog life in milliseconds
-
-#define MOTOR_TEST_PIN 13
-#define MTP2 12
+#define SERHEAD char(255)
+#define DOGBONE char(254)
+#define DOGLIFE 200   // Watchdog life in milliseconds
 
 
 // BMA180 config
@@ -40,7 +39,11 @@
 #define SERVO_T 13 // Tail servo PWM for yaw control
 
 
-
+void zeroStr(char *sStr) {
+    for (int i=0; i<128; i++) {
+        sStr[i] = 0;
+    }
+}
 
 
 

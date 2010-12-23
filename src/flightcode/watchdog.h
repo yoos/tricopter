@@ -8,8 +8,8 @@ class Watchdog {
 
 public:
     Watchdog(int, char);
-    void watch();
-    void feed(char);
+    void Watch();
+    void Feed();
     bool isAlive;
 };
 

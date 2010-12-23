@@ -6,15 +6,14 @@ Watchdog::Watchdog(int timeout, char food) {
     time = millis();
 }
 
-void Watchdog::watch() { // If this runs too late, dogLife may already have ended.
+void Watchdog::Watch() { // If this runs too late, dogLife may already have ended.
     if (millis() - time < dogLife)
         isAlive = true;
     else
         isAlive = false;
 }
 
-void Watchdog::feed(char food) {
-    if (food == dogBone)
-        time = millis();
+void Watchdog::Feed() {
+    time = millis();
 }
 
