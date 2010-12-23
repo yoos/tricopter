@@ -1,3 +1,5 @@
 # Dec. 23, 2010
 02:03 Soldered Polymax connectors to all components.
+11:46 To change ROS dependencies, edit rosdep.yaml in the ROS stack.
+12:51 Consulted ROS mailing list. Per Josh Faust's tip, ran "rosmake --pre-clean ros". Dependencies resolved!
 

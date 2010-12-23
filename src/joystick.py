@@ -19,7 +19,7 @@ baudRate = 9600
 feedInterval = 0.1   # How often to feed watchdog in seconds
 serHeader = chr(255)
 dogBone = chr(254) # Feed watchdog
-logOn = True
+logOn = False
 
 # Variables
 xAxis = 0
@@ -38,7 +38,7 @@ except:
 def feedDog():
     try:
         ser.write(dogBone)
-        rospy.loginfo("Dog fed")
+        if logOn: rospy.loginfo("Dog fed")
     except:
         if logOn: rospy.logerr("Unable to feed dog!")
 
