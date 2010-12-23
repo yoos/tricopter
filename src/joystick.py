@@ -19,7 +19,7 @@ baudRate = 9600
 feedInterval = 0.1   # How often to feed watchdog in seconds
 serHeader = chr(255)
 dogBone = chr(254) # Feed watchdog
-logOn = False
+logOn = True
 
 # Variables
 xAxis = 0
@@ -50,7 +50,7 @@ def callback(myJoy):
     if logOn: rospy.loginfo("Axis 0: %s (%s)   Axis 1: %s (%s)", xAxisValue, chr(xAxisValue), yAxisValue, chr(yAxisValue))
     if logOn: rospy.loginfo("Axis 0: %s   Axis 1: %s", myJoy.axes[xAxis], myJoy.axes[yAxis])
     try:
-        ser.write(serHeader + chr(yAxisValue))   # Testing. Need to try out ESC control.
+        ser.write(serHeader + chr(xAxisValue) + chr(yAxisValue))   # Testing. Need to try out ESC control.
     except:
         if logOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 

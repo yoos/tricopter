@@ -1,3 +1,5 @@
 # Dec. 22, 2010
 01:01 Arduino's default main() function is in /path/to/arduino/hardware/arduino/cores/arduino/main.cpp. From that I found that I must run init(); in order to use my own main().
+20:08 Manually created soft link /usr/lib/libboost_signals-mt.so.1.43.0 -> /usr/lib/libboost_signals-mt.so.1.45.0 in order to make ROS joy_node work.
+20:11 Nevermind, that didn't work. Downgraded boost and boost-libs to 1.43 instead.
 
