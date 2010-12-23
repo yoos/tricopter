@@ -45,8 +45,8 @@ def feedDog():
 ############################ ROS get joystick input ###########################
 
 def callback(myJoy):
-    xAxisValue = int(255*(myJoy.axes[xAxis]+1)/2)   # Range 0-255 in order to send as char value
-    yAxisValue = int(255*(myJoy.axes[yAxis]+1)/2)
+    xAxisValue = int(250*(myJoy.axes[xAxis]+1)/2)   # Range 0-250 in order to send as char value
+    yAxisValue = int(250*(myJoy.axes[yAxis]+1)/2)
     if logOn: rospy.loginfo("Axis 0: %s (%s)   Axis 1: %s (%s)", xAxisValue, chr(xAxisValue), yAxisValue, chr(yAxisValue))
     if logOn: rospy.loginfo("Axis 0: %s   Axis 1: %s", myJoy.axes[xAxis], myJoy.axes[yAxis])
     try:
