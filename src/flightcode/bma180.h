@@ -8,6 +8,11 @@
 #define READ_SIZE 6   // Number of bytes to read at a time
 #define REGADDR ACCXLSB
 
+// Calibration values
+#define AXCALIB
+#define AYCALIB
+#define AZCALIB
+
 // BMA180 address defines
 #define ID 0x00
 #define VERSION 0x01

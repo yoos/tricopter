@@ -4,14 +4,21 @@
 #include "i2c.h"
 #include "globals.h"
 
+#define READ_SIZE 6   // Number of bytes to read each time
+#define REGADDR 0x1D
+
+// Calibration values
+#define GXCALIB
+#define GYCALIB
+#define GZCALIB
+
+// ITG-3200 address defines
 #define GYRADDR 0x69 // gyro address, binary = 11101001
 #define SMPLRT_DIV 0x15
 #define DLPF_FS 0x16
 #define INT_CFG 0x17
 #define PWR_MGM 0x3E
 
-#define READ_SIZE 6   // Number of bytes to read each time
-#define REGADDR 0x1D
 
 class ITG3200 {
     uint16_t gBuffer[READ_SIZE];
