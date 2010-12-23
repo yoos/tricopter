@@ -171,7 +171,7 @@ applet/$(TARGET).cpp: $(TARGET).pde
 	# refer to this new, automatically generated, file.
 	# Not the original .pde file you actually edit...
 	test -d applet || mkdir applet
-	echo '#include "WProgram.h"' > applet/$(TARGET).cpp
+	echo -ne '#include "WProgram.h"\n#include "EEPROM.cpp"\n#include "LiquidCrystal.cpp"\n#include "Matrix.cpp"\n#include "Servo.cpp"\n#include "SoftwareSerial.cpp"\n#include "Sprite.cpp"\n#include "Stepper.cpp"\n#include "Wire.cpp"\n\n' > applet/$(TARGET).cpp
 #	echo 'void setup();' >> applet/$(TARGET).cpp
 #	echo 'void loop();' >> applet/$(TARGET).cpp
 	cat $(TARGET).pde >> applet/$(TARGET).cpp

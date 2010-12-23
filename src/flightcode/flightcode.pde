@@ -1,32 +1,34 @@
-#include <Servo.cpp>
-#include <Wire.cpp>
+#include <Servo.h>
+#include <Wire.h>
 #include "globals.h"
 #include "watchdog.cpp"
+#include "itg3200.cpp"
+#include "bma180.cpp"
 
-void setup() {
+char genStr[512];
+
+int main(void) {
+    init();   // For Arduino.
+ 
     Serial.begin(9600);
     Serial.println("Antares starting!");
     Wire.begin();
-}
+    Watchdog Jasper(3000, DOGBONE);   // Timeout in ms.
+    BMA180 myAcc(4, 2);   // range, bandwidth: DS p. 27
+    ITG3200 myGyr(2);   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s.
 
-void loop() {
-    Watchdog Jasper(3000, DOGBONE);
-    while (Jasper.isAlive) {
-        Jasper.watch();
-        for(int fadeValue = 0 ; fadeValue <= 255; fadeValue +=5) { 
-            analogWrite(MOTOR_TEST_PIN, fadeValue);         
-            analogWrite(MTP2, fadeValue);
-            delay(10);                            
-        } 
-        for(int fadeValue = 255 ; fadeValue >= 0; fadeValue -=5) { 
-            analogWrite(MOTOR_TEST_PIN, fadeValue);         
-            analogWrite(MTP2, fadeValue);
-            delay(10);                            
-        } 
+    for (;;) {
+        while (Jasper.isAlive) {
+            Jasper.watch();
+            myGyr.Poll();
+            myAcc.Poll();
+            delay(250);   // Eventually change this to 25 ms for 40 Hz operation.
+        }
+        while (!Jasper.isAlive) {
+        }
     }
-    while (!Jasper.isAlive) {
-        analogWrite(MOTOR_TEST_PIN, 255);
-    }
+
+    return 0;
 }
 
 
