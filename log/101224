@@ -2,4 +2,7 @@
 02:42 Interesting. If I send a header and only one value instead of the two the Seeeduino currently expects, the Seeeduino fills the second value with 0xFF. Or rather, the Arduino IDE might be sending 0xFF to the Seeeduino. I've no idea. In any case, that will interfere with my communication protocol.
 02:44 Running the servo with the Seeeduino makes it reset during operation. Perhaps the battery is almost dead.
 03:30 Changing input from int to unsigned int solved servo problem. I should've picked up on the hint when the numbers _flipped_ over to the negatives.
+15:12 Just tried to power my Seeeduino off my flight lipo by plugging leads into GND and Vin. Loud pop, yellow sparks, and lots of smoke. Fortunately it still functions through the USB port. However, the big diode next to the power light is scorched and cracked open and I cannot power it through wire anymore. Hopefully all that is needed is to replace the diode.
+15:17 But was it the current or the voltage? The battery voltage is 16.4 V, but I thought the Seeeduino was supposed to be able to take up to 20V? I'm also pretty sure I didn't connect the wires backwards.
+15:38 That wasn't a diode I fried, it was a 47 uF tantalum capacitor (there are two on the Seeeduino). I might have a few.
 
