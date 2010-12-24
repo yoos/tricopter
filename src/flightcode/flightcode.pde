@@ -27,6 +27,7 @@ int main(void) {
     for (;;) {
 //      while (Jasper.isAlive) {
         Jasper.isAlive = true;
+        int n = 0;
         while (true) {
             Jasper.Watch();
 //          myGyr.Poll();
@@ -35,24 +36,24 @@ int main(void) {
 
             char myChr;
             if (Serial.available()) {
-                myServo.write(0);
-                myChr = Serial.read();
+               myChr = Serial.read();
                 
-//              if (myChr == DOGBONE) {
-//                  Jasper.Feed();
-//                  Alice.Send("Dogbone received!");
-//              }
-//              else if (myChr == SERHEAD) {
+                if (myChr == DOGBONE) {
+                    Jasper.Feed();
+                    Alice.Send("Dogbone received!");
+                }
+                else if (myChr == SERHEAD) {
                     Alice.Send("Header received!");
                     for (int i=0; i<2; i++) {   // For now, only two bytes.
                         myChr = Serial.read();
                         if (myChr == SERHEAD) {   // If there was a dropped byte
                             i = 0;   // Start over
-                            myChr = Serial.read();
                             Alice.Send("Packet drop detected.");
                         }
+                        else if (myChr == DOGBONE)   // The dogbone might be sent in the middle of a control packet.
+                            Jasper.Feed();   // Feed dog and ignore discrepancy.
                         else
-                            motorInput[i] = myChr;
+                            motorInput[i] = myChr;   // If all is good, write to motorInput.
                     }
                     Serial.print("X: ");
                     Serial.print((int) motorInput[0]);
@@ -61,8 +62,16 @@ int main(void) {
                     Serial.print("   Writing ");
                     Serial.println((int) motorInput[0] * 180/250);
                     myServo.write(0);
-//              }
-//              else
+                }
+                else {
+                    if (n < 178) {
+                        myServo.write(n);
+                        Serial.print("n = ");
+                        Serial.println(n);
+                        n++;
+                    }
+                }
+ 
 //                  myServo.write(0);   // If there's some weird packet, send minimum throttle.
             }
             delay(50);
