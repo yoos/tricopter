@@ -1,3 +1,5 @@
 # Dec. 24, 2010
 02:42 Interesting. If I send a header and only one value instead of the two the Seeeduino currently expects, the Seeeduino fills the second value with 0xFF. Or rather, the Arduino IDE might be sending 0xFF to the Seeeduino. I've no idea. In any case, that will interfere with my communication protocol.
+02:44 Running the servo with the Seeeduino makes it reset during operation. Perhaps the battery is almost dead.
+03:30 Changing input from int to unsigned int solved servo problem. I should've picked up on the hint when the numbers _flipped_ over to the negatives.
 

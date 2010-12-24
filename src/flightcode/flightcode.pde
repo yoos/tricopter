@@ -56,23 +56,16 @@ int main(void) {
                             motorInput[i] = myChr;   // If all is good, write to motorInput.
                     }
                     Serial.print("X: ");
-                    Serial.print((int) motorInput[0]);
+                    Serial.print((unsigned int) motorInput[0]);
                     Serial.print("  Y: ");
-                    Serial.print((int) motorInput[1]);
+                    Serial.print((unsigned int) motorInput[1]);
                     Serial.print("   Writing ");
-                    Serial.println((int) motorInput[0] * 180/250);
-                    myServo.write(0);
+                    Serial.println((unsigned int) motorInput[0] * 180/250);
+                    myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
                 }
                 else {
-                    if (n < 178) {
-                        myServo.write(n);
-                        Serial.print("n = ");
-                        Serial.println(n);
-                        n++;
-                    }
+                    myServo.write(16);   // If there's some weird packet, send minimum throttle.
                 }
- 
-//                  myServo.write(0);   // If there's some weird packet, send minimum throttle.
             }
             delay(50);
         }
