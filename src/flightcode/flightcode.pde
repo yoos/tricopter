@@ -59,9 +59,11 @@ int main(void) {
                     Serial.print((unsigned int) motorInput[0]);
                     Serial.print("  Y: ");
                     Serial.print((unsigned int) motorInput[1]);
+                    motorInput[0] = map(motorInput[0], 0, 250, 0, 180);
                     Serial.print("   Writing ");
-                    Serial.println((unsigned int) motorInput[0] * 180/250);
-                    myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
+                    Serial.println((unsigned int) motorInput[0]);
+//                  myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
+                    myServo.write((unsigned int) motorInput[0]);
                 }
                 else {
                     myServo.write(16);   // If there's some weird packet, send minimum throttle.
