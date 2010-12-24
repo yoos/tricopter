@@ -32,7 +32,7 @@ try:
     ser = serial.Serial(serialPort, baudRate)
     rospy.loginfo("Arduino at %s", serialPort)
 except:
-    rospy.logerr("No Arduino!")
+    rospy.logerr("No Arduino at %s!", serialPort)
 
 ################################### Watchdog ##################################
 
