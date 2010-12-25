@@ -1,19 +1,17 @@
 #include "watchdog.h"
 
-Watchdog::Watchdog(int timeout, char food) {
+Watchdog::Watchdog(int timeout) {
     dogLife = timeout;
-    dogBone = food;
     time = millis();
 }
 
-void Watchdog::Watch() { // If this runs too late, dogLife may already have ended.
-    if (millis() - time < dogLife)
-        isAlive = true;
-    else
+void Watchdog::Watch(bool &seeFood) {   // If this runs too late, dogLife may already have ended.
+    if (!seeFood && millis() - time > dogLife)
         isAlive = false;
-}
-
-void Watchdog::Feed() {
-    time = millis();
+    else if (seeFood) {
+        seeFood = false;   // Eat the food.
+        time = millis();
+        isAlive = true;
+        }
 }
 

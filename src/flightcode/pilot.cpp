@@ -1,13 +1,9 @@
 #include "pilot.h"
 
-Pilot::Pilot(int motorL, int motorR, int motorT) {
-    pinMode(motorL, OUTPUT);
-    pinMode(motorR, OUTPUT);
-    pinMode(motorT, OUTPUT);
+Pilot::Pilot() {
 }
 
-void Pilot::fly(int flightMode) {
-
+void Pilot::Fly(int *input) {
 
 }
 

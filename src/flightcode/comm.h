@@ -5,12 +5,16 @@
 
 class Communicator {
     char commStr[];
-    int strLength;
+    int serRead;
 
 public:
     Communicator();
     int Send(char[]);
     char* Read(char[]);
+    void Listen();
+    
+    bool hasFood;
+    int input[PACKETSIZE];
 };
 
 #endif

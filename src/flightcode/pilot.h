@@ -2,11 +2,10 @@
 #define PILOT_H
 
 class Pilot {
-    int flightMode;
 
 public:
     Pilot();
-    void fly(int);
+    void Fly(int*);
 };
 
 

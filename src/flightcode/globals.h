@@ -5,6 +5,7 @@
 // Configurables
 
 #define DEBUG
+#define PACKETSIZE 2   // Bytes per packet of commands sent to Seeeduino.
 
 #define BAUDRATE 9600
 #define IMU_SAMPLE_INTERVAL 25   // In milliseconds
