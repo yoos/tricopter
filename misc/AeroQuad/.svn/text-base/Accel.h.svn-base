@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.1 Beta - December 2010
+  AeroQuad v2.1.2 Beta - December 2010
   www.AeroQuad.com
   Copyright (c) 2010 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -224,7 +224,7 @@ public:
 class Accel_AeroQuadMega_v2 : public Accel {
 private:
   int accelAddress;
-  int xdata[2];
+  //int xdata[2];
   
 public:
   Accel_AeroQuadMega_v2() : Accel(){
@@ -237,7 +237,7 @@ public:
   void initialize(void) {
     byte data;
   
-	  accelZero[ROLL] = readFloat(LEVELROLLCAL_ADR);
+    accelZero[ROLL] = readFloat(LEVELROLLCAL_ADR);
     accelZero[PITCH] = readFloat(LEVELPITCHCAL_ADR);
     accelZero[ZAXIS] = readFloat(LEVELZCAL_ADR);
     accelOneG = readFloat(ACCEL1G_ADR);

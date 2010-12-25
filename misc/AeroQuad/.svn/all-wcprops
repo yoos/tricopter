@@ -1,73 +1,67 @@
 K 25
 svn:wc:ra_dav:version-url
 V 32
-/svn/!svn/ver/558/trunk/AeroQuad
+/svn/!svn/ver/561/trunk/AeroQuad
 END
 GPS.h
 K 25
 svn:wc:ra_dav:version-url
 V 38
-/svn/!svn/ver/507/trunk/AeroQuad/GPS.h
+/svn/!svn/ver/561/trunk/AeroQuad/GPS.h
 END
 BatteryReadArmLed.h
 K 25
 svn:wc:ra_dav:version-url
 V 52
-/svn/!svn/ver/507/trunk/AeroQuad/BatteryReadArmLed.h
+/svn/!svn/ver/561/trunk/AeroQuad/BatteryReadArmLed.h
 END
 FlightCommand.pde
 K 25
 svn:wc:ra_dav:version-url
 V 50
-/svn/!svn/ver/507/trunk/AeroQuad/FlightCommand.pde
+/svn/!svn/ver/561/trunk/AeroQuad/FlightCommand.pde
 END
 DataStorage.h
 K 25
 svn:wc:ra_dav:version-url
 V 46
-/svn/!svn/ver/556/trunk/AeroQuad/DataStorage.h
-END
-SerialCom.pde
-K 25
-svn:wc:ra_dav:version-url
-V 46
-/svn/!svn/ver/556/trunk/AeroQuad/SerialCom.pde
+/svn/!svn/ver/561/trunk/AeroQuad/DataStorage.h
 END
 FlightControl.pde
 K 25
 svn:wc:ra_dav:version-url
 V 50
-/svn/!svn/ver/507/trunk/AeroQuad/FlightControl.pde
+/svn/!svn/ver/561/trunk/AeroQuad/FlightControl.pde
+END
+SerialCom.pde
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/561/trunk/AeroQuad/SerialCom.pde
 END
 AeroQuad.h
 K 25
 svn:wc:ra_dav:version-url
 V 43
-/svn/!svn/ver/556/trunk/AeroQuad/AeroQuad.h
+/svn/!svn/ver/561/trunk/AeroQuad/AeroQuad.h
 END
 Receiver.h
 K 25
 svn:wc:ra_dav:version-url
 V 43
-/svn/!svn/ver/507/trunk/AeroQuad/Receiver.h
+/svn/!svn/ver/561/trunk/AeroQuad/Receiver.h
 END
 Compass.h
 K 25
 svn:wc:ra_dav:version-url
 V 42
-/svn/!svn/ver/507/trunk/AeroQuad/Compass.h
-END
-ReadMeFirst.mht
-K 25
-svn:wc:ra_dav:version-url
-V 48
-/svn/!svn/ver/447/trunk/AeroQuad/ReadMeFirst.mht
+/svn/!svn/ver/561/trunk/AeroQuad/Compass.h
 END
 Accel.h
 K 25
 svn:wc:ra_dav:version-url
 V 40
-/svn/!svn/ver/558/trunk/AeroQuad/Accel.h
+/svn/!svn/ver/561/trunk/AeroQuad/Accel.h
 END
 gpl.txt
 K 25
@@ -75,81 +69,87 @@ svn:wc:ra_dav:version-url
 V 40
 /svn/!svn/ver/492/trunk/AeroQuad/gpl.txt
 END
-Altitude.h
-K 25
-svn:wc:ra_dav:version-url
-V 43
-/svn/!svn/ver/507/trunk/AeroQuad/Altitude.h
-END
 Template.h
 K 25
 svn:wc:ra_dav:version-url
 V 43
-/svn/!svn/ver/507/trunk/AeroQuad/Template.h
+/svn/!svn/ver/561/trunk/AeroQuad/Template.h
+END
+Altitude.h
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/561/trunk/AeroQuad/Altitude.h
 END
 PID.h
 K 25
 svn:wc:ra_dav:version-url
 V 38
-/svn/!svn/ver/507/trunk/AeroQuad/PID.h
+/svn/!svn/ver/561/trunk/AeroQuad/PID.h
 END
 Sensors.pde
 K 25
 svn:wc:ra_dav:version-url
 V 44
-/svn/!svn/ver/556/trunk/AeroQuad/Sensors.pde
+/svn/!svn/ver/561/trunk/AeroQuad/Sensors.pde
 END
 I2C.h
 K 25
 svn:wc:ra_dav:version-url
 V 38
-/svn/!svn/ver/507/trunk/AeroQuad/I2C.h
+/svn/!svn/ver/561/trunk/AeroQuad/I2C.h
 END
 Gyro.h
 K 25
 svn:wc:ra_dav:version-url
 V 39
-/svn/!svn/ver/557/trunk/AeroQuad/Gyro.h
+/svn/!svn/ver/561/trunk/AeroQuad/Gyro.h
 END
 DataAcquisition.h
 K 25
 svn:wc:ra_dav:version-url
 V 50
-/svn/!svn/ver/507/trunk/AeroQuad/DataAcquisition.h
+/svn/!svn/ver/561/trunk/AeroQuad/DataAcquisition.h
 END
 AeroQuad.pde
 K 25
 svn:wc:ra_dav:version-url
 V 45
-/svn/!svn/ver/556/trunk/AeroQuad/AeroQuad.pde
+/svn/!svn/ver/561/trunk/AeroQuad/AeroQuad.pde
 END
 Motors.h
 K 25
 svn:wc:ra_dav:version-url
 V 41
-/svn/!svn/ver/507/trunk/AeroQuad/Motors.h
+/svn/!svn/ver/561/trunk/AeroQuad/Motors.h
 END
 CHR6DM.h
 K 25
 svn:wc:ra_dav:version-url
 V 41
-/svn/!svn/ver/507/trunk/AeroQuad/CHR6DM.h
+/svn/!svn/ver/561/trunk/AeroQuad/CHR6DM.h
 END
 FlightAngle.h
 K 25
 svn:wc:ra_dav:version-url
 V 46
-/svn/!svn/ver/557/trunk/AeroQuad/FlightAngle.h
+/svn/!svn/ver/561/trunk/AeroQuad/FlightAngle.h
 END
 Filter.h
 K 25
 svn:wc:ra_dav:version-url
 V 41
-/svn/!svn/ver/507/trunk/AeroQuad/Filter.h
+/svn/!svn/ver/561/trunk/AeroQuad/Filter.h
 END
 README.markdown
 K 25
 svn:wc:ra_dav:version-url
 V 48
-/svn/!svn/ver/507/trunk/AeroQuad/README.markdown
+/svn/!svn/ver/561/trunk/AeroQuad/README.markdown
+END
+Camera.h
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/561/trunk/AeroQuad/Camera.h
 END

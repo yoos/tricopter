@@ -5,4 +5,7 @@
 15:12 Just tried to power my Seeeduino off my flight lipo by plugging leads into GND and Vin. Loud pop, yellow sparks, and lots of smoke. Fortunately it still functions through the USB port. However, the big diode next to the power light is scorched and cracked open and I cannot power it through wire anymore. Hopefully all that is needed is to replace the diode.
 15:17 But was it the current or the voltage? The battery voltage is 16.4 V, but I thought the Seeeduino was supposed to be able to take up to 20V? I'm also pretty sure I didn't connect the wires backwards.
 15:38 That wasn't a diode I fried, it was a 47 uF tantalum capacitor (there are two on the Seeeduino). I might have a few.
+16:08 Looks like I blew the traces off, too. I need to figure out what the wiring is before I run a few wires to necessary components. This doesn't seem like a fatal failure.
+16:27 Tried powering servo with USB port. dmesg reports over-current. How much power does this thing need?
+16:44 Stupid me. The ESCs output about 5.6 V. These Mystery 40 A ESCs apparently output a maximum of 4 A.
 

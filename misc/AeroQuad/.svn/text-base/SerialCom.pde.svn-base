@@ -1,22 +1,22 @@
 /*
-  AeroQuad v2.1 Beta - December 2010
- www.AeroQuad.com
- Copyright (c) 2010 Ted Carancho.  All rights reserved.
- An Open Source Arduino based multicopter.
+  AeroQuad v2.1.2 Beta - December 2010
+  www.AeroQuad.com
+  Copyright (c) 2010 Ted Carancho.  All rights reserved.
+  An Open Source Arduino based multicopter.
  
- This program is free software: you can redistribute it and/or modify 
- it under the terms of the GNU General Public License as published by 
- the Free Software Foundation, either version 3 of the License, or 
- (at your option) any later version. 
+  This program is free software: you can redistribute it and/or modify 
+  it under the terms of the GNU General Public License as published by 
+  the Free Software Foundation, either version 3 of the License, or 
+  (at your option) any later version. 
  
- This program is distributed in the hope that it will be useful, 
- but WITHOUT ANY WARRANTY; without even the implied warranty of 
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
- GNU General Public License for more details. 
+  This program is distributed in the hope that it will be useful, 
+  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+  GNU General Public License for more details. 
  
- You should have received a copy of the GNU General Public License 
- along with this program. If not, see <http://www.gnu.org/licenses/>. 
- */
+  You should have received a copy of the GNU General Public License 
+  along with this program. If not, see <http://www.gnu.org/licenses/>. 
+*/
 
 // SerialCom.pde is responsible for the serial communication for commands and telemetry from the AeroQuad
 // This comtains readSerialCommand() which listens for a serial command and it's arguments
@@ -160,6 +160,23 @@ void readSerialCommand() {
       compass.setMagCal(YAXIS, readFloatSerial(), readFloatSerial());
       compass.setMagCal(ZAXIS, readFloatSerial(), readFloatSerial());
 #endif
+      break;
+    case '~': //  read Camera values 
+      #ifdef Camera
+      myCamera.setMode(readFloatSerial());
+      myCamera.setCenterPitch(readFloatSerial());
+      myCamera.setCenterRoll(readFloatSerial());
+      myCamera.setCenterYaw(readFloatSerial());
+      myCamera.setmCameraPitch(readFloatSerial());
+      myCamera.setmCameraRoll(readFloatSerial());
+      myCamera.setmCameraYaw(readFloatSerial());
+      myCamera.setServoMinPitch(readFloatSerial());
+      myCamera.setServoMinRoll(readFloatSerial());
+      myCamera.setServoMinYaw(readFloatSerial());
+      myCamera.setServoMaxPitch(readFloatSerial());
+      myCamera.setServoMaxRoll(readFloatSerial());
+      myCamera.setServoMaxYaw(readFloatSerial());
+      #endif
       break;
     }
     digitalWrite(LEDPIN, HIGH);
@@ -450,6 +467,35 @@ void sendSerialTelemetry() {
     Serial.println(compass.getMagMin(ZAXIS), 2);
 #endif
     queryType = 'X';
+    break;
+  case '`': // Send Camera values 
+    #ifdef Camera
+    Serial.print(myCamera.getMode());
+    comma();
+    Serial.print(myCamera.getCenterPitch());
+    comma();
+    Serial.print(myCamera.getCenterRoll());
+    comma();
+    Serial.print(myCamera.getCenterYaw());
+    comma();
+    Serial.print(myCamera.getmCameraPitch() , 2);
+    comma();
+    Serial.print(myCamera.getmCameraRoll() , 2);
+    comma();
+    Serial.print(myCamera.getmCameraYaw() , 2);
+    comma();
+    Serial.print(myCamera.getServoMinPitch());
+    comma();
+    Serial.print(myCamera.getServoMinRoll());
+    comma();
+    Serial.print(myCamera.getServoMinYaw());
+    comma();
+    Serial.print(myCamera.getServoMaxPitch());
+    comma();
+    Serial.print(myCamera.getServoMaxRoll());
+    comma();
+    Serial.println(myCamera.getServoMaxYaw());
+    #endif
     break;
   }
 }
