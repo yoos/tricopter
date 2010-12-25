@@ -14,7 +14,7 @@ int main(void) {
     
     // Begin system services.
     Communicator Alice;
-    Alice.Send("Antares starting!");
+    Serial.println("Antares starting!");
     Watchdog Jasper(DOGLIFE, DOGBONE);   // Timeout in ms.
     BMA180 myAcc(4, 2);   // range, bandwidth: DS p. 27
     ITG3200 myGyr(2);   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s.
@@ -35,7 +35,7 @@ int main(void) {
 //          myGyr.Poll();
 //          myAcc.Poll();
 
-            char myChr;
+            int myChr;
             if (Serial.available() > 0) {
                 myChr = Serial.read();
                 
@@ -44,44 +44,37 @@ int main(void) {
                     Serial.println("Dogbone received!");
                 }
                 else if (myChr == SERHEAD) {
-                    myServo.write(70);
                     Serial.println("Header received!");
                     Serial.println(myChr);
-//                     for (int i=0; i<2; i++) {   // For now, only two bytes.
+                    for (int i=0; i<2; i++) {   // For now, only two bytes.
                         myChr = Serial.read();
                         Serial.println(myChr);
-//                         if (myChr == SERHEAD | myChr == NULL) {   // If there was a dropped byte
-//                             i = 0;   // Start over
-//                             Alice.Send("Packet drop detected.");
-//                         }
-//                         else if (myChr == DOGBONE) {   // The dogbone might be sent in the middle of a control packet.
-//                             Jasper.Feed();   // Feed dog and ignore discrepancy.
-//                             Serial.println("Dogbone received!");
-//                         }
-//                         else {
-// //                          motorInput[i] = map(int(myChr), 0, 250, 0, 178);   // If all is good, write to motorInput.
-                            motorInput[1] = myChr;
-                            myServo.write(motorInput[1]);
-                            Serial.print("   Writing ");
-                            Serial.println(motorInput[1]);
-//                             Serial.print("Motor ");
-//                             Serial.print(i);
-//                             Serial.print(" set to ");
-//                             Serial.print(motorInput[i]);
-//                             Serial.print("   ");
-//                             if (i)
-//                                 Serial.println("");   // Newline.
-//                         }
-//                     }
+                        if (myChr == SERHEAD | myChr == NULL) {   // If there was a dropped byte
+                            i = 0;   // Start over
+                            Serial.println("Packet drop detected.");
+                        }
+                        else if (myChr == DOGBONE) {   // The dogbone might be sent in the middle of a control packet.
+                            Jasper.Feed();   // Feed dog and ignore discrepancy.
+                            Serial.println("Dogbone received!");
+                        }
+                        else {
+                            motorInput[i] = map(myChr, 0, 250, 0, 178);   // If all is good, write to motorInput.
+                            myServo.write(motorInput[i]);
+                            Serial.print("Motor ");
+                            Serial.print(i);
+                            Serial.print(" set to ");
+                            Serial.print(motorInput[i]);
+                            Serial.print("   ");
+                            if (i)
+                                Serial.println("");   // Newline.
+                        }
+                    }
                 }
-//                 else {
-//                     for (int i=0; i<2; i++) {
-//                         motorInput[i] = 16;   // If there's some weird packet, send minimum throttle.
-//                     }
-//                 }
-            }
-            else {
-                myServo.write(80);
+                else {
+                    for (int i=0; i<2; i++) {
+                        motorInput[i] = 16;   // If there's some weird packet, send minimum throttle.
+                    }
+                }
             }
 //          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
             delay(100);
