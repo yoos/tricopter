@@ -23,12 +23,18 @@ int main(void) {
     // Attach motors.
     myServo.attach(9);
 
-    uint8_t motorInput[2];
     for (;;) {
 //      while (Jasper.isAlive) {
         Jasper.isAlive = true;
-        int n = 0;
+        unsigned int n = 0;
+        unsigned int motorInput[2];
         while (true) {
+            for (int i=0; i<2; i++) {
+                if (motorInput[i] > 178) {
+                    Serial.println("Input scaled!");
+                    motorInput[i] = map(motorInput[i], 0, motorInput[i], 0, 178);
+                }
+            }
             Jasper.Watch();
 //          myGyr.Poll();
 //          myAcc.Poll();
@@ -50,26 +56,34 @@ int main(void) {
                             i = 0;   // Start over
                             Alice.Send("Packet drop detected.");
                         }
-                        else if (myChr == DOGBONE)   // The dogbone might be sent in the middle of a control packet.
+                        else if (myChr == DOGBONE) {   // The dogbone might be sent in the middle of a control packet.
                             Jasper.Feed();   // Feed dog and ignore discrepancy.
-                        else
-                            motorInput[i] = myChr;   // If all is good, write to motorInput.
+                            Serial.println("Dogbone received!");
+                        }
+                        else {
+                            motorInput[i] = map((uint8_t) myChr, 0, 250, 0, 178);   // If all is good, write to motorInput.
+                            Serial.print("Motor ");
+                            Serial.print(i);
+                            Serial.print(" set to ");
+                            Serial.print((uint8_t) motorInput[i]);
+                            Serial.print("   ");
+                            if (i)
+                                Serial.println("");   // Newline.
+                        }
                     }
-                    Serial.print("X: ");
-                    Serial.print((unsigned int) motorInput[0]);
-                    Serial.print("  Y: ");
-                    Serial.print((unsigned int) motorInput[1]);
-                    motorInput[0] = map(motorInput[0], 0, 250, 0, 180);
-                    Serial.print("   Writing ");
-                    Serial.println((unsigned int) motorInput[0]);
-//                  myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
-                    myServo.write((unsigned int) motorInput[0]);
                 }
                 else {
-                    myServo.write(16);   // If there's some weird packet, send minimum throttle.
+                    for (int i=0; i<2; i++) {
+                        motorInput[i] = 160;   // If there's some weird packet, send minimum throttle.
+                    }
                 }
             }
-            delay(50);
+            Serial.print("   Writing ");
+            Serial.println((int) motorInput[1]);
+//          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
+            motorInput[1] = 150;
+            myServo.write(motorInput[1]);
+            delay(100);
         }
         while (!Jasper.isAlive) {
         }
