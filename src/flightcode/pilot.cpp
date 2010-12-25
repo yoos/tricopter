@@ -3,7 +3,7 @@
 Pilot::Pilot() {
 }
 
-void Pilot::Fly(int *input) {
+void Pilot::Fly(int *input, int *motors) {
 
 }
 

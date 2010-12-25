@@ -1,6 +1,7 @@
-#include "control.h"
+#include "system.h"
 
-
+System::System() {
+}
 
 
 

@@ -5,7 +5,7 @@ class Pilot {
 
 public:
     Pilot();
-    void Fly(int*);
+    void Fly(int*, int*);
 };
 
 

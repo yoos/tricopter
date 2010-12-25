@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "comm.cpp"
 #include "pilot.cpp"
+#include "system.cpp"
 #include "watchdog.cpp"
 #include "itg3200.cpp"
 #include "bma180.cpp"
@@ -15,10 +16,11 @@ int main(void) {
     
     // Begin system services.
     Communicator Alice;
-    Pilot Yeager;
     Watchdog Jasper(DOGLIFE);   // Timeout in ms.
     BMA180 myAcc(4, 2);   // range, bandwidth: DS p. 27
     ITG3200 myGyr(2);   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s.
+    Pilot Yeager;
+    System Tric;
     Servo myServo;
 
     // Attach motors.
@@ -33,7 +35,7 @@ int main(void) {
             Jasper.Watch(Alice.hasFood);
 //          myGyr.Poll();
 //          myAcc.Poll();
-            Yeager.Fly(Alice.input);
+            Yeager.Fly(Alice.input, Tric.motors);
 //          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
             delay(100);
         }
