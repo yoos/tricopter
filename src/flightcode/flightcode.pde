@@ -13,8 +13,7 @@ int main(void) {
     Wire.begin();
     
     // Begin system services.
-    Communicator Alice;
-    Serial.println("Antares starting!");
+    Serial.begin(BAUDRATE);
     Watchdog Jasper(DOGLIFE, DOGBONE);   // Timeout in ms.
     BMA180 myAcc(4, 2);   // range, bandwidth: DS p. 27
     ITG3200 myGyr(2);   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s.
@@ -36,8 +35,10 @@ int main(void) {
 //          myAcc.Poll();
 
             int myChr;
-            if (Serial.available() > 0) {
+            while (Serial.available()) {
                 myChr = Serial.read();
+                Serial.print("Read in: ");
+                Serial.println(myChr);
                 
                 if (myChr == DOGBONE) {
                     Jasper.Feed();
@@ -59,14 +60,13 @@ int main(void) {
                         }
                         else {
                             motorInput[i] = map(myChr, 0, 250, 0, 178);   // If all is good, write to motorInput.
-                            myServo.write(motorInput[i]);
+                            myServo.write(motorInput[1]);
                             Serial.print("Motor ");
                             Serial.print(i);
                             Serial.print(" set to ");
                             Serial.print(motorInput[i]);
                             Serial.print("   ");
-                            if (i)
-                                Serial.println("");   // Newline.
+                            if (i) Serial.println("");   // Newline.
                         }
                     }
                 }
