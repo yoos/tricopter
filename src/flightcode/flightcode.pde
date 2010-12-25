@@ -34,7 +34,6 @@ int main(void) {
             Jasper.Watch();
 //          myGyr.Poll();
 //          myAcc.Poll();
-            myServo.write(80);
 
             char myChr;
             if (Serial.available() > 0) {
@@ -42,11 +41,11 @@ int main(void) {
                 
                 if (myChr == DOGBONE) {
                     Jasper.Feed();
-                    Alice.Send("Dogbone received!");
+                    Serial.println("Dogbone received!");
                 }
                 else if (myChr == SERHEAD) {
                     myServo.write(70);
-                    Alice.Send("Header received!");
+                    Serial.println("Header received!");
                     Serial.println(myChr);
 //                     for (int i=0; i<2; i++) {   // For now, only two bytes.
                         myChr = Serial.read();
@@ -80,6 +79,9 @@ int main(void) {
 //                         motorInput[i] = 16;   // If there's some weird packet, send minimum throttle.
 //                     }
 //                 }
+            }
+            else {
+                myServo.write(80);
             }
 //          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
             delay(100);
