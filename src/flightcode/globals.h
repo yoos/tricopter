@@ -11,7 +11,7 @@
 #define GYRO_VREF 1
 #define ACCEL_VREF 1
 
-#define SERHEAD char(255) // 'S'
+#define SERHEAD 'S'
 #define DOGBONE char(254)
 #define DOGLIFE 200   // Watchdog life in milliseconds
 
