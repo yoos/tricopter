@@ -35,14 +35,14 @@ void Communicator::Listen() {
 
         if (serRead == DOGBONE) {   // Receive dogbone.
             #ifdef DEBUG
-                Serial.print("Dogbone received: ");
+                Serial.print("Comm received dogbone: ");
                 Serial.println(serRead);
             #endif
             hasFood = true;   // Will be set to false by watchdog.
         }
         else if (serRead == SERHEAD) {   // Receive header.
             #ifdef DEBUG
-                Serial.print("Header received: ");
+                Serial.print("Comm received header: ");
                 Serial.println(serRead);
             #endif
             for (int i=0; i<2; i++) {   // Each packet consists of header plus two bytes.

@@ -14,6 +14,7 @@ public:
     void Listen();
     
     bool hasFood;
+    
     int input[PACKETSIZE];
 };
 

@@ -29,6 +29,7 @@ int main(void) {
         Jasper.isAlive = true;
         int n = 0;
         while (true) {
+            Alice.Listen();
             Jasper.Watch(Alice.hasFood);
 //          myGyr.Poll();
 //          myAcc.Poll();
