@@ -13,7 +13,7 @@
 
 #define SERHEAD 'S'
 #define DOGBONE char(254)
-#define DOGLIFE 200   // Watchdog life in milliseconds
+#define DOGLIFE 3000   // Watchdog life in milliseconds
 
 
 // BMA180 config
