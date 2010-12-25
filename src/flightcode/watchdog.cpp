@@ -3,18 +3,27 @@
 Watchdog::Watchdog(int timeout) {
     dogLife = timeout;
     time = millis();
+    #ifdef DEBUG
+    Serial.println("Watchdog here!");
+    #endif
 }
 
 void Watchdog::Watch(bool &seeFood) {   // If this runs too late, dogLife may already have ended.
-    if (!seeFood && millis() - time > dogLife)
+    if (!seeFood && millis() - time > dogLife) {
         isAlive = false;
-    else if (seeFood) {
+        
         #ifdef DEBUG
-            Serial.print("Watchdog received dogbone!");
+        Serial.println("Watchdog died!");
         #endif
+    }
+    else if (seeFood) {
         seeFood = false;   // Eat the food.
         time = millis();
         isAlive = true;
+        
+        #ifdef DEBUG
+        Serial.print("Watchdog received dogbone!");
+        #endif
         }
 }
 

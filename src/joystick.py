@@ -49,7 +49,7 @@ def callback(myJoy):
     global timeLast
     if rospy.Time.now() - timeLast > rospy.Duration(feedInterval):   # Time - Time = Duration
         # Take care of the dog.
-#       feedDog()
+        feedDog()
         timeLast = rospy.Time.now() # Update time
         if logOn: rospy.loginfo("ROSTime: %s", timeLast)
 
