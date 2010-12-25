@@ -1,13 +1,16 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#include <Servo.h>
 #include "comm.h"
 
 class System {
+    Servo motor[3];
 
 public:
     System();
-    int motors[3];
+    void Run();
+    int motorVal[3];
 };
 
 

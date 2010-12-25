@@ -35,9 +35,10 @@ int main(void) {
             Jasper.Watch(Alice.hasFood);
 //          myGyr.Poll();
 //          myAcc.Poll();
-            Yeager.Fly(Alice.input, Tric.motors);
+            Yeager.Fly(Alice.input, Tric.motorVal);
+            Tric.Run();
 //          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
-            delay(100);
+            delay(100);   // TODO: Once everything's done, make system run at 40 Hz.
         }
         while (!Jasper.isAlive) {
         }

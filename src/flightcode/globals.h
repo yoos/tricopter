@@ -6,6 +6,8 @@
 
 #define DEBUG
 #define PACKETSIZE 2   // Bytes per packet of commands sent to Seeeduino.
+#define THROTTLE_MIN 16   // Servo signal that registers as minimum signal to ESC.
+#define THROTTLE_MAX 170   // Servo signal that registers as maximum signal to ESC.
 
 #define BAUDRATE 9600
 #define IMU_SAMPLE_INTERVAL 25   // In milliseconds
