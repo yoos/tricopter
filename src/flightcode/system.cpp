@@ -12,7 +12,12 @@ void System::Run() {
     }
 }
 
-
+void System::Die() {
+    for (int i=0; i<3; i++) {
+        motorVal[i] = THROTTLE_MIN;   // This is inelegant. Is there a way to avoid running both of these?
+        motor[i].write(THROTTLE_MIN);
+    }
+}
 
 
 

@@ -41,6 +41,7 @@ int main(void) {
             delay(100);   // TODO: Once everything's done, make system run at 40 Hz.
         }
         while (!Jasper.isAlive) {
+            Tric.Die();
         }
     }
 

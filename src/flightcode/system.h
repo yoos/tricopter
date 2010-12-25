@@ -10,6 +10,7 @@ class System {
 public:
     System();
     void Run();
+    void Die();
     int motorVal[3];
 };
 
