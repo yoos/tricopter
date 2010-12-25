@@ -13,7 +13,7 @@ void Watchdog::Watch(bool &seeFood) {   // If this runs too late, dogLife may al
         isAlive = false;
         
         #ifdef DEBUG
-        Serial.println("Watchdog died!");
+        Serial.println("Watchdog dead!");
         #endif
     }
     else if (seeFood) {
@@ -22,7 +22,7 @@ void Watchdog::Watch(bool &seeFood) {   // If this runs too late, dogLife may al
         isAlive = true;
         
         #ifdef DEBUG
-        Serial.print("Watchdog received dogbone!");
+        Serial.println("Watchdog received dogbone!");
         #endif
         }
 }

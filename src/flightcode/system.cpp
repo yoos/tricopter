@@ -24,7 +24,7 @@ void System::Die() {
         motor[i].write(THROTTLE_MIN);
     }
     #ifdef DEBUG
-    Serial.println("System died!");
+    Serial.println("System dead!");
     #endif
 }
 

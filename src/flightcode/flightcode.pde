@@ -27,22 +27,19 @@ int main(void) {
     myServo.attach(9);
 
     for (;;) {
-//      while (Jasper.isAlive) {
-        Jasper.isAlive = true;
-        int n = 0;
-        while (true) {
-            Alice.Listen();
-            Jasper.Watch(Alice.hasFood);
-//          myGyr.Poll();
-//          myAcc.Poll();
+        Alice.Listen();
+        Jasper.Watch(Alice.hasFood);
+//      myGyr.Poll();
+//      myAcc.Poll();
+        if (Jasper.isAlive) {
             Yeager.Fly(Alice.input, Tric.motorVal);
             Tric.Run();
 //          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
-            delay(100);   // TODO: Once everything's done, make system run at 40 Hz.
         }
-        while (!Jasper.isAlive) {
+        else {
             Tric.Die();
         }
+        delay(100);   // TODO: Once everything's done, make system run at 40 Hz.
     }
 
     return 0;

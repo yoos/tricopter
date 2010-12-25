@@ -11,7 +11,7 @@ void Pilot::Fly(int *input, int *motorVal) {
         motorVal[i] = input[i];   // Get input from Comm and update System.
     }
     #ifdef DEBUG
-    Serial.println("Pilot gave input to system!");
+    Serial.println("Pilot gave input to system.");
     #endif
 }
 
