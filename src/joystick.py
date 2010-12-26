@@ -15,8 +15,8 @@ from std_msgs.msg import String
 # Comm values
 serialPort = "/dev/ttyUSB0"
 baudRate = 9600
-feedInterval = 0.05   # How often to feed watchdog in seconds
-inputInterval = 0.1   # How often to send input values
+feedInterval = 0.1   # How often to feed watchdog in seconds
+inputInterval = 0.05   # How often to send input values
 serHeader = chr(255)
 dogBone = chr(254) # Feed watchdog
 logOn = True
@@ -57,16 +57,12 @@ def feedDog():
 def callback(myJoy):
     global inputLast, xAxisValue, yAxisValue
     if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
+        inputLast = rospy.Time.now()
         # Calculate axis values.
         xAxisValue = int(250*(myJoy.axes[xAxis]+1)/2)   # Range 0-250 in order to send as char value
         yAxisValue = int(250*(myJoy.axes[yAxis]+1)/2)
 
-
-def sendData():
-    global inputLast, xAxisValue, yAxisValue
-    if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
-        inputLast = rospy.Time.now()
-    # Write to serial.
+        # Write to serial.
         try:
             ser.write(serHeader + chr(xAxisValue) + chr(yAxisValue))   # Testing. Need to try out ESC control.
             if logOn: rospy.loginfo("Axis 0: %s (%s)   Axis 1: %s (%s)", xAxisValue, chr(xAxisValue), yAxisValue, chr(yAxisValue))
@@ -75,12 +71,10 @@ def sendData():
 
 
 def listener():
-    r = rospy.Rate(30)   # 10 Hz
     while not rospy.is_shutdown():
         rospy.Subscriber("joy", Joy, callback)
-        sendData()
         feedDog()
-        r.sleep()
+        rospy.spin()
 
 #################################### Qt GUI ###################################
 

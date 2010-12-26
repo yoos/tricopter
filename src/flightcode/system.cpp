@@ -8,6 +8,7 @@ System::System() {
 }
 
 void System::Run() {
+    myIMU.Update();
     if (!armed) {
         #ifdef DEBUG
         Serial.println("System: Motors not armed.");
