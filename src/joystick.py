@@ -65,25 +65,22 @@ def callback(myJoy):
 def sendData():
     global inputLast, xAxisValue, yAxisValue
     if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
-        if logOn: rospy.loginfo("Axis 0: %s (%s)   Axis 1: %s (%s)", xAxisValue, chr(xAxisValue), yAxisValue, chr(yAxisValue))
         inputLast = rospy.Time.now()
     # Write to serial.
         try:
             ser.write(serHeader + chr(xAxisValue) + chr(yAxisValue))   # Testing. Need to try out ESC control.
+            if logOn: rospy.loginfo("Axis 0: %s (%s)   Axis 1: %s (%s)", xAxisValue, chr(xAxisValue), yAxisValue, chr(yAxisValue))
         except:
             if logOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
 
 def listener():
-#   while not rospy.is_shutdown():
-#       if rospy.Time.now() - feedLast > rospy.Duration(feedInterval):
-    r = rospy.Rate(100)   # 10 Hz
+    r = rospy.Rate(30)   # 10 Hz
     while not rospy.is_shutdown():
         rospy.Subscriber("joy", Joy, callback)
         sendData()
         feedDog()
         r.sleep()
-        #feedInterval.sleep()   # Maybe? Right now the manual time checks work.
 
 #################################### Qt GUI ###################################
 
