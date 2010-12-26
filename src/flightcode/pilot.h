@@ -1,5 +1,5 @@
-#ifndef COMM_H
-#define COMM_H
+#ifndef PILOT_H
+#define PILOT_H
 
 #include "globals.h"
 #include "system.h"
@@ -20,5 +20,5 @@ public:
     int input[PACKETSIZE];
 };
 
-#endif
+#endif // PILOT_H
 

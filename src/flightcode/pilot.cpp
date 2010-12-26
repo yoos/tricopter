@@ -1,4 +1,4 @@
-#include "comm.h"
+#include "pilot.h"
 
 Pilot::Pilot() {
     Serial.begin(BAUDRATE);

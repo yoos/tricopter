@@ -1,7 +1,7 @@
 #include <Servo.h>
 #include <Wire.h>
 #include "globals.h"
-#include "comm.cpp"
+#include "pilot.cpp"
 #include "watchdog.cpp"
 #include "system.cpp"
 
