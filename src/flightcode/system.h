@@ -7,6 +7,7 @@
 class System {
     IMU myIMU;
     Servo motor[3];
+    bool armed;
 
 public:
     System();

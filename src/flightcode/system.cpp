@@ -1,21 +1,32 @@
 #include "system.h"
 
 System::System() {
+    armed = false;
     for (int i=0; i<3; i++) {
-        motorVal[i] = THROTTLE_MIN;   // Arm motors.
+        motor[i].write(0);   // Send some value that is not minimum throttle.
     }
-    #ifdef DEBUG
-    Serial.println("System armed motors.");
-    #endif
 }
 
 void System::Run() {
-    for (int i=0; i<3; i++) {
-        motor[i].write(motorVal[i]);   // Write motor values to motors.
+    if (!armed) {
+        #ifdef DEBUG
+        Serial.println("System: Motors not armed.");
+        #endif
+        if (motorVal[0] == 0 && motorVal[1] == 0 && motorVal[2] == 0) {
+            armed = true;
+            #ifdef DEBUG
+            Serial.println("System: Motors armed.");
+            #endif
+        }
     }
-    #ifdef DEBUG
-    Serial.println("System wrote to motors.");
-    #endif
+    else {
+        for (int i=0; i<3; i++) {
+            motor[i].write(motorVal[i]);   // Write motor values to motors.
+        }
+        #ifdef DEBUG
+        Serial.println("System wrote to motors.");
+        #endif
+    }
 }
 
 void System::Die() {
