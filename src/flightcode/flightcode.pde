@@ -2,7 +2,6 @@
 #include <Wire.h>
 #include "globals.h"
 #include "comm.cpp"
-#include "pilot.cpp"
 #include "watchdog.cpp"
 #include "system.cpp"
 
@@ -13,20 +12,19 @@ int main(void) {
     Wire.begin();
     
     // Introduce crew.
-    Communicator Alice;
-    Watchdog Jasper(DOGLIFE);   // Timeout in ms.
     Pilot Yeager;
+    Watchdog Jasper(DOGLIFE);   // Timeout in ms.
 
     // Start system.
     System Tric;
 
     for (;;) {
-        Alice.Listen();
-        Jasper.Watch(Alice.hasFood);
+        Yeager.Listen();
+        Jasper.Watch(Yeager.hasFood);
 //      myGyr.Poll();
 //      myAcc.Poll();
         if (Jasper.isAlive) {
-            Yeager.Fly(Alice.input, Tric.motorVal);
+            Yeager.Fly(Tric);
             Tric.Run();
 //          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
         }

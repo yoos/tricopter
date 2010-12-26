@@ -1,6 +1,6 @@
 #include "comm.h"
 
-Communicator::Communicator() {
+Pilot::Pilot() {
     Serial.begin(BAUDRATE);
     hasFood = false;
     for (int i=0; i<PACKETSIZE; i++)
@@ -10,7 +10,7 @@ Communicator::Communicator() {
     #endif
 }
 
-int Communicator::Send(char sStr[]) {
+int Pilot::Send(char sStr[]) {
     zeroStr(commStr);
     for (int i=0; i<128; i++) {
         commStr[i] = sStr[i];
@@ -21,7 +21,7 @@ int Communicator::Send(char sStr[]) {
     return 0;
 }
 
-char* Communicator::Read(char sStr[]) {
+char* Pilot::Read(char sStr[]) {
     zeroStr(commStr);
     int i = 0;
     while (Serial.available() > 0) {
@@ -32,7 +32,7 @@ char* Communicator::Read(char sStr[]) {
     return commStr;
 }
 
-void Communicator::Listen() {
+void Pilot::Listen() {
     while (Serial.available()) {
         serRead = Serial.read();
 
@@ -65,7 +65,7 @@ void Communicator::Listen() {
                 else if (serRead == DOGBONE)   // The dogbone might be sent in the middle of a control packet.
                     hasFood = true;
                 else {
-                    input[i] = map(serRead, 0, 250, 0, 178);   // If all is good, write to inputlist.
+                    input[i] = map(serRead, 0, 250, THROTTLE_MIN, THROTTLE_MAX);   // If all is good, write to inputlist.
                     #ifdef DEBUG
                     Serial.println("Comm determined motor value.");
                     #endif
@@ -80,5 +80,12 @@ void Communicator::Listen() {
     }
 }
 
-
+void Pilot::Fly(System &mySystem) {
+    for (int i=0; i<3; i++) {
+        mySystem.SetMotor(i, input[i]);
+    }
+    #ifdef DEBUG
+    Serial.println("Pilot gave input to system.");
+    #endif
+}
 

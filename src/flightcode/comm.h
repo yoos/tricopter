@@ -2,16 +2,18 @@
 #define COMM_H
 
 #include "globals.h"
+#include "system.h"
 
-class Communicator {
+class Pilot {
     char commStr[];
     int serRead;
 
 public:
-    Communicator();
+    Pilot();
     int Send(char[]);
     char* Read(char[]);
     void Listen();
+    void Fly(System&);
     
     bool hasFood;
     

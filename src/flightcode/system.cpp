@@ -39,5 +39,7 @@ void System::Die() {
     #endif
 }
 
-
+void System::SetMotor(int mNum, int mVal) {
+    motor[mNum].write(mVal);
+}
 

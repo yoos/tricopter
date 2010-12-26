@@ -8,12 +8,13 @@ class System {
     IMU myIMU;
     Servo motor[3];
     bool armed;
+    int motorVal[3];
 
 public:
     System();
     void Run();
     void Die();
-    int motorVal[3];
+    void SetMotor(int, int);
 };
 
 
