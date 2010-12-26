@@ -15,7 +15,8 @@ from std_msgs.msg import String
 # Comm values
 serialPort = "/dev/ttyUSB0"
 baudRate = 9600
-feedInterval = 0.1   # How often to feed watchdog in seconds
+feedInterval = 0.05   # How often to feed watchdog in seconds
+inputInterval = 0.1   # How often to send input values
 serHeader = chr(255)
 dogBone = chr(254) # Feed watchdog
 logOn = True
@@ -23,9 +24,12 @@ logOn = True
 # Variables
 xAxis = 0
 yAxis = 1
+xAxisValue = 125
+yAxisValue = 125
 
 rospy.init_node("tric_listener", anonymous=True)
-timeLast = rospy.Time.now()
+feedLast = rospy.Time.now()
+inputLast = rospy.Time.now()
 
 # Open serial connection
 try:
@@ -37,40 +41,46 @@ except:
 ################################### Watchdog ##################################
 
 def feedDog():
-    try:
-        ser.write(dogBone)
-        if logOn: rospy.loginfo("Dog fed")
-    except:
-        if logOn: rospy.logerr("Unable to feed dog!")
+    global feedLast
+    if rospy.Time.now() - feedLast > rospy.Duration(feedInterval):
+        # Take care of the dog.
+        if logOn: rospy.loginfo("ROSTime: %s", feedLast)
+        try:
+            ser.write(dogBone)
+            if logOn: rospy.loginfo("Dog fed")
+            feedLast = rospy.Time.now() # Update time
+        except:
+            if logOn: rospy.logerr("Unable to feed dog!")
 
 ############################ ROS get joystick input ###########################
 
 def callback(myJoy):
-    global timeLast
-    if rospy.Time.now() - timeLast > rospy.Duration(feedInterval):   # Time - Time = Duration
-        # Take care of the dog.
-        feedDog()
-        timeLast = rospy.Time.now() # Update time
-        if logOn: rospy.loginfo("ROSTime: %s", timeLast)
-
+    global inputLast, xAxisValue, yAxisValue
+    if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
         # Calculate axis values.
         xAxisValue = int(250*(myJoy.axes[xAxis]+1)/2)   # Range 0-250 in order to send as char value
         yAxisValue = int(250*(myJoy.axes[yAxis]+1)/2)
-        if logOn: rospy.loginfo("Axis 0: %s (%s)   Axis 1: %s (%s)", xAxisValue, chr(xAxisValue), yAxisValue, chr(yAxisValue))
-        if logOn: rospy.loginfo("Axis 0: %s   Axis 1: %s", myJoy.axes[xAxis], myJoy.axes[yAxis])
 
-        # Write to serial.
-        try:
-            ser.write(serHeader + chr(xAxisValue) + chr(yAxisValue))   # Testing. Need to try out ESC control.
-        except:
-            if logOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
+
+def sendData():
+    global xAxisValue, yAxisValue
+    if logOn: rospy.loginfo("Axis 0: %s (%s)   Axis 1: %s (%s)", xAxisValue, chr(xAxisValue), yAxisValue, chr(yAxisValue))
+    # Write to serial.
+    try:
+        ser.write(serHeader + chr(xAxisValue) + chr(yAxisValue))   # Testing. Need to try out ESC control.
+    except:
+        if logOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
+
 
 def listener():
-    global timeLast
 #   while not rospy.is_shutdown():
-#       if rospy.Time.now() - timeLast > rospy.Duration(feedInterval):
-    rospy.Subscriber("joy", Joy, callback)
-    rospy.spin()
+#       if rospy.Time.now() - feedLast > rospy.Duration(feedInterval):
+    r = rospy.Rate(1)   # 10 Hz
+    while not rospy.is_shutdown():
+        rospy.Subscriber("joy", Joy, callback)
+        sendData()
+        feedDog()
+        r.sleep()
         #feedInterval.sleep()   # Maybe? Right now the manual time checks work.
 
 #################################### Qt GUI ###################################
