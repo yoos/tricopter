@@ -9,16 +9,21 @@ IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
     #endif
 }
 
+void IMU::Update() {
+    myAcc.Poll();
+    myGyr.Poll();
+}
+
 void IMU::deadReckoning() {
     // Update position and orientation regularly
     if (millis() - lastTime > IMU_SAMPLE_INTERVAL) {
         for (int i; i<3; i++) {
-            curRot[i] = curRot[i] + gyro.get(i) * (IMU_SAMPLE_INTERVAL/1000);
+            curRot[i] = curRot[i] + myGyr.Get(i) * (IMU_SAMPLE_INTERVAL/1000);
         }
     }
 
     // Update X position
-    curPos[0] = accel.getX()*sec(gyro.getY         );
+//  curPos[0] = accel.getX()*sec(gyro.getY         );
 
 }
 

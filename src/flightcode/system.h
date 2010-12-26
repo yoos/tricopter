@@ -2,9 +2,10 @@
 #define SYSTEM_H
 
 #include <Servo.h>
-#include "imu.h"
+#include "imu.cpp"
 
 class System {
+    IMU myIMU;
     Servo motor[3];
 
 public:
