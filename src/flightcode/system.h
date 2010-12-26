@@ -2,7 +2,7 @@
 #define SYSTEM_H
 
 #include <Servo.h>
-#include "comm.h"
+#include "imu.h"
 
 class System {
     Servo motor[3];

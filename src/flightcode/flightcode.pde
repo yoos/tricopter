@@ -3,10 +3,8 @@
 #include "globals.h"
 #include "comm.cpp"
 #include "pilot.cpp"
-#include "system.cpp"
 #include "watchdog.cpp"
-#include "itg3200.cpp"
-#include "bma180.cpp"
+#include "system.cpp"
 
 int main(void) {
     init();   // For Arduino.
@@ -14,17 +12,13 @@ int main(void) {
     // Begin Arduino services.
     Wire.begin();
     
-    // Begin system services.
+    // Introduce crew.
     Communicator Alice;
     Watchdog Jasper(DOGLIFE);   // Timeout in ms.
-    BMA180 myAcc(4, 2);   // range, bandwidth: DS p. 27
-    ITG3200 myGyr(2);   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s.
     Pilot Yeager;
-    System Tric;
-    Servo myServo;
 
-    // Attach motors.
-    myServo.attach(9);
+    // Start system.
+    System Tric;
 
     for (;;) {
         Alice.Listen();

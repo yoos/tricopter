@@ -1,9 +1,12 @@
 #include "imu.h"
 
-IMU::IMU(Gyro& g, Accelerometer& a) {
-    gyro = g;
-    accel = a;
+IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
+             myGyr(2)   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s
+{
     IMU::reset();
+    #ifdef DEBUG
+    Serial.println("IMU here!");
+    #endif
 }
 
 void IMU::deadReckoning() {
