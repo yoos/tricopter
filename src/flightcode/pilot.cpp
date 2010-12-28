@@ -48,7 +48,7 @@ void Pilot::Listen() {
             Serial.print("Pilot received header: ");
             Serial.println(serRead);
             #endif
-            for (int i=0; i<2; i++) {   // Each packet consists of header plus two bytes.
+            for (int i=0; i<4; i++) {   // Each packet consists of header plus X, Y, Twist, and Z.
                 serRead = Serial.read();
 
                 #ifdef DEBUG
@@ -62,10 +62,12 @@ void Pilot::Listen() {
                     i = 0;   // Discard and start over.
                     Serial.println("Pilot detected packet drop.");
                 }
-                else if (serRead == DOGBONE)   // The dogbone might be sent in the middle of a control packet.
+                else if (serRead == DOGBONE) {   // The dogbone might be sent in the middle of a control packet.
                     hasFood = true;
+                    i--;
+                }
                 else {
-                    input[i] = map(serRead, 0, 250, THROTTLE_MIN, THROTTLE_MAX);   // If all is good, write to inputlist.
+                    input[i] = serRead;
                     #ifdef DEBUG
                     Serial.println("Pilot determined motor value.");
                     #endif
@@ -74,13 +76,14 @@ void Pilot::Listen() {
         }
         else {
             for (int i=0; i<PACKETSIZE; i++) {
-                input[i] = 16;   // If something weird happens, throttle down.
+                motorVal[i] = 16;   // If something weird happens, throttle down.
             }
         }
     }
 }
 
 void Pilot::Fly(System &mySystem) {
+                    input[i] = map(serRead, 0, 250, THROTTLE_MIN, THROTTLE_MAX);   // If all is good, write to inputlist.
     for (int i=0; i<3; i++) {
         mySystem.SetMotor(i, input[i]);
     }
