@@ -19,13 +19,29 @@ feedInterval = 0.1   # How often to feed watchdog in seconds
 inputInterval = 0.05   # How often to send input values
 serHeader = chr(255)
 dogBone = chr(254) # Feed watchdog
-logOn = True
+verboseOn = True
 
 # Variables
-xAxis = 0
-yAxis = 1
-xAxisValue = 125
-yAxisValue = 125
+xAxis = 0   # X axis
+yAxis = 1   # Y axis
+tAxis = 2   # Twist axis
+zAxis = 3   # Z axis
+hAxis = 4   # Top horizontal
+vAxis = 5   # Top vertical
+
+# Axis sign flips
+xSign = -1
+ySign = 1
+tSign = -1
+zSign = 1
+hSign = -1
+vSign = 1
+
+# Axis values
+xValue
+yValue
+tValue
+zValue
 
 rospy.init_node("tric_listener", anonymous=True)
 feedLast = rospy.Time.now()
@@ -44,30 +60,32 @@ def feedDog():
     global feedLast
     if rospy.Time.now() - feedLast > rospy.Duration(feedInterval):
         # Take care of the dog.
-        if logOn: rospy.loginfo("ROSTime: %s", feedLast)
+        if verboseOn: rospy.loginfo("ROSTime: %s", feedLast)
         try:
             ser.write(dogBone)
-            if logOn: rospy.loginfo("Dog fed")
+            if verboseOn: rospy.loginfo("Dog fed")
             feedLast = rospy.Time.now() # Update time
         except:
-            if logOn: rospy.logerr("Unable to feed dog!")
+            if verboseOn: rospy.logerr("Unable to feed dog!")
 
 ############################ ROS get joystick input ###########################
 
 def callback(myJoy):
-    global inputLast, xAxisValue, yAxisValue
+    global inputLast, xValue, yValue, zValue, tValue
     if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
         inputLast = rospy.Time.now()
         # Calculate axis values.
-        xAxisValue = int(250*(myJoy.axes[xAxis]+1)/2)   # Range 0-250 in order to send as char value
-        yAxisValue = int(250*(myJoy.axes[yAxis]+1)/2)
+        xValue = int(250*(xSign * myJoy.axes[xAxis] + 1) / 2)   # Range 0-250 in order to send as char value
+        yValue = int(250*(ySign * myJoy.axes[yAxis] + 1) / 2)
+        tValue = int(250*(tSign * myJoy.axes[tAxis] + 1) / 2)
+        zValue = int(250*(zSign * myJoy.axes[zAxis] + 1) / 2)
 
         # Write to serial.
         try:
-            ser.write(serHeader + chr(xAxisValue) + chr(yAxisValue))   # Testing. Need to try out ESC control.
-            if logOn: rospy.loginfo("Axis 0: %s (%s)   Axis 1: %s (%s)", xAxisValue, chr(xAxisValue), yAxisValue, chr(yAxisValue))
+            ser.write(serHeader + chr(xValue) + chr(yValue) + chr(tValue) + chr(zValue))
+            if verboseOn: rospy.loginfo("A0: %s   A1: %s   A2: %s   A3: %s", xValue, yValue, zValue, tValue)
         except:
-            if logOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
+            if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
 
 def listener():
