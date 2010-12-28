@@ -52,7 +52,12 @@ void BMA180::Poll() {
             tmp = -((signed) aRaw[i]);   // ...negate after casting as signed int.
         else   // If zero to positive accel.: 2^14-1 to 2^13...
             tmp = 0x3FFF - aRaw[i];   // ...subtract from 2^14-1.
-        aVal[i] = tmp/0x2000;   // Divide by maximum magnitude.
+        switch (i) {
+            case 0: aVal[i] = (tmp - AXOFFSET)/0x2000; break;   // Divide by maximum magnitude.
+            case 1: aVal[i] = (tmp - AYOFFSET)/0x2000; break;
+            case 2: aVal[i] = (tmp - AZOFFSET)/0x2000; break;
+            default: break;
+        }
     }
 
 //  Serial.println(aVal[0]);

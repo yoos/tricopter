@@ -8,9 +8,9 @@
 #define REGADDR 0x1D
 
 // Calibration values
-#define GXCALIB
-#define GYCALIB
-#define GZCALIB
+#define GXOFFSET 0
+#define GYOFFSET 0
+#define GZOFFSET 0
 
 // ITG-3200 address defines
 #define GYRADDR 0x69 // gyro address, binary = 11101001

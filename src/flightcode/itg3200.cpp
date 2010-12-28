@@ -40,7 +40,12 @@ void ITG3200::Poll() {
         float tmp;
         if (gRaw[i] >= 0x8000)   // If zero to negative rot. vel.: 2^16-1 to 2^15...
             tmp = -((signed) (0xFFFF - gRaw[i]));   // ...subtract from 2^16-1.
-        gVal[i] = tmp/0x8000;   // Divide by maximum magnitude.
+        switch (i) {
+            case 0: gVal[0] = (tmp - GXOFFSET)/0x8000; break;   // Divide by maximum magnitude.
+            case 1: gVal[1] = (tmp - GYOFFSET)/0x8000; break;
+            case 2: gVal[2] = (tmp - GZOFFSET)/0x8000; break;
+            default: break;
+        }
     }
 
     #ifdef DEBUG

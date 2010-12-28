@@ -9,9 +9,9 @@
 #define REGADDR ACCXLSB
 
 // Calibration values
-#define AXCALIB
-#define AYCALIB
-#define AZCALIB
+#define AXOFFSET 0
+#define AYOFFSET 0
+#define AZOFFSET 0
 
 // BMA180 address defines
 #define ID 0x00
