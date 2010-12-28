@@ -17,6 +17,10 @@ void IMU::Update() {
     #endif
 }
 
+void IMU::Get() {
+    angle = KH * (angle + myGyr.Get(1)*DT) + (1-KH) * myAcc.Get(0); // Doesn't work, but a start to complementary filtering?
+}
+
 void IMU::deadReckoning() {
     // Update position and orientation regularly
     if (millis() - lastTime > IMU_SAMPLE_INTERVAL) {

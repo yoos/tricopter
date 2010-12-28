@@ -10,6 +10,7 @@ class IMU {
 
     float aVal[3];
     float gVal[3];
+    float angle;
 
     int lastTime;
     float curPos[3]; // Array of X, Y, and Z coordinates relative to start position
@@ -18,6 +19,7 @@ class IMU {
 public:
     IMU();
     void Update();
+    void Get();
     void deadReckoning();
     void reset();
 };
