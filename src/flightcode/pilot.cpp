@@ -48,7 +48,7 @@ void Pilot::Listen() {
             Serial.print("Pilot received header: ");
             Serial.println(serRead);
             #endif
-            for (int i=0; i<4; i++) {   // Each packet consists of header plus X, Y, Twist, and Z.
+            for (int i=0; i<PACKETSIZE; i++) {
                 serRead = Serial.read();
 
                 #ifdef DEBUG
@@ -76,14 +76,20 @@ void Pilot::Listen() {
         }
         else {
             for (int i=0; i<PACKETSIZE; i++) {
-                motorVal[i] = 16;   // If something weird happens, throttle down.
+                motorVal[i] = THROTTLE_MIN;   // If something weird happens, throttle down.
             }
         }
     }
 }
 
 void Pilot::Fly(System &mySystem) {
-                    input[i] = map(serRead, 0, 250, THROTTLE_MIN, THROTTLE_MAX);   // If all is good, write to inputlist.
+    dir = atan2(input[Y], input[X]);
+    motorVal[TAIL] = input[Z] + input[Y] * cos(dir);
+    motorVal[L]    = input[Z] + input[Y] * cos(dir-2/3*PI);
+    motorVal[R]    = input[Z] + input[Y] * cos(dir+2/3*PI);
+    for (int i=0; i<3; i++) {
+        motorVal[i] = map(input[i], INPUT_MIN, INPUT_MAX, THROTTLE_MIN, THROTTLE_MAX);   // If all is good, write to inputlist.
+    }
     for (int i=0; i<3; i++) {
         mySystem.SetMotor(i, input[i]);
     }

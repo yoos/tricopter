@@ -7,6 +7,9 @@
 class Pilot {
     char commStr[];
     int serRead;
+    int input[PACKETSIZE];
+    int motorVal[PACKETSIZE];
+    double dir;   // Direction in radians
 
 public:
     Pilot();
@@ -17,7 +20,6 @@ public:
     
     bool hasFood;
     
-    int input[PACKETSIZE];
 };
 
 #endif // PILOT_H
