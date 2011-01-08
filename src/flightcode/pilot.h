@@ -7,8 +7,8 @@
 class Pilot {
     char commStr[];
     int serRead;
-    int input[PACKETSIZE];
-    int motorVal[PACKETSIZE];
+    int serInput[PACKETSIZE];
+    int motorVal[3];
     double dir;   // Direction in radians
 
 public:

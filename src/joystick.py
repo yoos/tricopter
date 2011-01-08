@@ -38,10 +38,10 @@ hSign = -1
 vSign = 1
 
 # Axis values
-xValue
-yValue
-tValue
-zValue
+xValue = 0
+yValue = 0
+tValue = 0
+zValue = 0
 
 rospy.init_node("tric_listener", anonymous=True)
 feedLast = rospy.Time.now()
