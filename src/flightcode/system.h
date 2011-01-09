@@ -10,12 +10,14 @@ class System {
     Servo tailServo;
     bool armed;
     int motorVal[3];
+    int tailServoVal;
 
 public:
     System();
     void Run();
     void Die();
     void SetMotor(int, int);
+    void SetServo(int);
 };
 
 

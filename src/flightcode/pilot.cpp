@@ -3,9 +3,13 @@
 Pilot::Pilot() {
     Serial.begin(BAUDRATE);
     hasFood = false;
-    for (int i=0; i<PACKETSIZE; i++) {
-        serInput[i] = 0;
-    }
+    
+    // Assume serial inputs
+    serInput[SX] = 125;
+    serInput[SY] = 125;
+    serInput[ST] = 125;
+    serInput[SZ] = 0;
+
     #ifdef DEBUG
     Serial.println("Pilot here!");
     #endif
@@ -77,7 +81,7 @@ void Pilot::Listen() {
         }
         else {
             for (int i=0; i<PACKETSIZE; i++) {
-                motorVal[i] = THROTTLE_MIN;   // If something weird happens, throttle down.
+                serInput[i] = 0;   // If something weird happens, throttle down.
             }
         }
     }
@@ -87,7 +91,7 @@ void Pilot::Fly(System &mySystem) {
     axisVal[SX] = serInput[SX] - 125;
     axisVal[SY] = serInput[SY] - 125;
     axisVal[ST] = serInput[ST] - 125;   // Comment out when testing with two-axis joystick!
-    axisVal[SZ] = serInput[SZ];
+    axisVal[SZ] = serInput[SZ];         // Comment out when testing with two-axis joystick!
 
 //  dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
@@ -110,6 +114,7 @@ void Pilot::Fly(System &mySystem) {
     for (int i=0; i<3; i++) {
         motorVal[i] = map(motorVal[i], mapLower, mapUpper, THROTTLE_MIN, THROTTLE_MAX);
     }
+    tailServoVal = 90 + 0.2*axisVal[ST];
 
     // Write to motors
     for (int i=0; i<3; i++) {
@@ -117,6 +122,8 @@ void Pilot::Fly(System &mySystem) {
         Serial.print(motorVal[i]);
         Serial.print("   ");
     }
+    mySystem.SetServo(tailServoVal);
+    Serial.print(tailServoVal);
     Serial.println("");
 
     #ifdef DEBUG

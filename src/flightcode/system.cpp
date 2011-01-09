@@ -31,6 +31,7 @@ void System::Run() {
         for (int i=0; i<3; i++) {
             motor[i].write(motorVal[i]);   // Write motor values to motors.
         }
+        tailServo.write(tailServoVal);
         #ifdef DEBUG
         Serial.println("System wrote to motors.");
         #endif
@@ -48,6 +49,10 @@ void System::Die() {
 }
 
 void System::SetMotor(int mNum, int mVal) {
-    motor[mNum].write(mVal);
+    motorVal[mNum] = mVal;
+}
+
+void System::SetServo(int sVal) {
+    tailServoVal = sVal;
 }
 
