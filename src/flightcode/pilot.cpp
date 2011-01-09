@@ -96,18 +96,19 @@ void Pilot::Fly(System &mySystem) {
     motorVal[MR] = axisVal[SZ] - 0.3333*axisVal[SY] - axisVal[SX]/sqrt(3);
     motorVal[ML] = axisVal[SZ] - 0.3333*axisVal[SY] + axisVal[SX]/sqrt(3);
 
-    // Normalization
-    motorMax = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
-    motorMax = motorMax > motorVal[ML] ? motorMax : motorVal[ML];
-    if (motorMax > 125) {
-        for (int i=0; i<3; i++) {
-            motorVal[i] = map(motorVal[i], 1, motorMax, 0, 125);   // Cap at 125.
-        }
-    }
+    // Find max/min motor values
+    mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
+    mapUpper = mapUpper > motorVal[ML] ? mapUpper : motorVal[ML];
+    mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
+    mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
+
+    // Find map boundaries (need to limit, but NOT fit, to [1, 125])
+    mapUpper = mapUpper > 125 ? mapUpper : 125;
+    mapLower = mapLower < 1 ? mapLower : 1;
 
     // Final calculations
     for (int i=0; i<3; i++) {
-        motorVal[i] = map(motorVal[i], 0, 125, THROTTLE_MIN, THROTTLE_MAX);
+        motorVal[i] = map(motorVal[i], mapLower, mapUpper, THROTTLE_MIN, THROTTLE_MAX);
     }
 
     // Write to motors

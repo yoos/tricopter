@@ -10,7 +10,7 @@ class Pilot {
     int serInput[PACKETSIZE];
     int axisVal[PACKETSIZE];
     int motorVal[3];
-    int motorMax;
+    int mapLower, mapUpper;
 //  double dir;   // Direction in radians
 
 public:
