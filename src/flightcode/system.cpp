@@ -2,14 +2,21 @@
 
 System::System() {
     armed = false;
+    motor[MT].attach(PMT);
+    motor[MR].attach(PMR);
+    motor[ML].attach(PML);
+    tailServo.attach(PST);
+
+    // Kill motors/servos
     for (int i=0; i<3; i++) {
         motor[i].write(0);   // Send some value that is not minimum throttle.
     }
+    tailServo.write(90);
 }
 
 void System::Run() {
     myIMU.Update();
-    if (!armed) {
+    if (!armed) {   // Don't run unless armed!
         #ifdef DEBUG
         Serial.println("System: Motors not armed.");
         #endif

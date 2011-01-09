@@ -22,21 +22,26 @@
 
 
 
-// Serial
+// Serial axis inputs
 #define SX 0
 #define SY 1
 #define ST 2
 #define SZ 3
 
 // Motors
-#define MT 0
-#define MR 1
-#define ML 2
+#define MT 0   // Tail motor
+#define MR 1   // Right motor
+#define ML 2   // Left motor
 
 // IMU
 #define KH 0
 #define DT 0
 
+// Pins
+#define PMT 2   // Tail motor
+#define PMR 3   // Right motor
+#define PML 4   // Left motor
+#define PST 5   // Tail servo
 
 // BMA180 config
 #define RANGEMASK 0x0E
