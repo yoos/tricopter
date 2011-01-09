@@ -88,19 +88,18 @@ void Pilot::Fly(System &mySystem) {
     axisVal[SY] = serInput[SY] - 125;
     axisVal[ST] = 0; //serInput[ST] - 125;
     axisVal[SZ] = 0; //serInput[SZ];
-    Serial.print(axisVal[SX]);
-    Serial.print("   ");
-    Serial.print(axisVal[SY]);
-    Serial.print("   ");
+//  Serial.print(axisVal[SX]);
+//  Serial.print("   ");
+//  Serial.print(axisVal[SY]);
+//  Serial.print("   ");
 
     dir = atan2(axisVal[SY], axisVal[SX]);
-    Serial.print(dir);
-    Serial.print("   ");
-//  Serial.println(axisVal[SX]);
+//  Serial.print(dir);
+//  Serial.print("   ");
 
-    motorVal[MT] = axisVal[SZ] + axisVal[SY]*cos(dir)        + axisVal[SX]*sin(dir);
-    motorVal[ML] = axisVal[SZ] + axisVal[SY]*cos(dir+2/3*PI) + axisVal[SX]*sin(dir+2/3*PI);
-    motorVal[MR] = axisVal[SZ] + axisVal[SY]*cos(dir-2/3*PI) + axisVal[SX]*sin(dir-2/3*PI);
+    motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs. ints
+    motorVal[MR] = axisVal[SZ] - 0.3333*axisVal[SY] - axisVal[SX]/sqrt(3);
+    motorVal[ML] = axisVal[SZ] - 0.3333*axisVal[SY] + axisVal[SX]/sqrt(3);
 
 //  for (int i=0; i<3; i++) {
 //      motorVal[i] = map(motorVal[i], INPUT_MIN, INPUT_MAX, THROTTLE_MIN, THROTTLE_MAX);   // If all is good, write to inputlist.
