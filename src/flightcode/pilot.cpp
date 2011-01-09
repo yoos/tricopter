@@ -3,8 +3,9 @@
 Pilot::Pilot() {
     Serial.begin(BAUDRATE);
     hasFood = false;
-    for (int i=0; i<PACKETSIZE; i++)
+    for (int i=0; i<PACKETSIZE; i++) {
         serInput[i] = 0;
+    }
     #ifdef DEBUG
     Serial.println("Pilot here!");
     #endif

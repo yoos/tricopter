@@ -19,7 +19,6 @@ public:
     void Fly(System&);
     
     bool hasFood;
-    
 };
 
 #endif // PILOT_H
