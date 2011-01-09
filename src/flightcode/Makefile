@@ -234,7 +234,7 @@ extcoff: $(TARGET).elf
 	# Link: create ELF output file from library.
 #applet/$(TARGET).elf: $(TARGET).pde applet/core.a
 applet/$(TARGET).elf: applet/$(TARGET).o applet/core.a
-	$(LD) $(ALL_LDFLAGS) -o $@ applet/$(TARGET).o applet/core.a
+	$(LD) $(ALL_LDFLAGS) -o $@ applet/$(TARGET).o -lm applet/core.a
 
 applet/core.a: $(OBJ_MODULES)
 	@for i in $(OBJ_MODULES); do echo $(AR) rcs applet/core.a $$i; $(AR) rcs applet/core.a $$i; done
