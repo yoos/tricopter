@@ -84,19 +84,35 @@ void Pilot::Listen() {
 }
 
 void Pilot::Fly(System &mySystem) {
-    dir = atan2(serInput[SY], serInput[SX]);
-    Serial.print(serInput[SY]);
+    axisVal[SX] = serInput[SX] - 125;
+    axisVal[SY] = serInput[SY] - 125;
+    axisVal[ST] = 0; //serInput[ST] - 125;
+    axisVal[SZ] = 0; //serInput[SZ];
+    Serial.print(axisVal[SX]);
     Serial.print("   ");
-    Serial.println(serInput[SX]);
-    motorVal[MT] = serInput[SZ] + serInput[SY]*cos(dir)        + serInput[SX]*sin(dir);
-    motorVal[ML] = serInput[SZ] + serInput[SY]*cos(dir+2/3*PI) + serInput[SX]*sin(dir+2/3*PI);
-    motorVal[MR] = serInput[SZ] + serInput[SY]*cos(dir-2/3*PI) + serInput[SX]*sin(dir-2/3*PI);
+    Serial.print(axisVal[SY]);
+    Serial.print("   ");
+
+    dir = atan2(axisVal[SY], axisVal[SX]);
+    Serial.print(dir);
+    Serial.print("   ");
+//  Serial.println(axisVal[SX]);
+
+    motorVal[MT] = axisVal[SZ] + axisVal[SY]*cos(dir)        + axisVal[SX]*sin(dir);
+    motorVal[ML] = axisVal[SZ] + axisVal[SY]*cos(dir+2/3*PI) + axisVal[SX]*sin(dir+2/3*PI);
+    motorVal[MR] = axisVal[SZ] + axisVal[SY]*cos(dir-2/3*PI) + axisVal[SX]*sin(dir-2/3*PI);
+
 //  for (int i=0; i<3; i++) {
 //      motorVal[i] = map(motorVal[i], INPUT_MIN, INPUT_MAX, THROTTLE_MIN, THROTTLE_MAX);   // If all is good, write to inputlist.
 //  }
+
     for (int i=0; i<3; i++) {
         mySystem.SetMotor(i, motorVal[i]);
+        Serial.print(motorVal[i]);
+        Serial.print("   ");
     }
+    Serial.println("");
+
     #ifdef DEBUG
     Serial.println("Pilot is flying.");
     #endif
