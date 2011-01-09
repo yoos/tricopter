@@ -21,8 +21,6 @@ int main(void) {
     for (;;) {
         Yeager.Listen();
         Jasper.Watch(Yeager.hasFood);
-//      myGyr.Poll();
-//      myAcc.Poll();
         if (true) {
             Yeager.Fly(Tric);
             Tric.Run();

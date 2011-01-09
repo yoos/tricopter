@@ -8,8 +8,8 @@
 #define PACKETSIZE 4   // Each packet contains header plus X, Y, Twist, and Z.
 #define INPUT_MIN 1   // Minimum integer input value from joystick
 #define INPUT_MAX 250   // Maximum integer input value from joystick
-#define THROTTLE_MIN 16   // Servo signal that registers as minimum signal to ESC.
-#define THROTTLE_MAX 170   // Servo signal that registers as maximum signal to ESC.
+#define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
+#define TMAX 170   // Servo signal that registers as maximum throttle to ESC.
 
 #define BAUDRATE 9600
 #define IMU_SAMPLE_INTERVAL 25   // In milliseconds

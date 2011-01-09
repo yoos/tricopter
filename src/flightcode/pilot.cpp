@@ -81,7 +81,7 @@ void Pilot::Listen() {
         }
         else {
             for (int i=0; i<PACKETSIZE; i++) {
-                serInput[i] = 0;   // If something weird happens, throttle down.
+                serInput[i] = 0;   // If something weird happens, assume input is zero.
             }
         }
     }
@@ -90,8 +90,8 @@ void Pilot::Listen() {
 void Pilot::Fly(System &mySystem) {
     axisVal[SX] = serInput[SX] - 125;
     axisVal[SY] = serInput[SY] - 125;
-    axisVal[ST] = serInput[ST] - 125;   // Comment out when testing with two-axis joystick!
-    axisVal[SZ] = serInput[SZ];         // Comment out when testing with two-axis joystick!
+    axisVal[ST] = serInput[ST] - 125;
+    axisVal[SZ] = serInput[SZ];
 
 //  dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
@@ -112,7 +112,7 @@ void Pilot::Fly(System &mySystem) {
 
     // Final calculations
     for (int i=0; i<3; i++) {
-        motorVal[i] = map(motorVal[i], mapLower, mapUpper, THROTTLE_MIN, THROTTLE_MAX);
+        motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
     }
     tailServoVal = 90 + 0.2*axisVal[ST];
 

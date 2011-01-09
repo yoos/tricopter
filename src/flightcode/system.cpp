@@ -20,7 +20,7 @@ void System::Run() {
         #ifdef DEBUG
         Serial.println("System: Motors not armed.");
         #endif
-        if (motorVal[0] == 0 && motorVal[1] == 0 && motorVal[2] == 0) {
+        if (motorVal[MT] == TMIN && motorVal[MR] == TMIN && motorVal[ML] == TMIN) {
             armed = true;
             #ifdef DEBUG
             Serial.println("System: Motors armed.");
@@ -40,8 +40,8 @@ void System::Run() {
 
 void System::Die() {
     for (int i=0; i<3; i++) {
-        motorVal[i] = THROTTLE_MIN;   // This is inelegant. Is there a way to avoid running both of these?
-        motor[i].write(THROTTLE_MIN);
+        motorVal[i] = TMIN;   // This is inelegant. Is there a way to avoid running both of these?
+        motor[i].write(TMIN);
     }
     #ifdef DEBUG
     Serial.println("System dead!");
