@@ -3,4 +3,5 @@
 14:10 Then tried applying 12 V from ATX power supply to USB power lines: something started smoking, so I stopped.
 14:10 Then tried applying 9 V from battery to C8 (optional capacitor pinholes): works.
 14:10 Is there a resistor somewhere that limits the total current flow through the Seeeduino? Maybe the USB lines are ignored because USB max current is 500 mA anyway. I need schematics.
+14:25 Never mind, that didn't work, either. Tried powering with battery  on 3.3 V switch and saw the TX/RX LEDs do weird stuff. At any rate, connecting the battery shouldn't make the power light get brighter.
 
