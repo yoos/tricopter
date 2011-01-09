@@ -85,6 +85,9 @@ void Pilot::Listen() {
 
 void Pilot::Fly(System &mySystem) {
     dir = atan2(serInput[SY], serInput[SX]);
+    Serial.print(serInput[SY]);
+    Serial.print("   ");
+    Serial.println(serInput[SX]);
     motorVal[MT] = serInput[SZ] + serInput[SY]*cos(dir)        + serInput[SX]*sin(dir);
     motorVal[ML] = serInput[SZ] + serInput[SY]*cos(dir+2/3*PI) + serInput[SX]*sin(dir+2/3*PI);
     motorVal[MR] = serInput[SZ] + serInput[SY]*cos(dir-2/3*PI) + serInput[SX]*sin(dir-2/3*PI);

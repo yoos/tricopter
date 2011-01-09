@@ -77,8 +77,8 @@ def callback(myJoy):
         # Calculate axis values.
         xValue = int(250*(xSign * myJoy.axes[xAxis] + 1) / 2)   # Range 0-250 in order to send as char value
         yValue = int(250*(ySign * myJoy.axes[yAxis] + 1) / 2)
-        tValue = int(250*(tSign * myJoy.axes[tAxis] + 1) / 2)
-        zValue = int(250*(zSign * myJoy.axes[zAxis] + 1) / 2)
+        tValue = 0 # int(250*(tSign * myJoy.axes[tAxis] + 1) / 2)
+        zValue = 0 # int(250*(zSign * myJoy.axes[zAxis] + 1) / 2)
 
         # Write to serial.
         try:

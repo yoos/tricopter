@@ -4,8 +4,8 @@
 
 // Configurables
 
-#define DEBUG
-#define PACKETSIZE 4   // Each packet contains header plus X, Y, Twist, and Z.
+// #define DEBUG
+#define PACKETSIZE 2   // Each packet contains header plus X, Y, Twist, and Z.
 #define INPUT_MIN 0   // Minimum integer input value from joystick
 #define INPUT_MAX 250   // Maximum integer input value from joystick
 #define THROTTLE_MIN 16   // Servo signal that registers as minimum signal to ESC.
