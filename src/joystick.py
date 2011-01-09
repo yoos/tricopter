@@ -77,13 +77,13 @@ def callback(myJoy):
         # Calculate axis values.
         xValue = int(250*(xSign * myJoy.axes[xAxis] + 1) / 2)   # Range 0-250 in order to send as char value
         yValue = int(250*(ySign * myJoy.axes[yAxis] + 1) / 2)
-        tValue = 0 # int(250*(tSign * myJoy.axes[tAxis] + 1) / 2)
-        zValue = 0 # int(250*(zSign * myJoy.axes[zAxis] + 1) / 2)
+        tValue = int(125) # int(250*(tSign * myJoy.axes[tAxis] + 1) / 2)
+        zValue = int(1) # int(250*(zSign * myJoy.axes[zAxis] + 1) / 2)
 
         # Write to serial.
         try:
             ser.write(serHeader + chr(xValue) + chr(yValue) + chr(tValue) + chr(zValue))
-            if verboseOn: rospy.loginfo("A0: %s   A1: %s   A2: %s   A3: %s", xValue, yValue, zValue, tValue)
+            if verboseOn: rospy.loginfo("A0: %s   A1: %s   A2: %s   A3: %s", xValue, yValue, tValue, zValue)
         except:
             if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
