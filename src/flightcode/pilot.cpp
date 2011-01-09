@@ -86,25 +86,31 @@ void Pilot::Listen() {
 void Pilot::Fly(System &mySystem) {
     axisVal[SX] = serInput[SX] - 125;
     axisVal[SY] = serInput[SY] - 125;
-    axisVal[ST] = 0; //serInput[ST] - 125;
-    axisVal[SZ] = 0; //serInput[SZ];
-//  Serial.print(axisVal[SX]);
-//  Serial.print("   ");
-//  Serial.print(axisVal[SY]);
-//  Serial.print("   ");
+    axisVal[ST] = serInput[ST] - 125;   // Comment out when testing with two-axis joystick!
+    axisVal[SZ] = serInput[SZ];
 
-    dir = atan2(axisVal[SY], axisVal[SX]);
-//  Serial.print(dir);
-//  Serial.print("   ");
+//  dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
+    // Intermediate calculations
     motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs. ints
     motorVal[MR] = axisVal[SZ] - 0.3333*axisVal[SY] - axisVal[SX]/sqrt(3);
     motorVal[ML] = axisVal[SZ] - 0.3333*axisVal[SY] + axisVal[SX]/sqrt(3);
 
-//  for (int i=0; i<3; i++) {
-//      motorVal[i] = map(motorVal[i], INPUT_MIN, INPUT_MAX, THROTTLE_MIN, THROTTLE_MAX);   // If all is good, write to inputlist.
-//  }
+    // Normalization
+    motorMax = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
+    motorMax = motorMax > motorVal[ML] ? motorMax : motorVal[ML];
+    if (motorMax > 125) {
+        for (int i=0; i<3; i++) {
+            motorVal[i] = map(motorVal[i], 1, motorMax, 0, 125);   // Cap at 125.
+        }
+    }
 
+    // Final calculations
+    for (int i=0; i<3; i++) {
+        motorVal[i] = map(motorVal[i], 0, 125, THROTTLE_MIN, THROTTLE_MAX);
+    }
+
+    // Write to motors
     for (int i=0; i<3; i++) {
         mySystem.SetMotor(i, motorVal[i]);
         Serial.print(motorVal[i]);
