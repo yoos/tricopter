@@ -75,10 +75,10 @@ def callback(myJoy):
     if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
         inputLast = rospy.Time.now()
         # Calculate axis values.
-        xValue = int(250*(xSign * myJoy.axes[xAxis] + 1) / 2)   # Range 0-250 in order to send as char value
-        yValue = int(250*(ySign * myJoy.axes[yAxis] + 1) / 2)
-        tValue = int(125) # int(250*(tSign * myJoy.axes[tAxis] + 1) / 2)
-        zValue = int(1) # int(250*(zSign * myJoy.axes[zAxis] + 1) / 2)
+        xValue = int(248*(xSign * myJoy.axes[xAxis] + 1) / 2 + 2)   # Range 2-250 in order to send as char value
+        yValue = int(248*(ySign * myJoy.axes[yAxis] + 1) / 2 + 2)
+        tValue = int(248*(tSign * myJoy.axes[tAxis] + 1) / 2 + 2)
+        zValue = int(248*(zSign * myJoy.axes[zAxis] + 1) / 2 + 2)
 
         # Write to serial.
         try:

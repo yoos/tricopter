@@ -88,10 +88,10 @@ void Pilot::Listen() {
 }
 
 void Pilot::Fly(System &mySystem) {
-    axisVal[SX] = serInput[SX] - 125;
-    axisVal[SY] = serInput[SY] - 125;
-    axisVal[ST] = serInput[ST] - 125;
-    axisVal[SZ] = serInput[SZ];
+    axisVal[SX] = serInput[SX] - 126;   // [-124, 124]
+    axisVal[SY] = serInput[SY] - 126;   // [-124, 124]
+    axisVal[ST] = serInput[ST] - 126;   // [-124, 124]
+    axisVal[SZ] = serInput[SZ] - 2;         // [0, 248]
 
 //  dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
@@ -106,15 +106,15 @@ void Pilot::Fly(System &mySystem) {
     mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
     mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
 
-    // Find map boundaries (need to limit, but NOT fit, to [1, 125])
-    mapUpper = mapUpper > 125 ? mapUpper : 125;
-    mapLower = mapLower < 1 ? mapLower : 1;
+    // Find map boundaries (need to limit, but NOT fit, to [0, 124])
+    mapUpper = mapUpper > 124 ? mapUpper : 124;
+    mapLower = mapLower < 0 ? mapLower : 0;
 
     // Final calculations
     for (int i=0; i<3; i++) {
         motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
     }
-    tailServoVal = 90 + 0.2*axisVal[ST];
+    tailServoVal = 90 + 0.1*axisVal[ST];
 
     // Write to motors
     for (int i=0; i<3; i++) {
