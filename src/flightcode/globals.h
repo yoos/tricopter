@@ -7,9 +7,9 @@
 // #define DEBUG
 #define PACKETSIZE 4   // Each packet contains header plus X, Y, Twist, and Z.
 #define INPUT_MIN 1   // Minimum integer input value from joystick
-#define INPUT_MAX 250   // Maximum integer input value from joystick
+#define INPUT_MAX 251   // Maximum integer input value from joystick
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
-#define TMAX 170   // Servo signal that registers as maximum throttle to ESC.
+#define TMAX 180   // Servo signal that registers as maximum throttle to ESC.
 
 #define BAUDRATE 9600
 #define IMU_SAMPLE_INTERVAL 25   // In milliseconds
@@ -22,18 +22,18 @@
 
 
 
-// Serial axis inputs
+// Serial axis array index values
 #define SX 0
 #define SY 1
 #define ST 2
 #define SZ 3
 
-// Motors
+// Motors array index values
 #define MT 0   // Tail motor
 #define MR 1   // Right motor
 #define ML 2   // Left motor
 
-// IMU
+// IMU constants
 #define KH 0
 #define DT 0
 
