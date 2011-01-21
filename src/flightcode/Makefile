@@ -39,8 +39,8 @@ INSTALL_DIR = $(HOME)/apps/arduino-0018
 PORT = /dev/ttyUSB*
 UPLOAD_RATE = 57600
 AVRDUDE_PROGRAMMER = stk500v1
-MCU = atmega328p
-#MCU = atmega1280
+#MCU = atmega328p
+MCU = atmega1280
 F_CPU = 16000000
 
 ############################################################################

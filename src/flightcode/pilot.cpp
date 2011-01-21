@@ -5,10 +5,10 @@ Pilot::Pilot() {
     hasFood = false;
     
     // Assume serial inputs
-    serInput[SX] = 125;
-    serInput[SY] = 125;
-    serInput[ST] = 125;
-    serInput[SZ] = 0;
+    serInput[SX] = 126;
+    serInput[SY] = 126;
+    serInput[ST] = 126;
+    serInput[SZ] = 1;
 
     #ifdef DEBUG
     Serial.println("Pilot here!");
@@ -91,7 +91,7 @@ void Pilot::Fly(System &mySystem) {
     axisVal[SX] = serInput[SX] - 126;   // [-125, 125]
     axisVal[SY] = serInput[SY] - 126;   // [-125, 125]
     axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
-    axisVal[SZ] = serInput[SZ] - 1;         // [0, 250]
+    axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
 
 //  dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
@@ -107,14 +107,14 @@ void Pilot::Fly(System &mySystem) {
     mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
 
     // Find map boundaries (need to limit, but NOT fit, to [1, 125])
-    mapUpper = mapUpper > 125 ? mapUpper : 125;
-    mapLower = mapLower < 1 ? mapLower : 1;
+    mapUpper = mapUpper > 250 ? mapUpper : 250;
+    mapLower = mapLower < 0 ? mapLower : 0;
 
     // Final calculations
     for (int i=0; i<3; i++) {
         motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
     }
-    tailServoVal = 90 + 0.1*axisVal[ST];
+    tailServoVal = 90 + 0.2*axisVal[ST];
 
     // Write to motors
     for (int i=0; i<3; i++) {
