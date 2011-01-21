@@ -63,9 +63,13 @@ void Pilot::Listen() {
                 Serial.println(serRead);
                 #endif
 
-                if (serRead == SERHEAD | serRead == NULL) {   // Dropped byte?
+                if (serRead == SERHEAD) {   // Dropped byte?
                     i = 0;   // Discard and start over.
                     Serial.println("Pilot detected packet drop.");
+                }
+                else if (serRead == -1) {
+                    i = 0;
+                    Serial.println("Pilot detected malformed packet.");
                 }
                 else if (serRead == DOGBONE) {   // The dogbone might be sent in the middle of a control packet.
                     hasFood = true;
@@ -81,7 +85,7 @@ void Pilot::Listen() {
         }
         else {
             for (int i=0; i<PACKETSIZE; i++) {
-                serInput[i] = 0;   // If something weird happens, assume input is zero.
+                serInput[i] = 1;   // If something weird happens, assume input is 1.
             }
         }
     }
@@ -92,6 +96,12 @@ void Pilot::Fly(System &mySystem) {
     axisVal[SY] = serInput[SY] - 126;   // [-125, 125]
     axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
     axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
+
+    for (int i=0; i<4; i++) {
+        Serial.print(serInput[i]);
+        Serial.print("   ");
+    }
+    Serial.println("");
 
 //  dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
@@ -119,12 +129,12 @@ void Pilot::Fly(System &mySystem) {
     // Write to motors
     for (int i=0; i<3; i++) {
         mySystem.SetMotor(i, motorVal[i]);
-        Serial.print(motorVal[i]);
-        Serial.print("   ");
+//      Serial.print(motorVal[i]);
+//      Serial.print("   ");
     }
     mySystem.SetServo(tailServoVal);
-    Serial.print(tailServoVal);
-    Serial.println("");
+//  Serial.print(tailServoVal);
+//  Serial.println("");
 
     #ifdef DEBUG
     Serial.println("Pilot is flying.");

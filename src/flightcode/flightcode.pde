@@ -10,12 +10,12 @@ int main(void) {
  
     // Begin Arduino services.
     Wire.begin();
-    pinMode(22, OUTPUT);
-    digitalWrite(22, LOW);
-    pinMode(23, OUTPUT);
-    digitalWrite(23, LOW);
-    pinMode(24, OUTPUT);
-    digitalWrite(24, LOW);
+//  pinMode(22, OUTPUT);
+//  digitalWrite(22, LOW);
+//  pinMode(23, OUTPUT);
+//  digitalWrite(23, LOW);
+//  pinMode(24, OUTPUT);
+//  digitalWrite(24, LOW);
     
     // Introduce crew.
     Pilot Yeager;
@@ -29,6 +29,7 @@ int main(void) {
         Jasper.Watch(Yeager.hasFood);
         if (true) {
             Yeager.Fly(Tric);
+            delay(10);
             Tric.Run();
 //          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
         }
