@@ -1,14 +1,14 @@
 10
 
 dir
-562
+577
 http://aeroquad.googlecode.com/svn/trunk/AeroQuad
 http://aeroquad.googlecode.com/svn
 
 
 
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T09:09:07.640769Z
+570
 caranchoengineering
 has-props
 
@@ -32,10 +32,10 @@ file
 
 
 
-2010-12-25T00:49:47.232384Z
-360d9f218d85ed768c48a1120a7a24b2
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.868351Z
+02fdfa700bd8b2a44dc776c0321666d8
+2011-01-13T10:47:19.512954Z
+566
 caranchoengineering
 
 
@@ -58,41 +58,7 @@ caranchoengineering
 
 
 
-4718
-
-BatteryReadArmLed.h
-file
-
-
-
-
-2010-12-25T00:49:47.232384Z
-4d68d027d7b6290c48dd2d5941117787
-2010-12-22T08:35:03.280097Z
-561
-caranchoengineering
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-4842
+4710
 
 FlightCommand.pde
 file
@@ -100,10 +66,10 @@ file
 
 
 
-2010-12-25T00:49:47.232384Z
-4cc522f386eda075497d53ed5b108173
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.868351Z
+a9dce56c4c314d9218a88e17540e30e3
+2011-01-13T10:47:19.512954Z
+566
 caranchoengineering
 
 
@@ -126,7 +92,7 @@ caranchoengineering
 
 
 
-5238
+5237
 
 DataStorage.h
 file
@@ -134,10 +100,10 @@ file
 
 
 
-2010-12-25T00:49:47.232384Z
-be04fcfacc0031d958513a1154d085c9
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.868351Z
+f78a9776fc64d4403bbae3f77ba44ae0
+2011-01-21T09:09:07.640769Z
+570
 caranchoengineering
 
 
@@ -160,41 +126,7 @@ caranchoengineering
 
 
 
-10428
-
-FlightControl.pde
-file
-
-
-
-
-2010-12-25T00:49:47.232384Z
-60e90775d10399f1b9ae9b5e408fd873
-2010-12-22T08:35:03.280097Z
-561
-caranchoengineering
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-13485
+9512
 
 SerialCom.pde
 file
@@ -202,10 +134,10 @@ file
 
 
 
-2010-12-25T00:49:47.232384Z
-6415222eeef4b34e868f5b09c14f132c
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.869353Z
+e1830901dd5fe27546b9f3aa5900b545
+2011-01-21T09:09:07.640769Z
+570
 caranchoengineering
 
 
@@ -228,7 +160,41 @@ caranchoengineering
 
 
 
-17029
+17835
+
+FlightControl.pde
+file
+
+
+
+
+2011-01-21T10:36:12.869353Z
+13921d83c9ce0fdbb1fb309cd80f661d
+2011-01-13T10:47:19.512954Z
+566
+caranchoengineering
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+13661
 
 AeroQuad.h
 file
@@ -236,10 +202,10 @@ file
 
 
 
-2010-12-25T00:49:47.235718Z
-ebdda49a2ba9a04b95c298d6b376e08c
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.869353Z
+cd27be13dc6eb232b774dd7f4bb0aa21
+2011-01-21T09:09:07.640769Z
+570
 caranchoengineering
 
 
@@ -262,7 +228,7 @@ caranchoengineering
 
 
 
-12328
+12079
 
 Receiver.h
 file
@@ -270,10 +236,10 @@ file
 
 
 
-2010-12-25T00:49:47.235718Z
-871d301754e061a1eb76c6d86aca2653
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.870353Z
+36e5a9ed4b057d4614a8b5f03049f1d2
+2011-01-19T08:16:07.362337Z
+569
 caranchoengineering
 
 
@@ -296,7 +262,7 @@ caranchoengineering
 
 
 
-25030
+21369
 
 Compass.h
 file
@@ -304,10 +270,10 @@ file
 
 
 
-2010-12-25T00:49:47.235718Z
-3487c27ff54464b238e337c5f289269f
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.870353Z
+682489d988bf7a88647c4d15da61d9ae
+2011-01-13T10:47:19.512954Z
+566
 caranchoengineering
 
 
@@ -330,7 +296,7 @@ caranchoengineering
 
 
 
-8092
+7626
 
 Accel.h
 file
@@ -338,10 +304,10 @@ file
 
 
 
-2010-12-25T00:49:47.235718Z
-871c7afbc156050bdbea7bd5171d95c6
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.870353Z
+c70a9e79c991317cfccc5bbba5654ef9
+2011-01-19T08:16:07.362337Z
+569
 caranchoengineering
 
 
@@ -364,7 +330,7 @@ caranchoengineering
 
 
 
-22195
+23118
 
 gpl.txt
 file
@@ -400,50 +366,16 @@ caranchoengineering
 
 35821
 
-Template.h
-file
-
-
-
-
-2010-12-25T00:49:47.235718Z
-3018ef4b0e79232e062a90355de3c6f7
-2010-12-22T08:35:03.280097Z
-561
-caranchoengineering
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-6387
-
 Altitude.h
 file
 
 
 
 
-2010-12-25T00:49:47.235718Z
-388aaa8af06b5d96b80d0795644f343b
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.871354Z
+487f519d0a50adfc9249d8a7d2097f4c
+2011-01-13T10:47:19.512954Z
+566
 caranchoengineering
 
 
@@ -466,7 +398,41 @@ caranchoengineering
 
 
 
-8237
+8286
+
+Template.h
+file
+
+
+
+
+2011-01-21T10:36:12.871354Z
+a8f5315c3b0ab5f5c161ddf7a6a54d89
+2011-01-13T10:47:19.512954Z
+566
+caranchoengineering
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6362
 
 PID.h
 file
@@ -474,10 +440,10 @@ file
 
 
 
-2010-12-25T00:49:47.235718Z
-5940fe4ee0da794b540e81f357860529
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.871354Z
+b572b00703a9738e408d64e203f788e2
+2011-01-13T10:47:19.512954Z
+566
 caranchoengineering
 
 
@@ -500,7 +466,7 @@ caranchoengineering
 
 
 
-1614
+1665
 
 Sensors.pde
 file
@@ -508,10 +474,10 @@ file
 
 
 
-2010-12-25T00:49:47.235718Z
-9d3b97736cae3864e23eb043c86c485a
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.872351Z
+607e27f074a4f87bd75ce33d481b19be
+2011-01-21T09:09:07.640769Z
+570
 caranchoengineering
 
 
@@ -534,7 +500,7 @@ caranchoengineering
 
 
 
-4498
+3402
 
 I2C.h
 file
@@ -542,10 +508,10 @@ file
 
 
 
-2010-12-25T00:49:47.239051Z
-69ccec713c63059fa2a0e60cd2942648
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.872351Z
+191e71c39ea9a248b1f587232039e4db
+2011-01-13T10:47:19.512954Z
+566
 caranchoengineering
 
 
@@ -568,7 +534,7 @@ caranchoengineering
 
 
 
-2228
+2220
 
 Gyro.h
 file
@@ -576,10 +542,10 @@ file
 
 
 
-2010-12-25T00:49:47.239051Z
-919f608b5d6f024ed362536a73da9c88
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.872351Z
+d53e10c18dbe5841487e125e7e307349
+2011-01-21T09:09:07.640769Z
+570
 caranchoengineering
 
 
@@ -602,7 +568,7 @@ caranchoengineering
 
 
 
-24924
+22318
 
 AeroQuad.pde
 file
@@ -610,10 +576,10 @@ file
 
 
 
-2010-12-25T00:49:47.239051Z
-7b514926c0986dba86ecce83fa96617a
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.873352Z
+f84ffb4f388fc5ae266c2082c3988f63
+2011-01-19T08:16:07.362337Z
+569
 caranchoengineering
 
 
@@ -636,7 +602,7 @@ caranchoengineering
 
 
 
-14329
+15023
 
 DataAcquisition.h
 file
@@ -644,10 +610,10 @@ file
 
 
 
-2010-12-25T00:49:47.239051Z
-2b840d8bc0b22784581ffd105d2b79ad
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.873352Z
+a4de036ba921f321e108c8e4887a3c67
+2011-01-13T10:47:19.512954Z
+566
 caranchoengineering
 
 
@@ -670,7 +636,41 @@ caranchoengineering
 
 
 
-6280
+6272
+
+BatteryMonitor.h
+file
+
+
+
+
+2011-01-21T10:36:12.873352Z
+28a32a15f37998f9edca2ac097b1d11c
+2011-01-19T08:16:07.362337Z
+569
+caranchoengineering
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+8504
 
 Motors.h
 file
@@ -678,10 +678,10 @@ file
 
 
 
-2010-12-25T00:49:47.239051Z
-b3c9817cc844d4f9b9bdac50d8c80651
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.874352Z
+ae3d997d6bd6410d5e793651fe82d38a
+2011-01-21T09:09:07.640769Z
+570
 caranchoengineering
 
 
@@ -704,7 +704,7 @@ caranchoengineering
 
 
 
-27828
+29419
 
 CHR6DM.h
 file
@@ -712,10 +712,10 @@ file
 
 
 
-2010-12-25T00:49:47.239051Z
-99d20f6c1de7faa76bc97195af910872
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.874352Z
+72a5eb15ec023d982401991b6cc2246f
+2011-01-13T10:47:19.512954Z
+566
 caranchoengineering
 
 
@@ -738,7 +738,7 @@ caranchoengineering
 
 
 
-17756
+17748
 
 FlightAngle.h
 file
@@ -746,10 +746,10 @@ file
 
 
 
-2010-12-25T00:49:47.242384Z
-609232975992ef55939f43d51d12c1d8
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.877351Z
+008c4534b6d1e293e4801017eca17e4e
+2011-01-19T08:16:07.362337Z
+569
 caranchoengineering
 
 
@@ -772,7 +772,7 @@ caranchoengineering
 
 
 
-30161
+29004
 
 Filter.h
 file
@@ -780,10 +780,10 @@ file
 
 
 
-2010-12-25T00:49:47.242384Z
-7a6aaabcc58051bfc052887cfe4d736c
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.877351Z
+4a513eaa7eafb3e314251880037625d4
+2011-01-13T10:47:19.512954Z
+566
 caranchoengineering
 
 
@@ -806,7 +806,7 @@ caranchoengineering
 
 
 
-3038
+3030
 
 README.markdown
 file
@@ -814,10 +814,10 @@ file
 
 
 
-2010-12-25T00:49:47.242384Z
-0ee4c4eba98b42a9b5dbcb4914324104
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.877351Z
+87f5843136171de129122ebb192165c7
+2011-01-19T08:16:07.362337Z
+569
 caranchoengineering
 
 
@@ -840,7 +840,7 @@ caranchoengineering
 
 
 
-13878
+14315
 
 Camera.h
 file
@@ -848,10 +848,10 @@ file
 
 
 
-2010-12-25T00:49:47.242384Z
-4438fca96048a76f97d9f9ab4ff9320a
-2010-12-22T08:35:03.280097Z
-561
+2011-01-21T10:36:12.878351Z
+562423755ea89ebac8ad8fce09eb92c9
+2011-01-13T10:47:19.512954Z
+566
 caranchoengineering
 
 
@@ -874,5 +874,5 @@ caranchoengineering
 
 
 
-7576
+9064
 

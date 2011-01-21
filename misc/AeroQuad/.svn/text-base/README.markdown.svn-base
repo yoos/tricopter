@@ -1,11 +1,23 @@
-AeroQuad Flight Software Source Code 2.1.2 Beta
+AeroQuad Flight Software Source Code 2.1
 ========================================
 [http://www.aeroquad.com](http://www.aeroquad.com)
 
-Version 2.1.2 Beta Release Notes (12/22/2010
+Version 2.1 Release Notes (1/20/2010)
+----------------------------------------
+
+  * Added support for battery monitor for AeroQuad v2.0 Shield
+  * Initialization bug fix for receiver code
+  * Fixed issues 64-81 in Google Code Issue Tracker (http://code.google.com/p/aeroquad/issues/list)
+
+Version 2.1.2 Beta Release Notes (12/22/2010)
+----------------------------------------
+
   * Fixed PWM timer class to work with Uno, special thanks to CupOfTea (implementation) and Ala42 (debugging)!
+  * Implemented PWM timer class for Mega (thanks CupOfTea!)
 
 Version 2.1.1 Beta Release Notes (12/20/2010)
+----------------------------------------
+
   * Fixed issues 55-63 in Google Code Issue Tracker (http://code.google.com/p/aeroquad/issues/list)
   * Added support for DCM with Uno and v1.8 Shield for improved Stable Mode performance, special thanks to Ala42 and Aadamson for all their optimization work
   * Added experimental camera stabilization code (thanks CupOfTea)
@@ -18,7 +30,6 @@ Version 2.1 Beta Release Notes (12/4/2010)
   * This has many changes and optimization improvements implemented, please be careful flying with this version as this is still a work in progress
   * Full documentation on all changes will be provided at full release
   * Many improvements by Lokling and Honk
-
 
 Version 2.0.1 Release Notes (9/19/2010)
 ----------------------------------------
