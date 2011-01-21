@@ -106,9 +106,9 @@ void Pilot::Fly(System &mySystem) {
     mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
     mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
 
-    // Find map boundaries (need to limit, but NOT fit, to [0, 125])
+    // Find map boundaries (need to limit, but NOT fit, to [1, 125])
     mapUpper = mapUpper > 125 ? mapUpper : 125;
-    mapLower = mapLower < 0 ? mapLower : 0;
+    mapLower = mapLower < 1 ? mapLower : 1;
 
     // Final calculations
     for (int i=0; i<3; i++) {
