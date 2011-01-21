@@ -72,20 +72,20 @@ def feedDog():
 
 def callback(myJoy):
     global inputLast, xValue, yValue, zValue, tValue
-    if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
-        inputLast = rospy.Time.now()
-        # Calculate axis values.
-        xValue = int(250*(xSign * myJoy.axes[xAxis] + 1) / 2 + 1)   # Range 1-251 in order to send as char value
-        yValue = int(250*(ySign * myJoy.axes[yAxis] + 1) / 2 + 1)
-        tValue = int(250*(tSign * myJoy.axes[tAxis] + 1) / 2 + 1)
-        zValue = int(250*(zSign * myJoy.axes[zAxis] + 1) / 2 + 1)
+#   if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
+#       inputLast = rospy.Time.now()
+    # Calculate axis values.
+    xValue = int(250*(xSign * myJoy.axes[xAxis] + 1) / 2 + 1)   # Range 1-251 in order to send as char value
+    yValue = int(250*(ySign * myJoy.axes[yAxis] + 1) / 2 + 1)
+    tValue = int(250*(tSign * myJoy.axes[tAxis] + 1) / 2 + 1)
+    zValue = int(250*(zSign * myJoy.axes[zAxis] + 1) / 2 + 1)
 
-        # Write to serial.
-        try:
-            ser.write(serHeader + chr(xValue) + chr(yValue) + chr(tValue) + chr(zValue))
-            if verboseOn: rospy.loginfo("A0: %s   A1: %s   A2: %s   A3: %s", xValue, yValue, tValue, zValue)
-        except:
-            if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
+    # Write to serial.
+    try:
+        ser.write(serHeader + chr(xValue) + chr(yValue) + chr(tValue) + chr(zValue))
+        if verboseOn: rospy.loginfo("A0: %s   A1: %s   A2: %s   A3: %s", xValue, yValue, tValue, zValue)
+    except:
+        if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
 
 def listener():

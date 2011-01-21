@@ -4,5 +4,4 @@
 14:10 Then tried applying 9 V from battery to C8 (optional capacitor pinholes): works.
 14:10 Is there a resistor somewhere that limits the total current flow through the Seeeduino? Maybe the USB lines are ignored because USB max current is 500 mA anyway. I need schematics.
 14:25 Never mind, that didn't work, either. Tried powering with battery  on 3.3 V switch and saw the TX/RX LEDs do weird stuff. At any rate, connecting the battery shouldn't make the power light get brighter.
-15:38 Maybe it did work? The apparent voltage leak occurs only when the voltage is higher than about 5 V. The 5.5 V/4 A from the Mystery ESC makes the TX/RX LEDs light up dimly. The 9 V battery (currently at 7.5 V) makes the LEDs light up fairly brightly. Best not try this with 12 V lest the LEDs fail.
 
