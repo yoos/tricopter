@@ -5,10 +5,10 @@ Pilot::Pilot() {
     hasFood = false;
     
     // Assume serial inputs
-    serInput[SX] = 125;
-    serInput[SY] = 125;
-    serInput[ST] = 125;
-    serInput[SZ] = 0;
+    serInput[SX] = 126;
+    serInput[SY] = 126;
+    serInput[ST] = 126;
+    serInput[SZ] = 1;
 
     #ifdef DEBUG
     Serial.println("Pilot here!");
