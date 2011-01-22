@@ -14,7 +14,7 @@ from std_msgs.msg import String
 
 # Comm values
 serialPort = "/dev/ttyUSB0"
-baudRate = 9600
+baudRate = 57600
 feedInterval = 0.1   # How often to feed watchdog in seconds
 inputInterval = 0.05   # How often to send input values
 serHeader = chr(255)
