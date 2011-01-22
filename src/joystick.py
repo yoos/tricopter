@@ -83,7 +83,7 @@ def callback(myJoy):
     # Write to serial.
     try:
         ser.write(serHeader + chr(xValue) + chr(yValue) + chr(tValue) + chr(zValue))
-        if verboseOn: rospy.loginfo("A0: %s   A1: %s   A2: %s   A3: %s", xValue, yValue, tValue, zValue)
+        if verboseOn: rospy.logerr("A0: %s   A1: %s   A2: %s   A3: %s", xValue, yValue, tValue, zValue)
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 

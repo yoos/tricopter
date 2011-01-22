@@ -10,12 +10,12 @@ int main(void) {
  
     // Begin Arduino services.
     Wire.begin();
-//  pinMode(22, OUTPUT);
-//  digitalWrite(22, LOW);
-//  pinMode(23, OUTPUT);
-//  digitalWrite(23, LOW);
-//  pinMode(24, OUTPUT);
-//  digitalWrite(24, LOW);
+    pinMode(22, OUTPUT);
+    digitalWrite(22, LOW);
+    pinMode(23, OUTPUT);
+    digitalWrite(23, LOW);
+    pinMode(24, OUTPUT);
+    digitalWrite(24, LOW);
     
     // Introduce crew.
     Pilot Yeager;

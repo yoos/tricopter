@@ -75,7 +75,7 @@ void Pilot::Listen() {
                     hasFood = true;
                     i--;
                 }
-                else {
+                else if (serRead != SERHEAD && serRead != -1) {
                     serInput[i] = serRead;
                     #ifdef DEBUG
                     Serial.println("Pilot determined motor value.");
@@ -124,17 +124,17 @@ void Pilot::Fly(System &mySystem) {
     for (int i=0; i<3; i++) {
         motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
     }
-    tailServoVal = 90 + 0.2*axisVal[ST];
+    tailServoVal = 105 - 0.2*axisVal[ST];
 
     // Write to motors
     for (int i=0; i<3; i++) {
         mySystem.SetMotor(i, motorVal[i]);
-//      Serial.print(motorVal[i]);
-//      Serial.print("   ");
+        Serial.print(motorVal[i]);
+        Serial.print("   ");
     }
     mySystem.SetServo(tailServoVal);
-//  Serial.print(tailServoVal);
-//  Serial.println("");
+    Serial.print(tailServoVal);
+    Serial.println("");
 
     #ifdef DEBUG
     Serial.println("Pilot is flying.");
