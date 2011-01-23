@@ -133,13 +133,13 @@ void Pilot::Fly(System &mySystem) {
     else {
         for (int i=0; i<3; i++) {
             mySystem.SetMotor(i, motorVal[i]);
-            Serial.print(motorVal[i]);
-            Serial.print("   ");
+//          Serial.print(motorVal[i]);
+//          Serial.print("   ");
         }
     }
-    mySystem.SetServo(tailServoVal);
-    Serial.print(tailServoVal);
-    Serial.println("");
+//  mySystem.SetServo(tailServoVal);
+//  Serial.print(tailServoVal);
+//  Serial.println("");
 
     #ifdef DEBUG
     Serial.println("Pilot is flying.");

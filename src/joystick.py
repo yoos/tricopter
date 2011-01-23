@@ -84,12 +84,7 @@ def callback(myJoy):
     tValue = int(250*(tSign * myJoy.axes[tAxis] + 1) / 2 + 1)
     zValue = int(250*(zSign * myJoy.axes[zAxis] + 1) / 2 + 1)
 
-    if xValue > 0 and xValue < 252 and \
-       yValue > 0 and yValue < 252 and \
-       tValue > 0 and tValue < 252 and \
-       zValue > 0 and zValue < 252:   # If everything is within range
-
-        okayToSend = True
+    okayToSend = True
         
 def sendData():
     try:
