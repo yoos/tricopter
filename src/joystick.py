@@ -16,9 +16,10 @@ from std_msgs.msg import String
 serialPort = "/dev/ttyUSB0"
 baudRate = 57600
 feedInterval = 0.1   # How often to feed watchdog in seconds
-inputInterval = 0.05   # How often to send input values
+inputInterval = 0.5   # How often to send input values
 serHeader = chr(255)
 dogBone = chr(254) # Feed watchdog
+okayToSend = False
 verboseOn = True
 
 # Variables
@@ -71,16 +72,30 @@ def feedDog():
 ############################ ROS get joystick input ###########################
 
 def callback(myJoy):
-    global inputLast, xValue, yValue, zValue, tValue
-#   if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
-#       inputLast = rospy.Time.now()
+    global okayToSend, inputLast, xValue, yValue, zValue, tValue
+
     # Calculate axis values.
     xValue = int(250*(xSign * myJoy.axes[xAxis] + 1) / 2 + 1)   # Range 1-251 in order to send as char value
     yValue = int(250*(ySign * myJoy.axes[yAxis] + 1) / 2 + 1)
     tValue = int(250*(tSign * myJoy.axes[tAxis] + 1) / 2 + 1)
     zValue = int(250*(zSign * myJoy.axes[zAxis] + 1) / 2 + 1)
+    
+    if xValue == yValue == 126:
+        okayToSend = True
+    if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
+        if xValue > 0 and xValue < 252 and \
+           yValue > 0 and yValue < 252 and \
+           tValue > 0 and tValue < 252 and \
+           zValue > 0 and zValue < 252:
+            
+            okayToSend = True
+            inputLast = rospy.Time.now()
+        
+    if okayToSend:
+        sendData()
+        okayToSend = False
 
-    # Write to serial.
+def sendData():
     try:
         ser.write(serHeader + chr(xValue) + chr(yValue) + chr(tValue) + chr(zValue))
         if verboseOn: rospy.logerr("A0: %s   A1: %s   A2: %s   A3: %s", xValue, yValue, tValue, zValue)
@@ -92,6 +107,7 @@ def listener():
     while not rospy.is_shutdown():
         rospy.Subscriber("joy", Joy, callback)
         feedDog()
+        rospy.logerr("testing!")
         rospy.spin()
 
 #################################### Qt GUI ###################################
