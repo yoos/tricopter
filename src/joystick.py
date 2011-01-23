@@ -15,8 +15,7 @@ from std_msgs.msg import String
 # Comm values
 serialPort = "/dev/ttyUSB0"
 baudRate = 57600
-feedInterval = 0.1   # How often to feed watchdog in seconds
-inputInterval = 0.5   # How often to send input values
+inputRate = 20   # Input rate in Hz
 serHeader = chr(255)
 dogBone = chr(254) # Feed watchdog
 okayToSend = False
@@ -77,7 +76,7 @@ def feedDog():
 ############################ ROS get joystick input ###########################
 
 def callback(myJoy):
-    global okayToSend, inputLast, xValue, yValue, zValue, tValue
+    global okayToSend, xValue, yValue, zValue, tValue
 
     # Calculate axis values.
     xValue = int(250*(xSign * myJoy.axes[xAxis] + 1) / 2 + 1)   # Range 1-251 in order to send as char value
@@ -88,7 +87,7 @@ def callback(myJoy):
     if xValue > 0 and xValue < 252 and \
        yValue > 0 and yValue < 252 and \
        tValue > 0 and tValue < 252 and \
-       zValue > 0 and zValue < 252:
+       zValue > 0 and zValue < 252:   # If everything is within range
 
         okayToSend = True
         
@@ -102,12 +101,11 @@ def sendData():
 
 def listener():
     global okayToSend
-    rate = rospy.Rate(5)
+    rate = rospy.Rate(inputRate)
     while not rospy.is_shutdown():
         rospy.Subscriber("joy", Joy, callback)
         if okayToSend:
             sendData()
-            rospy.logerr("Data sent!")
         rate.sleep()
         #rospy.spin()
 
