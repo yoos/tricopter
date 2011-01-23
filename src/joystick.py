@@ -44,6 +44,11 @@ yValue = 126
 tValue = 126
 zValue = 126   # Keep this at non-zero so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 
+xZero = True
+yZero = True
+tZero = True
+zZero = False
+
 rospy.init_node("tric_listener", anonymous=True)
 feedLast = rospy.Time.now()
 inputLast = rospy.Time.now()
@@ -79,24 +84,14 @@ def callback(myJoy):
     yValue = int(250*(ySign * myJoy.axes[yAxis] + 1) / 2 + 1)
     tValue = int(250*(tSign * myJoy.axes[tAxis] + 1) / 2 + 1)
     zValue = int(250*(zSign * myJoy.axes[zAxis] + 1) / 2 + 1)
-    
-    if xValue == yValue == 126:
-        okayToSend = True
-        rospy.logerr("x and y are zero")
-    if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
-        if xValue > 0 and xValue < 252 and \
-           yValue > 0 and yValue < 252 and \
-           tValue > 0 and tValue < 252 and \
-           zValue > 0 and zValue < 252:
-            
-            okayToSend = True
-            inputLast = rospy.Time.now()
-            rospy.logerr("timer reset")
-        
-    if okayToSend:
-        sendData()
-        okayToSend = False
 
+    if xValue > 0 and xValue < 252 and \
+       yValue > 0 and yValue < 252 and \
+       tValue > 0 and tValue < 252 and \
+       zValue > 0 and zValue < 252:
+
+        okayToSend = True
+        
 def sendData():
     try:
         ser.write(serHeader + chr(xValue) + chr(yValue) + chr(tValue) + chr(zValue))
@@ -106,11 +101,15 @@ def sendData():
 
 
 def listener():
+    global okayToSend
+    rate = rospy.Rate(5)
     while not rospy.is_shutdown():
         rospy.Subscriber("joy", Joy, callback)
-        feedDog()
-        rospy.logerr("testing!")
-        rospy.spin()
+        if okayToSend:
+            sendData()
+            rospy.logerr("Data sent!")
+        rate.sleep()
+        #rospy.spin()
 
 #################################### Qt GUI ###################################
 
