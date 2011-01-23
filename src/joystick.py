@@ -41,7 +41,7 @@ vSign = 1
 xValue = 126
 yValue = 126
 tValue = 126
-zValue = 1
+zValue = 126   # Keep this at non-zero so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 
 rospy.init_node("tric_listener", anonymous=True)
 feedLast = rospy.Time.now()
@@ -63,7 +63,7 @@ def feedDog():
         if verboseOn: rospy.loginfo("ROSTime: %s", feedLast)
         try:
             ser.write(dogBone)
-            if verboseOn: rospy.loginfo("Dog fed")
+            if verboseOn: rospy.logerr("Dog fed")
             feedLast = rospy.Time.now() # Update time
         except:
             if verboseOn: rospy.logerr("Unable to feed dog!")

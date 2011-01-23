@@ -10,12 +10,12 @@ int main(void) {
  
     // Begin Arduino services.
     Wire.begin();
-    pinMode(22, OUTPUT);
-    digitalWrite(22, LOW);
-    pinMode(23, OUTPUT);
-    digitalWrite(23, LOW);
-    pinMode(24, OUTPUT);
-    digitalWrite(24, LOW);
+//  pinMode(22, OUTPUT);
+//  digitalWrite(22, LOW);
+//  pinMode(23, OUTPUT);
+//  digitalWrite(23, LOW);
+//  pinMode(24, OUTPUT);
+//  digitalWrite(24, LOW);
     
     // Introduce crew.
     Pilot Yeager;
@@ -36,7 +36,7 @@ int main(void) {
         else {
             Tric.Die();
         }
-        delay(25);   // TODO: Once everything's done, make system run at 40 Hz.
+        delay(200);   // TODO: Once everything's done, make system run at 40 Hz.
     }
 
     return 0;

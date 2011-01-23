@@ -8,7 +8,7 @@ Pilot::Pilot() {
     serInput[SX] = 126;
     serInput[SY] = 126;
     serInput[ST] = 126;
-    serInput[SZ] = 1;
+    serInput[SZ] = 126;   // Keep this at non-zero to prevent disastrous false starts.
 
     #ifdef DEBUG
     Serial.println("Pilot here!");
