@@ -82,6 +82,7 @@ def callback(myJoy):
     
     if xValue == yValue == 126:
         okayToSend = True
+        rospy.logerr("x and y are zero")
     if rospy.Time.now() - inputLast > rospy.Duration(inputInterval):   # Time - Time = Duration
         if xValue > 0 and xValue < 252 and \
            yValue > 0 and yValue < 252 and \
@@ -90,6 +91,7 @@ def callback(myJoy):
             
             okayToSend = True
             inputLast = rospy.Time.now()
+            rospy.logerr("timer reset")
         
     if okayToSend:
         sendData()
