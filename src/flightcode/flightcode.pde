@@ -35,7 +35,7 @@ int main(void) {
         else {
             Tric.Die();
         }
-        delay(0);   // TODO: Once everything's done, make system run at 40 Hz.
+        delay(25);   // TODO: Once everything's done, make system run at 40 Hz.
     }
 
     return 0;

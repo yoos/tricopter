@@ -4,12 +4,13 @@
 import sys
 from PyQt4 import Qt
 import serial
+import threading
+from threading import Timer, Thread
+from signal import signal, SIGINT
 
 # ROS stuff
 import roslib; roslib.load_manifest("tricopter")
 import rospy
-import threading
-from threading import Timer, Thread
 from joy.msg import Joy
 from tricopter.msg import TricJoy
 

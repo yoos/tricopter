@@ -66,14 +66,12 @@ void Pilot::Listen() {
                 }
                 else if (serRead == -1) {   // This happens when serial is empty.
                     Serial.println("Pilot detected malformed packet.");
-                    digitalWrite(13, HIGH);
                 }
                 else if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
                     serInput[i] = serRead;
                     #ifdef DEBUG
                     Serial.println("Pilot determined motor value.");
                     #endif
-                    digitalWrite(13, LOW);
                 }
             }
         }
@@ -109,7 +107,7 @@ void Pilot::Fly(System &mySystem) {
     mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
     mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
 
-    // Find map boundaries (need to limit, but NOT fit, to [1, 125])
+    // Find map boundaries (need to limit, but NOT fit, to [0, 250])
     mapUpper = mapUpper > 250 ? mapUpper : 250;
     mapLower = mapLower < 0 ? mapLower : 0;
 
