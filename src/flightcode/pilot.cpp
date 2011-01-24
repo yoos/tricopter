@@ -40,21 +40,24 @@ char* Pilot::Read(char sStr[]) {
 void Pilot::Listen() {
     while (Serial.available()) {
         serRead = Serial.read();
+        delay(10);
 
-        if (serRead == DOGBONE) {   // Receive dogbone.
-            #ifdef DEBUG
-            Serial.print("Pilot received dogbone: ");
-            Serial.println(serRead);
-            #endif
-            hasFood = true;   // Will be set to false by watchdog.
-        }
-        else if (serRead == SERHEAD) {   // Receive header.
+        if (serRead == SERHEAD) {   // Receive header.
+            hasFood = true;
             #ifdef DEBUG
             Serial.print("Pilot received header: ");
             Serial.println(serRead);
             #endif
             for (int i=0; i<PACKETSIZE; i++) {
-                serRead = Serial.read();
+                if (Serial.available()) {
+                    serRead = Serial.read();
+                    delay(10);
+                }
+                else {
+                    Serial.print("Serial empty!");
+                    Serial.println("");
+                    break;
+                }
 
                 #ifdef DEBUG
                 Serial.print("Pilot received motor control byte #");
@@ -64,29 +67,26 @@ void Pilot::Listen() {
                 #endif
 
                 if (serRead == SERHEAD) {   // Dropped byte?
-                    i = 0;   // Discard and start over.
+//                  i = 0;   // Discard and start over.
                     Serial.println("Pilot detected packet drop.");
                 }
                 else if (serRead == -1) {
-                    i = 0;
+//                  i = 0;
                     Serial.println("Pilot detected malformed packet.");
-                }
-                else if (serRead == DOGBONE) {   // The dogbone might be sent in the middle of a control packet.
-                    hasFood = true;
-                    i--;
+                    digitalWrite(13, HIGH);
                 }
                 else if (serRead > 0 && serRead < 252) {
                     serInput[i] = serRead;
                     #ifdef DEBUG
                     Serial.println("Pilot determined motor value.");
                     #endif
+                    digitalWrite(13, LOW);
                 }
             }
         }
         else {
-            for (int i=0; i<PACKETSIZE; i++) {
-                serInput[i] = 1;   // If something weird happens, assume input is 1.
-            }
+            Serial.print("Weird header!");   // Warn if something weird happens.
+            Serial.println("");
         }
     }
 }
@@ -127,15 +127,10 @@ void Pilot::Fly(System &mySystem) {
     tailServoVal = 100 - 0.2*axisVal[ST];
 
     // Write to motors
-    if (serInput[SX] == 1 && serInput[SY] == 1 && serInput[ST] == 1) {
-        Serial.print("Not freaking out.");
-    }
-    else {
-        for (int i=0; i<3; i++) {
-            mySystem.SetMotor(i, motorVal[i]);
-//          Serial.print(motorVal[i]);
-//          Serial.print("   ");
-        }
+    for (int i=0; i<3; i++) {
+        mySystem.SetMotor(i, motorVal[i]);
+//      Serial.print(motorVal[i]);
+//      Serial.print("   ");
     }
 //  mySystem.SetServo(tailServoVal);
 //  Serial.print(tailServoVal);

@@ -29,14 +29,13 @@ int main(void) {
         Jasper.Watch(Yeager.hasFood);
         if (true) {
             Yeager.Fly(Tric);
-            delay(10);
             Tric.Run();
 //          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
         }
         else {
             Tric.Die();
         }
-        delay(25);   // TODO: Once everything's done, make system run at 40 Hz.
+        delay(0);   // TODO: Once everything's done, make system run at 40 Hz.
     }
 
     return 0;

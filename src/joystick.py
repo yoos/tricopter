@@ -14,10 +14,9 @@ from std_msgs.msg import String
 
 # Comm values
 serialPort = "/dev/ttyUSB0"
-baudRate = 19200
-inputRate = 20   # Input rate in Hz
+baudRate = 9600
+inputRate = 10   # Inpt rate in Hz
 serHeader = chr(255)
-dogBone = chr(254) # Feed watchdog
 okayToSend = False
 verboseOn = True
 
@@ -59,19 +58,6 @@ try:
 except:
     rospy.logerr("No Arduino at %s!", serialPort)
 
-################################### Watchdog ##################################
-
-def feedDog():
-    global feedLast
-    if rospy.Time.now() - feedLast > rospy.Duration(feedInterval):
-        # Take care of the dog.
-        if verboseOn: rospy.loginfo("ROSTime: %s", feedLast)
-        try:
-            ser.write(dogBone)
-            if verboseOn: rospy.logerr("Dog fed")
-            feedLast = rospy.Time.now() # Update time
-        except:
-            if verboseOn: rospy.logerr("Unable to feed dog!")
 
 ############################ ROS get joystick input ###########################
 
