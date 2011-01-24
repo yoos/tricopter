@@ -4,6 +4,7 @@ Watchdog::Watchdog(int timeout) {
     dogLife = timeout;
     deadCycle = 0;
     time = millis();
+    isAlive = false;
     #ifdef DEBUG
     Serial.println("Watchdog here!");
     #endif

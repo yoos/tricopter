@@ -40,7 +40,7 @@ char* Pilot::Read(char sStr[]) {
 void Pilot::Listen() {
     while (Serial.available()) {
         serRead = Serial.read();
-        delayMicroseconds(150);
+        delayMicroseconds(150);   // Need delay to prevent Serial.read() from dropping bits.
 
         if (serRead == SERHEAD) {   // Receive header.
             hasFood = true;
@@ -118,6 +118,8 @@ void Pilot::Fly(System &mySystem) {
     }
     tailServoVal = 100 - 0.2*axisVal[ST];
 
+    Serial.print(millis());
+    Serial.print(": ");
     // Write to motors
     for (int i=0; i<3; i++) {
         mySystem.SetMotor(i, motorVal[i]);

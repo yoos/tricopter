@@ -2,7 +2,7 @@
 #define WATCHDOG_H
 
 class Watchdog {
-    int time;
+    long int time;   // Make sure this doesn't overflow!
     int deadCycle;
     int dogLife;
 
