@@ -9,8 +9,7 @@ import serial
 import roslib; roslib.load_manifest("tricopter")
 import rospy
 from joy.msg import Joy
-from std_msgs.msg import String
-
+from tricopter.msg import TricJoy
 
 # Comm values
 serialPort = "/dev/ttyUSB0"
@@ -33,25 +32,15 @@ except:
 ############################ ROS get joystick input ###########################
 
 def callback(joyPub):
-
-    sendData()
-        
-def sendData():
     try:
-        ser.write(serHeader + chr(xValue) + chr(yValue) + chr(tValue) + chr(zValue))
-        if verboseOn: rospy.logerr("A0: %s   A1: %s   A2: %s   A3: %s", xValue, yValue, tValue, zValue)
+        ser.write(serHeader + chr(joyPub.axisInputs[0]) + chr(joyPub.axisInputs[1]) + chr(joyPub.axisInputs[2]) + chr(joyPub.axisInputs[3]))
+        if verboseOn: rospy.logerr("A0: %s   A1: %s   A2: %s   A3: %s", joyPub.axisInputs[0], joyPub.axisInputs[1], joyPub.axisInputs[2], joyPub.axisInputs[3])
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
-
 def listener():
-    global okayToSend
-    rate = rospy.Rate(inputRate)
     while not rospy.is_shutdown():
-        rospy.Subscriber("tric_joy_publisher", String, callback)
-        if okayToSend:
-            sendData()
-        #rate.sleep()
+        rospy.Subscriber("tric_joy_publisher", TricJoy, callback)
         rospy.spin()
 
 #################################### Qt GUI ###################################

@@ -1,3 +1,4 @@
 (in-package tricopter-msg)
-(export '(AXES-VAL
+(export '(AXISINPUTS-VAL
+          BUTTONINPUTS-VAL
 ))

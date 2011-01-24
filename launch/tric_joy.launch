@@ -7,7 +7,7 @@
     <param name="deadzone" value="0" />
   </node>
 
-  <!--<node pkg="tricopter" type="joystick.py" name="tric_comm_listener"/>-->
+  <node pkg="tricopter" type="joystick.py" name="tric_comm_listener"/>
   <node pkg="tricopter" type="comm_talker.py" name="tric_comm_talker"/>
 
 </launch>
