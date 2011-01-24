@@ -41,9 +41,10 @@ void Pilot::Listen() {
     while (Serial.available()) {
         serRead = Serial.read();
         delayMicroseconds(150);   // Need delay to prevent Serial.read() from dropping bits.
-
-        if (serRead == SERHEAD) {   // Receive header.
+        if (serRead == DOGBONE) {   // Receive dogbone.
             hasFood = true;
+        }
+        else if (serRead == SERHEAD) {   // Receive header.
             #ifdef DEBUG
             Serial.print("Pilot received header: ");
             Serial.println(serRead);
