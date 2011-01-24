@@ -8,7 +8,7 @@ Pilot::Pilot() {
     serInput[SX] = 126;
     serInput[SY] = 126;
     serInput[ST] = 126;
-    serInput[SZ] = 126;   // Keep this at non-zero to prevent disastrous false starts.
+    serInput[SZ] = 1;
 
     #ifdef DEBUG
     Serial.println("Pilot here!");
@@ -89,11 +89,11 @@ void Pilot::Fly(System &mySystem) {
     axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
     axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
 
-    for (int i=0; i<4; i++) {
-        Serial.print(serInput[i]);
-        Serial.print("   ");
-    }
-    Serial.println("");
+//  for (int i=0; i<4; i++) {
+//      Serial.print(serInput[i]);
+//      Serial.print("   ");
+//  }
+//  Serial.println("");
 
 //  dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
@@ -121,12 +121,12 @@ void Pilot::Fly(System &mySystem) {
     // Write to motors
     for (int i=0; i<3; i++) {
         mySystem.SetMotor(i, motorVal[i]);
-//      Serial.print(motorVal[i]);
-//      Serial.print("   ");
+        Serial.print(motorVal[i]);
+        Serial.print("   ");
     }
-//  mySystem.SetServo(tailServoVal);
-//  Serial.print(tailServoVal);
-//  Serial.println("");
+    mySystem.SetServo(tailServoVal);
+    Serial.print(tailServoVal);
+    Serial.println("");
 
     #ifdef DEBUG
     Serial.println("Pilot is flying.");

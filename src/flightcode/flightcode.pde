@@ -27,7 +27,7 @@ int main(void) {
     for (;;) {
         Yeager.Listen();
         Jasper.Watch(Yeager.hasFood);
-        if (true) {
+        if (Jasper.isAlive) {
             Yeager.Fly(Tric);
             Tric.Run();
 //          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);

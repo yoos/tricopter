@@ -3,6 +3,7 @@
 
 class Watchdog {
     int time;
+    int deadCycle;
     int dogLife;
 
 public:
