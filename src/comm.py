@@ -14,17 +14,17 @@ from tricopter.msg import TricJoy
 # Comm values
 serialPort = "/dev/ttyUSB0"
 baudRate = 57600
-inputRate = 400   # Inpt rate in Hz
+dataSendInterval = 0.05   # Interval between data sends in seconds
 serHeader = chr(255)
 okayToSend = False
 verboseOn = True
 
-rospy.init_node("tric_listener", anonymous=False)
+rospy.init_node("tric_comm_node", anonymous=True)
 
 # Open serial connection
 try:
     ser = serial.Serial(serialPort, baudRate)
-    rospy.loginfo("Arduino at %s", serialPort)
+    rospy.logerr("Arduino at %s", serialPort)
 except:
     rospy.logerr("No Arduino at %s!", serialPort)
 
@@ -37,10 +37,12 @@ def callback(joyPub):
         if verboseOn: rospy.logerr("A0: %s   A1: %s   A2: %s   A3: %s", joyPub.axisInputs[0], joyPub.axisInputs[1], joyPub.axisInputs[2], joyPub.axisInputs[3])
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
+    rospy.sleep(dataSendInterval)
+
 
 def listener():
     while not rospy.is_shutdown():
-        rospy.Subscriber("tric_joy_publisher", TricJoy, callback)
+        rospy.Subscriber("tric_joy_publisher", TricJoy, callback, queue_size=1)
         rospy.spin()
 
 #################################### Qt GUI ###################################
@@ -54,7 +56,7 @@ class CtrlButton(Qt.QPushButton):
         apply(Qt.QPushButton.__init__, (self,) + args)
         self.connect(self, SIGNAL("clicked()"), self.doPrint)
     def doPrint(self):
-        rospy.loginfo("Control button clicked")
+        rospy.logerr("Control button clicked")
 
 #mainWin = MainWindow()
 

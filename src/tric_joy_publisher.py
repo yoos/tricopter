@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import roslib; roslib.load_manifest("tricopter")
 import rospy
 from joy.msg import Joy
@@ -28,7 +30,7 @@ axisValues = [126, 126, 126, 126]   # Keep Z value at non-zero so user is forced
 buttonValues = []
 
 
-rospy.init_node("tric_joy_publisher")
+rospy.init_node("tric_joy_publisher_node")
 pub = rospy.Publisher("tric_joy_publisher", TricJoy)   # Initialize node tric_joy_publisher with msg TricJoy.
 publishLast = rospy.Time.now()
 
@@ -40,8 +42,8 @@ def callback(myJoy):
     axisValues[1] = int(250*(ySign * myJoy.axes[yAxis] + 1) / 2 + 1)
     axisValues[2] = int(250*(tSign * myJoy.axes[tAxis] + 1) / 2 + 1)
     axisValues[3] = int(250*(zSign * myJoy.axes[zAxis] + 1) / 2 + 1)
-
-    if armed and rospy.Time.now() - publishLast > rospy.Duration(publishInterval):
+    
+    if armed: # and rospy.Time.now() - publishLast > rospy.Duration(publishInterval):
         pub.publish(axisValues, buttonValues)
         publishLast = rospy.Time.now()   # Update time
     elif not armed:
