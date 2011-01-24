@@ -8,6 +8,8 @@ import serial
 # ROS stuff
 import roslib; roslib.load_manifest("tricopter")
 import rospy
+import threading
+from threading import Timer, Thread
 from joy.msg import Joy
 from tricopter.msg import TricJoy
 
@@ -15,29 +17,14 @@ from tricopter.msg import TricJoy
 serialPort = "/dev/ttyUSB0"
 baudRate = 57600
 dataSendInterval = 0.05   # Interval between data sends in seconds
+dogFeedInterval = 0.1
 serHeader = chr(255)
-okayToSend = False
+dogBone = chr(254)
 verboseOn = True
 
 armed = False
 
-# Variables
-xAxis = 0   # X axis
-yAxis = 1   # Y axis
-tAxis = 2   # Twist axis
-zAxis = 3   # Z axis
-hAxis = 4   # Top horizontal
-vAxis = 5   # Top vertical
-
-# Axis sign flips
-xSign = -1
-ySign = 1 
-tSign = -1
-zSign = 1 
-hSign = -1
-vSign = 1 
-
-# Axis values
+axisSigns = [-1, 1, -1, 1, -1, 1]   # Axis sign flips
 axisValues = [126, 126, 126, 126]   # Keep Z value at non-zero so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 buttonValues = []
 
@@ -56,13 +43,14 @@ except:
 def callback(myJoy):
     global axisValues, armed
     # Calculate axis values.
-    axisValues[0] = int(250*(xSign * myJoy.axes[xAxis] + 1) / 2 + 1)   # Range 1-251 in order to send as char value
-    axisValues[1] = int(250*(ySign * myJoy.axes[yAxis] + 1) / 2 + 1)
-    axisValues[2] = int(250*(tSign * myJoy.axes[tAxis] + 1) / 2 + 1)
-    axisValues[3] = int(250*(zSign * myJoy.axes[zAxis] + 1) / 2 + 1)
+    axisValues[0] = int(250*(axisSigns[0] * myJoy.axes[0] + 1) / 2 + 1)   # Range 1-251 in order to send as char value
+    axisValues[1] = int(250*(axisSigns[1] * myJoy.axes[1] + 1) / 2 + 1)
+    axisValues[2] = int(250*(axisSigns[2] * myJoy.axes[2] + 1) / 2 + 1)
+    axisValues[3] = int(250*(axisSigns[3] * myJoy.axes[3] + 1) / 2 + 1)
 
     if armed:
-        sendData()
+        sendData(serHeader + chr(axisValues[0]) + chr(axisValues[1]) + chr(axisValues[2]) + chr(axisValues[3]))
+        if verboseOn: rospy.logerr("A0: %s   A1: %s   A2: %s   A3: %s", axisValues[0], axisValues[1], axisValues[2], axisValues[3])
     elif not armed:
         rospy.logerr("Move joystick throttle to minimum position in order to send motor arming signal.")
         if axisValues[3] == 1:   # If throttle is at minimum position
@@ -71,17 +59,27 @@ def callback(myJoy):
     
     rospy.sleep(dataSendInterval)
 
-def sendData():
+def sendData(myStr):
     try:
-        ser.write(serHeader + chr(axisValues[0]) + chr(axisValues[1]) + chr(axisValues[2]) + chr(axisValues[3]))
-        if verboseOn: rospy.logerr("A0: %s   A1: %s   A2: %s   A3: %s", axisValues[0], axisValues[1], axisValues[2], axisValues[3])
+        ser.write(myStr)
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
-def tric_comm():
+def tric_subscriber():
     while not rospy.is_shutdown():
         rospy.Subscriber("joy", Joy, callback, queue_size=1)
         rospy.spin()
+
+def tric_watchdog():
+    while not rospy.is_shutdown():
+        sendData(dogBone)
+        rospy.sleep(dogFeedInterval)
+
+def tric_comm():
+    subscriberThread = threading.Thread(None, tric_subscriber)
+    subscriberThread.start()
+    watchdogThread = threading.Thread(None, tric_watchdog)
+    watchdogThread.start()
 
 #################################### Qt GUI ###################################
 
