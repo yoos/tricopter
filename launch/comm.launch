@@ -7,8 +7,8 @@
     <param name="deadzone" value="0" />
   </node>
 
-  <node pkg="tricopter" type="joystick.py" name="tric_comm_listener"/>
-  <node pkg="tricopter" type="comm_talker.py" name="tric_comm_talker"/>
+  <node pkg="tricopter" type="comm.py" name="tric_comm"/>
+  <node pkg="tricopter" type="tric_joy_publisher.py" name="tric_joy_publisher"/>
 
 </launch>
 <!-- %EndTag(FULL)%-->

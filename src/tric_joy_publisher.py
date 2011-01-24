@@ -51,6 +51,7 @@ def callback(myJoy):
 
 def tric_joy_publisher():
     while not rospy.is_shutdown():
+        rospy.logerr("Move joystick throttle to minimum to send arm signal.")
         rospy.Subscriber("joy", Joy, callback)
         rospy.spin()
 
