@@ -40,7 +40,7 @@ char* Pilot::Read(char sStr[]) {
 void Pilot::Listen() {
     while (Serial.available()) {
         serRead = Serial.read();
-        delayMicroseconds(200);
+        delayMicroseconds(150);
 
         if (serRead == SERHEAD) {   // Receive header.
             hasFood = true;
@@ -50,7 +50,7 @@ void Pilot::Listen() {
             #endif
             for (int i=0; i<PACKETSIZE; i++) {
                 serRead = Serial.read();
-                delayMicroseconds(200);
+                delayMicroseconds(150);
 
                 #ifdef DEBUG
                 Serial.print("Pilot received motor control byte #");
