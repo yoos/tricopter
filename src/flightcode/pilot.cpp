@@ -40,7 +40,7 @@ char* Pilot::Read(char sStr[]) {
 void Pilot::Listen() {
     while (Serial.available()) {
         serRead = Serial.read();
-        delay(10);
+        delayMicroseconds(1000);
 
         if (serRead == SERHEAD) {   // Receive header.
             hasFood = true;
@@ -49,15 +49,8 @@ void Pilot::Listen() {
             Serial.println(serRead);
             #endif
             for (int i=0; i<PACKETSIZE; i++) {
-                if (Serial.available()) {
-                    serRead = Serial.read();
-                    delay(10);
-                }
-                else {
-                    Serial.print("Serial empty!");
-                    Serial.println("");
-                    break;
-                }
+                serRead = Serial.read();
+                delayMicroseconds(1000);
 
                 #ifdef DEBUG
                 Serial.print("Pilot received motor control byte #");
@@ -70,12 +63,11 @@ void Pilot::Listen() {
 //                  i = 0;   // Discard and start over.
                     Serial.println("Pilot detected packet drop.");
                 }
-                else if (serRead == -1) {
-//                  i = 0;
+                else if (serRead == -1) {   // This happens when serial is empty.
                     Serial.println("Pilot detected malformed packet.");
                     digitalWrite(13, HIGH);
                 }
-                else if (serRead > 0 && serRead < 252) {
+                else if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
                     serInput[i] = serRead;
                     #ifdef DEBUG
                     Serial.println("Pilot determined motor value.");
