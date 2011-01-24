@@ -14,7 +14,7 @@ from std_msgs.msg import String
 
 # Comm values
 serialPort = "/dev/ttyUSB0"
-baudRate = 9600
+baudRate = 57600
 inputRate = 10   # Inpt rate in Hz
 serHeader = chr(255)
 okayToSend = False
