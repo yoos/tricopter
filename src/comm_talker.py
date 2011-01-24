@@ -4,6 +4,9 @@ import rospy
 from joy.msg import Joy
 from tricopter.msg import TricJoy
 
+armed = False
+publishInterval = 0.05   # How often to publish in seconds
+
 # Variables
 xAxis = 0   # X axis
 yAxis = 1   # Y axis
@@ -25,10 +28,12 @@ axisValues = [126, 126, 126, 126]   # Keep Z value at non-zero so user is forced
 buttonValues = []
 
 
+rospy.init_node("tric_joy_publisher")
 pub = rospy.Publisher("tric_joy_publisher", TricJoy)   # Initialize node tric_joy_publisher with msg TricJoy.
+publishLast = rospy.Time.now()
 
 def callback(myJoy):
-    global axisValues
+    global axisValues, armed, publishLast
 
     # Calculate axis values.
     axisValues[0] = int(250*(xSign * myJoy.axes[xAxis] + 1) / 2 + 1)   # Range 1-251 in order to send as char value
@@ -36,11 +41,15 @@ def callback(myJoy):
     axisValues[2] = int(250*(tSign * myJoy.axes[tAxis] + 1) / 2 + 1)
     axisValues[3] = int(250*(zSign * myJoy.axes[zAxis] + 1) / 2 + 1)
 
-    pub.publish(axisValues, buttonValues)
+    if armed and rospy.Time.now() - publishLast > rospy.Duration(publishInterval):
+        pub.publish(axisValues, buttonValues)
+        publishLast = rospy.Time.now()   # Update time
+    elif not armed:
+        if axisValues[3] == 1:   # If throttle is at minimum position
+            armed = True
+            rospy.logerr("Joystick throttle at minimum! Arm signal sent!")
 
 def tric_joy_publisher():
-    rospy.init_node("tric_joy_publisher")
-
     while not rospy.is_shutdown():
         rospy.Subscriber("joy", Joy, callback)
         rospy.spin()
