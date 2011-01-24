@@ -8,7 +8,6 @@
   </node>
 
   <node pkg="tricopter" type="comm.py" name="tric_comm"/>
-  <node pkg="tricopter" type="tric_joy_publisher.py" name="tric_joy_publisher"/>
 
 </launch>
 <!-- %EndTag(FULL)%-->
