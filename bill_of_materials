@@ -17,7 +17,7 @@ Ad astra / 955 / Soo-Hyun Yoo
     TGY AerodriveXp 25 SK Series 35-42 1000Kv / 605w   142.0     17.51       3         54   HobbyKing
     Mystery 40A Brushless Speed Controller              30.0     23.79       3         72   HobbyKing
     12x4.5 counter rotating props (pair)                 1.0?     7.95       2         16   Amazon
-    12x4.5 counter rotating props (pair)                 1.0?     7.95       3         24   Draganfly
+    12x4.5 counter rotating props (pair)                 1.0?     7.95       4         32   Amazon2
     Prop Saver w/ Band 4mm (10pcs)                       2.5      4.18       1          4   HobbyKing
     Power HD High-Torque Servo 1501MG                   60.0     13.30       1         13   Value Hobby
 
@@ -43,6 +43,7 @@ Ad astra / 955 / Soo-Hyun Yoo
     Screws/nuts (2-56)                                  10.0?        0     N/A          0   Own
     Mini USB Cable 150cm                                 N/A      2.00       1          2   Seeedstudio
     Heat shrink                                                   3.83                  4   Digi-Key
+    Screws/nuts/cable ties/bushings                      N/A     42.36     N/A         42   McMaster
 
 # Tools
     Stahl Tools STSSVT Variable Temp. Soldering Station  N/A     14.98       1         15   Amazon
@@ -60,7 +61,8 @@ Ad astra / 955 / Soo-Hyun Yoo
 #   Digi-Key     - $42  + $9.35
 #   Seeedstudio  - $52  + $0
 #   Amazon       - $61  + $8.48
-#   Draganfly    - $24  + $7.95
+#   Amazon2      - $32  + $0
+#   McMaster     - $42  + $?.??
 
 Cost: $567 + $81.30 = $648.35
 Weight: 1242g
