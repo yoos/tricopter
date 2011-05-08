@@ -9,7 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/tricopter</url>
   <depend package="rospy"/>
-  <depend package="rosrt"/>
+  <!--<depend package="rosrt"/>-->
   <depend package="joy"/>
 
 </package>

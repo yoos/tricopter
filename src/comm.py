@@ -66,34 +66,40 @@ def sendData(myStr):
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
-def tric_subscriber():
-    while not rospy.is_shutdown():
-        rospy.Subscriber("joy", Joy, callback, queue_size=1)
-        rospy.spin()
+class TricSubscriber(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.running = True
+    def run(self):
+        while self.running and not rospy.is_shutdown():
+            rospy.Subscriber("joy", Joy, callback, queue_size=1)
+            rospy.spin()
 
-def tric_watchdog():
-    while not rospy.is_shutdown():
-        sendData(dogBone)
-        rospy.sleep(dogFeedInterval)
-
-def tric_comm():
-    subscriberThread = threading.Thread(None, tric_subscriber)
-    subscriberThread.start()
-    watchdogThread = threading.Thread(None, tric_watchdog)
-    watchdogThread.start()
+class TricWatchdog(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.running = True
+        self.times = 0
+    def run(self):
+        while self.running and not rospy.is_shutdown():
+            self.times += 1
+            sendData(dogBone)
+            rospy.loginfo(self.times)
+            rospy.sleep(dogFeedInterval)
+            
 
 #################################### Qt GUI ###################################
 
-class MainWindow(Qt.QMainWindow):
-    def __init__(self, *args):
-        apply(Qt.QMainWindow.__init__, (self,) + args)
-
-class CtrlButton(Qt.QPushButton):
-    def __init__(self, *args):
-        apply(Qt.QPushButton.__init__, (self,) + args)
-        self.connect(self, SIGNAL("clicked()"), self.doPrint)
-    def doPrint(self):
-        rospy.logerr("Control button clicked")
+#class MainWindow(Qt.QMainWindow):
+#    def __init__(self, *args):
+#        apply(Qt.QMainWindow.__init__, (self,) + args)
+#
+#class CtrlButton(Qt.QPushButton):
+#    def __init__(self, *args):
+#        apply(Qt.QPushButton.__init__, (self,) + args)
+#        self.connect(self, SIGNAL("clicked()"), self.doPrint)
+#    def doPrint(self):
+#        rospy.logerr("Control button clicked")
 
 #mainWin = MainWindow()
 
@@ -101,7 +107,20 @@ class CtrlButton(Qt.QPushButton):
 
 if __name__ == "__main__" :
     try:
-        tric_comm()
+        tricSub = TricSubscriber()
+        tricSub.start()
+        tricWatch = TricWatchdog()
+        tricWatch.start()
+        raw_input("Hit <enter> to quit")
+
+        # Stop the while loops
+        tricSub.running = False
+        tricWatch.running = False
+
+        # Wait for threads to finish jobs
+        tricSub.join()
+        tricWatch.join()
+
     except rospy.ROSInterruptException:
         pass
     #mainWin.show()
