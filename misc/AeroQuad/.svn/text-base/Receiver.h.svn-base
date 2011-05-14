@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.1 - January 2011
+  AeroQuad v2.4 - April 2011
   www.AeroQuad.com
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -31,7 +31,7 @@ public:
   float transmitterSmooth[LASTCHANNEL];
   float mTransmitter[LASTCHANNEL];
   float bTransmitter[LASTCHANNEL];
-  unsigned long currentTime, previousTime;
+  //unsigned long currentTime, previousTime;
 
   Receiver(void) {
     transmitterCommand[ROLL] = 1500;
@@ -68,23 +68,38 @@ public:
     }
   }
 
+  // returns non-smoothed non-scaled ADC data in PWM full range 1000-2000 values
   const int getRaw(byte channel) {
     return receiverData[channel];
   }
-
+  
+  // returns raw but smoothed receiver(channel) in PWM
+  const int getRawSmoothed(byte channel) {
+    return transmitterCommandSmooth[channel];
+  }
+ 
+   // returns smoothed & scaled receiver(channel) in PWM values, zero centered
   const int getData(byte channel) {
-    // reduce sensitivity of transmitter input by xmitFactor
     return transmitterCommand[channel];
+  }
+  
+  // return the smoothed & scaled number of radians/sec in stick movement - zero centered
+  const float getSIData(byte channel) {
+    // 2.3 Original
+    return ((transmitterCommand[channel] - transmitterZero[channel]) * (2.5 * PWM2RAD));  // +/- 2.5RPS 50% of full rate
+    // 2.3 Stable
+    //return ((transmitterCommand[channel] - transmitterZero[channel]) * (5.0 * PWM2RAD));  // +/- 5RPS factored by xmitfactor of full rate
   }
 
   const int getTrimData(byte channel) {
     return receiverData[channel] - transmitterTrim[channel];
   }
 
+  // returns Zero value of channel in PWM
   const int getZero(byte channel) {
     return transmitterZero[channel];
   }
-
+  // sets zero value of channel in PWM
   void setZero(byte channel, int value) {
     transmitterZero[channel] = value;
   }
@@ -132,15 +147,15 @@ public:
   const float getAngle(byte channel) {
     // Scale 1000-2000 usecs to -45 to 45 degrees
     // m = 0.09, b = -135
-    // reduce transmitterCommand by xmitFactor to lower sensitivity of transmitter input
     return (0.09 * transmitterCommand[channel]) - 135;
+    //return (0.09 * receiverData[channel]) - 135;
   }
 };
 
 /*************************************************/
 /*************** AeroQuad PCINT ******************/
 /*************************************************/
-#if defined(AeroQuad_v1) || defined(AeroQuad_v18) || defined(AeroQuad_Wii) || defined(AeroQuad_v1_IDG)
+#if defined(AeroQuad_v1) || defined(AeroQuad_v18) || defined(AeroQuad_Mini) || defined(AeroQuad_Wii) || defined(AeroQuad_v1_IDG)
 volatile uint8_t *port_to_pcmask[] = {
   &PCMSK0,
   &PCMSK1,
@@ -257,15 +272,17 @@ public:
       // Apply transmitter calibration adjustment
       receiverData[channel] = (mTransmitter[channel] * lastGoodWidth) + bTransmitter[channel];
       // Smooth the flight control transmitter inputs
-      transmitterCommandSmooth[channel] = smooth(receiverData[channel], transmitterCommandSmooth[channel], transmitterSmooth[channel]);
+      transmitterCommandSmooth[channel] = filterSmooth(receiverData[channel], transmitterCommandSmooth[channel], transmitterSmooth[channel]);
     }
 
     // Reduce transmitter commands using xmitFactor and center around 1500
-    for (byte channel = ROLL; channel < THROTTLE; channel++)
-      transmitterCommand[channel] = ((transmitterCommandSmooth[channel] - transmitterZero[channel]) * xmitFactor) + transmitterZero[channel];
+    for (byte channel = ROLL; channel < LASTCHANNEL; channel++)
+      if (channel < THROTTLE)
+        transmitterCommand[channel] = ((transmitterCommandSmooth[channel] - transmitterZero[channel]) * xmitFactor) + transmitterZero[channel];
+      else
     // No xmitFactor reduction applied for throttle, mode and
-    for (byte channel = THROTTLE; channel < LASTCHANNEL; channel++)
-      transmitterCommand[channel] = transmitterCommandSmooth[channel];
+    //for (byte channel = THROTTLE; channel < LASTCHANNEL; channel++)
+        transmitterCommand[channel] = transmitterCommandSmooth[channel];
   }
 };
 #endif
@@ -373,7 +390,7 @@ public:
       // Apply transmitter calibration adjustment
       receiverData[channel] = (mTransmitter[channel] * lastGoodWidth) + bTransmitter[channel];
       // Smooth the flight control transmitter inputs
-      transmitterCommandSmooth[channel] = smooth(receiverData[channel], transmitterCommandSmooth[channel], transmitterSmooth[channel]);
+      transmitterCommandSmooth[channel] = filterSmooth(receiverData[channel], transmitterCommandSmooth[channel], transmitterSmooth[channel]);
     }
 
     // Reduce transmitter commands using xmitFactor and center around 1500
@@ -416,13 +433,13 @@ public:
     SREG = oldSREG;
 
     for(byte channel = ROLL; channel < LASTCHANNEL; channel++) {
-      currentTime = micros();
+      //currentTime = micros();
       // Apply transmitter calibration adjustment
       receiverData[channel] = (mTransmitter[channel] * data[channel]) + bTransmitter[channel];
       // Smooth the flight control transmitter inputs
-      transmitterCommandSmooth[channel] = smooth(receiverData[channel], transmitterCommandSmooth[channel], transmitterSmooth[channel]);
+      transmitterCommandSmooth[channel] = filterSmooth(receiverData[channel], transmitterCommandSmooth[channel], transmitterSmooth[channel]);
       //transmitterCommandSmooth[channel] = transmitterFilter[channel].filter(receiverData[channel]);
-      previousTime = currentTime;
+      //previousTime = currentTime;
     }
 
     // Reduce transmitter commands using xmitFactor and center around 1500
@@ -466,7 +483,8 @@ ISR(TIMER4_CAPT_vect)//interrupt.
     }
     else
     {
-      PWM_RAW[PPM_Counter]=Pulse_Width; //Saving pulse.
+      //PWM_RAW[PPM_Counter]=Pulse_Width; //Saving pulse.
+      PWM_RAW[PPM_Counter & 0x07]=Pulse_Width; //Saving pulse.
       PPM_Counter++;
     }
     Start_Pulse=ICR4;
@@ -517,12 +535,12 @@ public:
 
   void read(void) {
     for(byte channel = ROLL; channel < LASTCHANNEL; channel++) {
-      currentTime = micros();
+      //currentTime = micros();
       // Apply transmitter calibration adjustment
       receiverData[channel] = (mTransmitter[channel] * ((PWM_RAW[receiverPin[channel]]+600)/2)) + bTransmitter[channel];
       // Smooth the flight control transmitter inputs
-      transmitterCommandSmooth[channel] = smooth(receiverData[channel], transmitterCommandSmooth[channel], transmitterSmooth[channel]);
-      previousTime = currentTime;
+      transmitterCommandSmooth[channel] = filterSmooth(receiverData[channel], transmitterCommandSmooth[channel], transmitterSmooth[channel]);
+      //previousTime = currentTime;
     }
 
     // Reduce transmitter commands using xmitFactor and center around 1500
@@ -599,12 +617,12 @@ public:
 
 
     for(byte channel = ROLL; channel < LASTCHANNEL; channel++) {
-      currentTime = micros();
+      //currentTime = micros();
       // Apply transmitter calibration adjustment
       receiverData[channel] = (mTransmitter[channel] * data[channel]) + bTransmitter[channel];
       // Smooth the flight control transmitter inputs
-      transmitterCommandSmooth[channel] = smooth(receiverData[channel], transmitterCommandSmooth[channel], transmitterSmooth[channel]);
-      previousTime = currentTime;
+      transmitterCommandSmooth[channel] = filterSmooth(receiverData[channel], transmitterCommandSmooth[channel], transmitterSmooth[channel]);
+      //previousTime = currentTime;
     }
 
     // Reduce transmitter commands using xmitFactor and center around 1500

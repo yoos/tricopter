@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.1 - January 2011
+  AeroQuad v2.4 - April 2011
   www.AeroQuad.com
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -41,38 +41,19 @@ void readPilotCommands() {
       gyro.calibrate(); // defined in Gyro.h
       accel.calibrate(); // defined in Accel.h
       //accel.setOneG(accel.getFlightData(ZAXIS));
-       #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-      flightAngle.calibrate();
-       #endif
+      #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
+        _flightAngle->calibrate();
+      #endif
       zeroIntegralError();
-      #ifndef BatteryMonitor
       motors.pulseMotors(3);
-      #endif
-      #ifdef BatteryMonitor
-      ledCW(); ledCW(); ledCW();
-      #endif
+      // ledCW() is currently a private method in BatteryMonitor.h, fix and agree on this behavior in next revision
+      //#if defined(BattMonitor) && defined(ArduCopter)
+      //  ledCW(); ledCW(); ledCW();
+      //#endif
       #ifdef ArduCopter
         zero_ArduCopter_ADC();
       #endif
     }   
-    // Multipilot Zero Gyro sensors (left stick no throttle, right stick upper right corner)
-    if ((receiver.getRaw(ROLL) > MAXCHECK) && (receiver.getRaw(PITCH) > MAXCHECK)) {
-      accel.calibrate(); // defined in Accel.h
-      zeroIntegralError();
-      motors.pulseMotors(3);
-      #ifdef ArduCopter
-        zero_ArduCopter_ADC();
-      #endif
-    }   
-    // Multipilot Zero Gyros (left stick no throttle, right stick upper left corner)
-    if ((receiver.getRaw(ROLL) < MINCHECK) && (receiver.getRaw(PITCH) > MAXCHECK)) {
-      gyro.calibrate();
-      zeroIntegralError();
-      motors.pulseMotors(4);
-      #ifdef ArduCopter
-        zero_ArduCopter_ADC();
-      #endif
-    }
     // Arm motors (left stick lower right corner)
     if (receiver.getRaw(YAW) > MAXCHECK && armed == OFF && safetyCheck == ON) {
       zeroIntegralError();
@@ -94,23 +75,32 @@ void readPilotCommands() {
     receiver.setTransmitterTrim(ROLL, receiver.getRaw(ROLL));
     receiver.setTransmitterTrim(PITCH, receiver.getRaw(PITCH));
     receiver.setTransmitterTrim(YAW, receiver.getRaw(YAW));
+    //receiver.setZero(ROLL, receiver.getRaw(ROLL));
+    //receiver.setZero(PITCH, receiver.getRaw(PITCH));
+    //receiver.setZero(YAW, receiver.getRaw(YAW));
   }
   
-  // Check Mode switch for Acro or Stable
-  if (receiver.getRaw(MODE) > 1500) {
-    #if defined(AeroQuad_v18) || defined(AeroQuadMega_v2)
-      if (flightMode == ACRO)
-        digitalWrite(LED2PIN, HIGH);
-    #endif
-    flightMode = STABLE;
- }
-  else {
-    #if defined(AeroQuad_v18) || defined(AeroQuadMega_v2)
-      if (flightMode == STABLE)
-        digitalWrite(LED2PIN, LOW);
-    #endif
+  #ifdef AeroQuad_Mini
     flightMode = ACRO;
-  }
+  #else
+    // Check Mode switch for Acro or Stable
+    if (receiver.getRaw(MODE) > 1500) {
+      if (flightMode == ACRO) {
+        #if defined(AeroQuad_v18) || defined(AeroQuadMega_v2)
+          digitalWrite(LED2PIN, HIGH);
+        #endif
+        zeroIntegralError();
+      }
+      flightMode = STABLE;
+   }
+    else {
+      #if defined(AeroQuad_v18) || defined(AeroQuadMega_v2)
+        if (flightMode == STABLE)
+          digitalWrite(LED2PIN, LOW);
+      #endif
+      flightMode = ACRO;
+    }
+  #endif
   
    #if defined(APM_OP_CHR6DM) || defined(ArduCopter) 
       if (flightMode == ACRO) {
@@ -124,25 +114,25 @@ void readPilotCommands() {
    #endif
   
   #ifdef AltitudeHold
-    
    if (receiver.getRaw(AUX) < 1750) {
-      if (storeAltitude == ON) {
-        holdAltitude = altitude.getData();
-        holdThrottle = receiver.getData(THROTTLE);
-        PID[ALTITUDE].integratedError = 0;
-        accel.setOneG(accel.getFlightData(ZAXIS));
-        storeAltitude = OFF;
-      }
-      altitudeHold = ON;
-    }
-    else {
-      storeAltitude = ON;
-      altitudeHold = OFF;
-    }
+     if (altitudeHold != ALTPANIC ) {  // check for special condition with manditory override of Altitude hold
+       if (storeAltitude == ON) {
+         holdAltitude = altitude.getData();
+         holdThrottle = receiver.getData(THROTTLE);
+         PID[ALTITUDE].integratedError = 0;
+         PID[ALTITUDE].lastPosition = holdAltitude;  // add to initialize hold position on switch turn on.
+         //accel.setOneG(accel.getFlightData(ZAXIS));  // AKA need to fix this
+         storeAltitude = OFF;
+       }
+       altitudeHold = ON;
+     }
+     // note, Panic will stay set until Althold is toggled off/on
+   } 
+   else {
+     storeAltitude = ON;
+     altitudeHold = OFF;
+   }
   #endif
-  
-  // Use for correcting gyro drift with v2.0 Shield
-  //gyro.setReceiverYaw(receiver.getData(YAW));
 }
 
 

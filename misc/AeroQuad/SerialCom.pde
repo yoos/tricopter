@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.1 - January 2011
+  AeroQuad v2.4 - April 2011
   www.AeroQuad.com
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -36,6 +36,11 @@ void readSerialPID(unsigned char PIDid) {
   pid->D = readFloatSerial();
   pid->lastPosition = 0;
   pid->integratedError = 0;
+  if (PIDid == HEADING)
+    pid->typePID = TYPEPI;
+  else
+    pid->typePID = NOTYPE;
+  pid->firstPass = true;
 }
 
 void readSerialCommand() {
@@ -62,7 +67,7 @@ void readSerialCommand() {
       readSerialPID(LEVELPITCH);
       readSerialPID(LEVELGYROROLL);
       readSerialPID(LEVELGYROPITCH);
-      windupGuard = readFloatSerial();
+      windupGuard = readFloatSerial(); // defaults found in setup() of AeroQuad.pde
       break;
     case 'G': // Receive auto level configuration
       levelLimit = readFloatSerial();
@@ -82,9 +87,6 @@ void readSerialCommand() {
       gyro.setSmoothFactor(readFloatSerial());
       accel.setSmoothFactor(readFloatSerial());
       timeConstant = readFloatSerial();
-#if defined(AeroQuad_v1) || defined(AeroQuad_v18)
-      flightAngle.initialize();
-#endif
       break;
     case 'M': // Receive transmitter smoothing values
       receiver.setXmitFactor(readFloatSerial());
@@ -138,8 +140,11 @@ void readSerialCommand() {
       for (byte motor = FRONT; motor < LASTMOTOR; motor++)
         motors.setRemoteCommand(motor, readFloatSerial());
       break;
-    case 'a':
-      // spare
+    case 'a': // fast telemetry transfer
+      if (readFloatSerial() == 1.0)
+        fastTransfer = ON;
+      else
+        fastTransfer = OFF;
       break;
     case 'b': // calibrate gyros
       gyro.calibrate();
@@ -147,7 +152,7 @@ void readSerialCommand() {
     case 'c': // calibrate accels
       accel.calibrate();
 #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-      flightAngle.calibrate();
+      flightAngle->calibrate();
       accel.setOneG(accel.getFlightData(ZAXIS));
 #endif
       break;
@@ -162,7 +167,7 @@ void readSerialCommand() {
 #endif
       break;
     case '~': //  read Camera values 
-      #ifdef Camera
+#ifdef Camera
       camera.setMode(readFloatSerial());
       camera.setCenterPitch(readFloatSerial());
       camera.setCenterRoll(readFloatSerial());
@@ -176,7 +181,7 @@ void readSerialCommand() {
       camera.setServoMaxPitch(readFloatSerial());
       camera.setServoMaxRoll(readFloatSerial());
       camera.setServoMaxYaw(readFloatSerial());
-      #endif
+#endif
       break;
     }
     digitalWrite(LEDPIN, HIGH);
@@ -187,20 +192,22 @@ void readSerialCommand() {
 //********************************* Serial Telemetry ************************************************
 //***************************************************************************************************
 
-void PrintValueComma(float val)
-{
+void PrintValueComma(float val) {
   Serial.print(val);
   comma();
 }
 
-void PrintValueComma(char val)
-{
+void PrintValueComma(double val) {
   Serial.print(val);
   comma();
 }
 
-void PrintValueComma(int val)
-{
+void PrintValueComma(char val) {
+  Serial.print(val);
+  comma();
+}
+
+void PrintValueComma(int val) {
   Serial.print(val);
   comma();
 }
@@ -222,11 +229,14 @@ void sendSerialTelemetry() {
   update = 0;
   switch (queryType) {
   case '=': // Reserved debug command to view any variable from Serial Monitor
-    //printFreeMemory();
-    //Serial.print(gyro.getHeading());
-    //comma();
-    //Serial.print(batteryMonitor, 2);
+    //PrintValueComma(gyro.getFlightData(PITCH));
+    //PrintValueComma(flightAngle->getData(PITCH));
+    //PrintValueComma(flightAngle->getGyroUnbias(PITCH));
+    //PrintValueComma(receiver.getZero(ROLL));
+    //PrintValueComma(flightAngle->getData(ROLL));
+    //Serial.print(degrees(flightAngle->getData(YAW)));
     //Serial.println();
+    //printFreeMemory();
     //queryType = 'X';
     break;
   case 'B': // Send roll and pitch gyro PID values
@@ -250,8 +260,6 @@ void sendSerialTelemetry() {
     queryType = 'X';
     break;
   case 'H': // Send auto level configuration values
-    //Serial.print(levelLimit);
-    //comma();
 		PrintValueComma(levelLimit);
     Serial.println(levelOff);
     queryType = 'X';
@@ -268,7 +276,7 @@ void sendSerialTelemetry() {
     Serial.println(PID[ZDAMPENING].D);
 #else
     for(byte i=0; i<9; i++) {
-      PrintValueComma(0);
+     PrintValueComma(0);
     }
     Serial.println('0');
 #endif
@@ -309,10 +317,11 @@ void sendSerialTelemetry() {
     for (byte axis = ROLL; axis < YAW; axis++) {
       PrintValueComma(levelAdjust[axis]);
     }
-    PrintValueComma(flightAngle.getData(ROLL));
-    PrintValueComma(flightAngle.getData(PITCH));
+    PrintValueComma(degrees(flightAngle->getData(ROLL)));
+    PrintValueComma(degrees(flightAngle->getData(PITCH)));
     #if defined(HeadingMagHold) || defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-      PrintValueComma(compass.getAbsoluteHeading());
+      //PrintValueComma(compass.getAbsoluteHeading());
+      PrintValueComma(flightAngle->getDegreesHeading(YAW));
     #else
       PrintValueComma(0);
     #endif
@@ -329,7 +338,7 @@ void sendSerialTelemetry() {
     Serial.println();
     break;
   case 'R': // Raw magnetometer data
-#if defined(HeadingMagHold) && defined(AeroQuad_v2)
+#if defined(HeadingMagHold)
     PrintValueComma(compass.getRawData(XAXIS));
     PrintValueComma(compass.getRawData(YAXIS));
     Serial.println(compass.getRawData(ZAXIS));
@@ -342,7 +351,10 @@ void sendSerialTelemetry() {
   case 'S': // Send all flight data
     PrintValueComma(deltaTime);
     for (byte axis = ROLL; axis < LASTAXIS; axis++) {
-      PrintValueComma(gyro.getFlightData(axis));
+      if (axis == PITCH)
+        PrintValueComma(-gyro.getFlightData(axis));
+      else
+        PrintValueComma(gyro.getFlightData(axis));
     }
     #ifdef BattMonitor
       PrintValueComma(batteryMonitor.getData());
@@ -356,16 +368,22 @@ void sendSerialTelemetry() {
       PrintValueComma(motors.getMotorCommand(motor));
     }
     for (byte axis = ROLL; axis < LASTAXIS; axis++) {
-      PrintValueComma(accel.getFlightData(axis));
-    }
+      if (axis == ROLL)
+        PrintValueComma(accel.getFlightData(YAXIS));
+      else if (axis == PITCH)
+        PrintValueComma(accel.getFlightData(XAXIS));
+      else
+        PrintValueComma(accel.getFlightData(ZAXIS));
+    }  
     Serial.print(armed, BIN);
     comma();
     if (flightMode == STABLE)
       PrintValueComma(2000);
     if (flightMode == ACRO)
       PrintValueComma(1000);
-    #if defined(HeadingMagHold) || defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-      PrintValueComma(compass.getAbsoluteHeading());
+    #ifdef HeadingMagHold
+      //PrintValueComma(compass.getAbsoluteHeading());
+      PrintValueComma(flightAngle->getDegreesHeading(YAW));
     #else
       PrintValueComma(0);
     #endif
@@ -408,7 +426,13 @@ void sendSerialTelemetry() {
     PrintValueComma(receiver.getData(YAW));
     PrintValueComma(headingHold);
     PrintValueComma(setHeading);
-    Serial.println(relativeHeading);
+    // AKA - Configurator wants -180/180 for headings,
+    // when heading hold active, the relative heading can be > 180 due to the way it's calculated
+    // this corrects it just for the configurator.
+    if ((setHeading + relativeHeading) > 180)
+      Serial.println(-360 + relativeHeading);
+    else
+      Serial.println(relativeHeading);
     break;
   case '6': // Report remote commands
     for (byte motor = FRONT; motor < LEFT; motor++) {
@@ -436,15 +460,13 @@ void sendSerialTelemetry() {
     PrintValueComma(5);
 #elif defined(ArduCopter)
     PrintValueComma(6);
-#elif defined(Multipilot)
-    PrintValueComma(7);
-#elif defined(MultipilotI2C)
-    PrintValueComma(8);
 #elif defined(AeroQuadMega_CHR6DM)
     PrintValueComma(5);
 #elif defined(APM_OP_CHR6DM)
     PrintValueComma(6);
-#endif
+#elif defined(AeroQuad_Mini)
+    PrintValueComma(2);
+#endif    
     // Determine which motor flight configuration for Configurator GUI
 #if defined(plusConfig)
     Serial.print('0');
@@ -479,42 +501,25 @@ void sendSerialTelemetry() {
     queryType = 'X';
     break;
   case '`': // Send Camera values 
-    #ifdef Camera
-    //Serial.print(camera.getMode());
-    //comma();
+#ifdef Camera
     PrintValueComma(camera.getMode());
-    //Serial.print(camera.getCenterPitch());
-    //comma();
     PrintValueComma(camera.getCenterPitch());
-    //Serial.print(camera.getCenterRoll());
-    //comma();
     PrintValueComma(camera.getCenterRoll());
-    //Serial.print(camera.getCenterYaw());
-    //comma();
     PrintValueComma(camera.getCenterYaw());
+
     Serial.print(camera.getmCameraPitch() , 2);
     comma();
     Serial.print(camera.getmCameraRoll() , 2);
     comma();
     Serial.print(camera.getmCameraYaw() , 2);
     comma();
-    //Serial.print(camera.getServoMinPitch());
-    //comma();
     PrintValueComma(camera.getServoMinPitch());
-    //Serial.print(camera.getServoMinRoll());
-    //comma();
     PrintValueComma(camera.getServoMinRoll());
-    //Serial.print(camera.getServoMinYaw());
-    //comma();
     PrintValueComma(camera.getServoMinYaw());
-    //Serial.print(camera.getServoMaxPitch());
-    //comma();
     PrintValueComma(camera.getServoMaxPitch());
-    //Serial.print(camera.getServoMaxRoll());
-    //comma();
     PrintValueComma(camera.getServoMaxRoll());
     Serial.println(camera.getServoMaxYaw());
-    #endif
+#endif
     break;
   }
 }
@@ -552,7 +557,85 @@ void printInt(int data) {
   msb = data >> 8;
   lsb = data & 0xff;
 
-  Serial.print(msb, BYTE);
-  Serial.print(lsb, BYTE);
+  binaryPort->print(msb, BYTE);
+  binaryPort->print(lsb, BYTE);
 }
+
+void sendBinaryFloat(float data) {
+  union binaryFloatType {
+    byte floatByte[4];
+    float floatVal;
+  } binaryFloat;
+  
+  binaryFloat.floatVal = data;
+  binaryPort->print(binaryFloat.floatByte[3], BYTE);
+  binaryPort->print(binaryFloat.floatByte[2], BYTE);
+  binaryPort->print(binaryFloat.floatByte[1], BYTE);
+  binaryPort->print(binaryFloat.floatByte[0], BYTE);
+}
+
+void sendBinaryuslong(unsigned long data) {
+  union binaryuslongType {
+    byte uslongByte[4];
+    unsigned long uslongVal;
+  } binaryuslong;
+  
+  binaryuslong.uslongVal = data;
+  binaryPort->print(binaryuslong.uslongByte[3], BYTE);
+  binaryPort->print(binaryuslong.uslongByte[2], BYTE);
+  binaryPort->print(binaryuslong.uslongByte[1], BYTE);
+  binaryPort->print(binaryuslong.uslongByte[0], BYTE);
+}
+
+#ifdef BinaryWrite
+void fastTelemetry(void)
+{
+  // **************************************************************
+  // ***************** Fast Transfer Of Sensor Data ***************
+  // **************************************************************
+  // AeroQuad.h defines the output rate to be 10ms
+  // Since writing to UART is done by hardware, unable to measure data rate directly
+  // Through analysis:  115200 baud = 115200 bits/second = 14400 bytes/second
+  // If float = 4 bytes, then 3600 floats/second
+  // If 10 ms output rate, then 36 floats/10ms
+  // Number of floats written using sendBinaryFloat is 15
+
+  if (armed == ON) {
+    #ifdef OpenlogBinaryWrite
+       printInt(21845); // Start word of 0x5555
+       sendBinaryuslong(currentTime);
+//        printInt((int)flightMode);
+       for (byte axis = ROLL; axis < LASTAXIS; axis++) sendBinaryFloat(gyro.getData(axis));
+       for (byte axis = XAXIS; axis < LASTAXIS; axis++) sendBinaryFloat(accel.getData(axis));
+//        sendBinaryFloat(accel.accelOneG);
+       #ifdef HeadingMagHold
+//          sendBinaryFloat(compass.hdgX);
+//          sendBinaryFloat(compass.hdgY);
+           sendBinaryFloat(compass.getRawData(XAXIS));
+           sendBinaryFloat(compass.getRawData(YAXIS));
+           sendBinaryFloat(compass.getRawData(ZAXIS));
+       #else
+         sendBinaryFloat(0.0);
+         sendBinaryFloat(0.0);
+//          sendBinaryFloat(0.0);
+       #endif
+//        for (byte axis = ROLL; axis < ZAXIS; axis++) sendBinaryFloat(flightAngle->getData(axis));
+       printInt(32767); // Stop word of 0x7FFF
+    #else
+       printInt(21845); // Start word of 0x5555
+       for (byte axis = ROLL; axis < LASTAXIS; axis++) sendBinaryFloat(gyro.getData(axis));
+       for (byte axis = XAXIS; axis < LASTAXIS; axis++) sendBinaryFloat(accel.getData(axis));
+       for (byte axis = ROLL; axis < LASTAXIS; axis++)
+       #ifdef HeadingMagHold
+         sendBinaryFloat(compass.getRawData(axis));
+       #else
+         sendBinaryFloat(0);
+       #endif
+       for (byte axis = ROLL; axis < LASTAXIS; axis++) sendBinaryFloat(flightAngle->getGyroUnbias(axis));
+       for (byte axis = ROLL; axis < LASTAXIS; axis++) sendBinaryFloat(flightAngle->getData(axis));
+       printInt(32767); // Stop word of 0x7FFF
+    #endif
+  }
+}
+#endif    
 

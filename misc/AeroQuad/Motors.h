@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.1 - January 2011
+  AeroQuad v2.4 - April 2011
   www.AeroQuad.com
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -391,8 +391,8 @@ public:
     TCCR1A =((1<<WGM11)|(1<<COM1B1)|(1<<COM1C1)); //Please read page 131 of DataSheet, we are changing the registers settings of WGM11,COM1B1,COM1A1 to 1 thats all...
     TCCR1B = (1<<WGM13)|(1<<WGM12)|(1<<CS11); //Prescaler set to 8, that give us a resolution of 0.5us, read page 134 of data sheet
     //OCR1A = 3000; //PB5, none
-    OCR1B = 3000; //PB6, OUT2
-    OCR1C = 3000; //PB7  OUT3
+    OCR1B = 2000; //PB6, OUT2
+    OCR1C = 2000; //PB7  OUT3
     ICR1 = 6600; //300hz freq...
 
     // Init PWM Timer 3
@@ -402,8 +402,8 @@ public:
     TCCR3A =((1<<WGM31)|(1<<COM3B1)|(1<<COM3C1));
     TCCR3B = (1<<WGM33)|(1<<WGM32)|(1<<CS31);
     //OCR3A = 3000; //PE3, NONE
-    OCR3B = 3000; //PE4, OUT7
-    OCR3C = 3000; //PE5, OUT6
+    OCR3B = 2000; //PE4, OUT7
+    OCR3C = 2000; //PE5, OUT6
     ICR3 = 40000; //50hz freq (standard servos)
 
     // Init PWM Timer 5
@@ -414,8 +414,8 @@ public:
     TCCR5A =((1<<WGM51)|(1<<COM5B1)|(1<<COM5C1));
     TCCR5B = (1<<WGM53)|(1<<WGM52)|(1<<CS51);
     //OCR5A = 3000; //PL3,
-    OCR5B = 3000; //PL4, OUT0
-    OCR5C = 3000; //PL5, OUT1
+    OCR5B = 2000; //PL4, OUT0
+    OCR5C = 2000; //PL5, OUT1
     ICR5 = 6600; //300hz freq
 
     // Init PPM input and PWM Timer 4
@@ -429,12 +429,14 @@ public:
     TCCR4B = ((1<<WGM43)|(1<<WGM42)|(1<<CS41)|(1<<ICES4));
 
     OCR4A = 40000; ///50hz freq. (standard servos)
-    OCR4B = 3000; //PH4, OUT5
-    OCR4C = 3000; //PH5, OUT4
+    OCR4B = 2000; //PH4, OUT5
+    OCR4C = 2000; //PH5, OUT4
 
     //TCCR4B |=(1<<ICES4); //Changing edge detector (rising edge).
     //TCCR4B &=(~(1<<ICES4)); //Changing edge detector. (falling edge)
     TIMSK4 |= (1<<ICIE4); // Enable Input Capture interrupt. Timer interrupt mask
+    
+    commandAllMotors(1000);
   }
 
   void write (void) {
@@ -592,8 +594,8 @@ MotorYaw[5] =  100;
 
 void motor_axis_correction()
 {
-int i;
-for (i=0;i<LASTMOTOR;i++)
+//int i;
+for (byte i=0;i<LASTMOTOR;i++)
   {
   motorAxisCommandPitch[i] = (motorAxisCommand[PITCH] / 100.0) * MotorPitch[i];
   motorAxisCommandRoll[i] = (motorAxisCommand[ROLL] / 100.0) * MotorRoll[i];
@@ -604,9 +606,9 @@ for (i=0;i<LASTMOTOR;i++)
 //After that we can mix them together:
 void motor_matrix_command()
 {
-int i;
+//int i;
 float valuemotor;
-for (i=0;i<LASTMOTOR;i++)
+for (byte i=0;i<LASTMOTOR;i++)
   {
    valuemotor = ((Throttle* MotorGas[i])/100) + motorAxisCommandPitch[i] + motorAxisCommandYaw[i] + motorAxisCommandRoll[i];
    //valuemotor = Throttle + motorAxisCommandPitch[i] + motorAxisCommandYaw[i] + motorAxisCommandRoll[i]; // OLD VERSION WITHOUT GAS CONTROL ON Mixertable
@@ -780,13 +782,13 @@ void matrix_debug()
 void WireMotorWrite()
 {
 int i = 0;
-int nmotor=0;
+//int nmotor=0;
 int index=0;
 int tout=0;
 char buff_i2c[10];
 
 Wire.endTransmission(); //end transmission
-for(nmotor=0;nmotor<6;nmotor++)
+for(byte nmotor=0;nmotor<6;nmotor++)
   {
   index=0x29+nmotor;
   Wire.beginTransmission(index);

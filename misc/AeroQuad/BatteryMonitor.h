@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.1 - January 2011
+  AeroQuad v2.4 - April 2011
   www.AeroQuad.com
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -35,10 +35,9 @@ public:
   float batteryVoltage;
 
   BatteryMonitor(void) {
-
     lowVoltageWarning = 10.2; //10.8;
     lowVoltageAlarm = 9.5; //10.2;
-    batteryVoltage = lowVoltageWarning+2;
+    batteryVoltage = lowVoltageWarning + 2;
     batteryStatus = OK;
   }
 
@@ -47,7 +46,7 @@ public:
   virtual void lowBatteryEvent(byte);
 
   void measure(byte armed) {
-    batteryVoltage = smooth(readBatteryVoltage(BATTERYPIN), batteryVoltage, 0.1);
+    batteryVoltage = filterSmooth(readBatteryVoltage(BATTERYPIN), batteryVoltage, 0.1);
     if (armed == ON) {
       if (batteryVoltage < lowVoltageWarning) batteryStatus = WARNING;
       if (batteryVoltage < lowVoltageAlarm) batteryStatus = ALARM;
@@ -178,11 +177,16 @@ public:
 // *******************************************************************************
 class BatteryMonitor_AeroQuad : public BatteryMonitor {
 private:
-  #define BUZZERPIN 49
-  long previousTime;
-  byte state;
+  #if defined (__AVR_ATmega328P__)
+    #define BUZZERPIN 12
+  #else
+    #define BUZZERPIN 49
+  #endif
+
+  byte state, firstAlarm;
   float diode; // raw voltage goes through diode on Arduino
   float batteryScaleFactor;
+  long currentBatteryTime, previousBatteryTime;
 
 public:
   BatteryMonitor_AeroQuad() : BatteryMonitor(){}
@@ -191,50 +195,56 @@ public:
     float R1   = 15000;
     float R2   =  7500;
     float Aref =     5.0;
-    batteryScaleFactor = ((Aref / 1024.0) * ((R1 + R2) / R2));    
+    batteryScaleFactor = ((Aref / 1024.0) * ((R1 + R2) / R2));
+#ifdef AeroQuad_Mini
+    diode = 0.0;
+#else    
     diode = 0.9; // measured with DMM
+#endif    
     analogReference(DEFAULT);
-    pinMode(BUZZERPIN, OUTPUT); // connect a 12V buzzer to pin 49
+    pinMode(BUZZERPIN, OUTPUT); // connect a 12V buzzer to buzzer pin
     digitalWrite(BUZZERPIN, LOW);
-    previousTime = millis();
+    previousBatteryTime = millis();
     state = LOW;
+    firstAlarm = OFF;
   }
 
   void lowBatteryEvent(byte level) {
-    long currentTime = millis()- previousTime;
+    long currentBatteryTime = millis() - previousBatteryTime;
     if (level == OK) {
       digitalWrite(BUZZERPIN, LOW);
       autoDescent = 0;
-      holdAltitude = 0;
     }
     if (level == WARNING) {
-      if ((autoDescent == 0) && (currentTime > 1000)) {
-        autoDescent = -50;
-      }
-      if (currentTime > 1100) {
-        autoDescent = 50;
-        digitalWrite(LED2PIN, HIGH);
+      //if ((autoDescent == 0) && (currentBatteryTime > 1000)) {
+      //  autoDescent = -50;
+      //}
+      if (currentBatteryTime > 1100) {
+        //autoDescent = 50;
+        digitalWrite(LED3PIN, HIGH);
         digitalWrite(BUZZERPIN, HIGH);
       }
-      if (currentTime > 1200) {
-        previousTime = millis();
-        autoDescent = 0;
-        digitalWrite(LED2PIN, LOW);
+      if (currentBatteryTime > 1200) {
+        previousBatteryTime = millis();
+        //autoDescent = 0;
+        digitalWrite(LED3PIN, LOW);
         digitalWrite(BUZZERPIN, LOW);
       }
     }
     if (level == ALARM) {
-      if (digitalRead(BUZZERPIN) == LOW) autoDescent = 0; // intialize autoDescent to zero if first time in ALARM state
+      if (firstAlarm == OFF) autoDescent = 0; // intialize autoDescent to zero if first time in ALARM state
+      firstAlarm = ON;
       digitalWrite(BUZZERPIN, HIGH); // enable buzzer
-      if ((currentTime > 500) && (throttle > 1400)) {
+      digitalWrite(LED3PIN, HIGH);
+      if ((currentBatteryTime > 500) && (throttle > 1400)) {
         autoDescent -= 1; // auto descend quad
         holdAltitude -= 0.2; // descend if in attitude hold mode
-        previousTime = millis();
-        if (state == LOW) state = HIGH;
-        else state = LOW;
-        digitalWrite(LEDPIN, state);
-        digitalWrite(LED2PIN, state);
-        digitalWrite(LED3PIN, state);
+        previousBatteryTime = millis();
+        //if (state == LOW) state = HIGH;
+        //else state = LOW;
+        //digitalWrite(LEDPIN, state);
+        //digitalWrite(LED2PIN, state);
+        //digitalWrite(LED3PIN, state);
       }
     }
   }
