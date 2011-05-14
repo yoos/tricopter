@@ -20,12 +20,25 @@
 #define PWR_MGM 0x3E
 
 
+/* WIRING GUIDE
+ * 10 kOhm pull-ups on I2C lines.
+ * SCL -> SCL
+ * SDA -> SDA
+ * CLK -> GND
+ * INT -- not connected
+ * GND -> GND
+ * VIO -> 3.3V
+ * VDD -> 3.3V
+ */
+
+
 class ITG3200 {
     uint16_t gBuffer[READ_SIZE];
     char gStr[512];
 
     uint16_t gRaw[3];
     float gVal[3];
+    float gZero[3];
 
 public:
     ITG3200(uint8_t);
