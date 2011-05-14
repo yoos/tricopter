@@ -23,6 +23,7 @@ Ad astra / 955 / Soo-Hyun Yoo
 
 # Control
     Seeeduino Mega (16 MHz)                              3.0?    49.50       1         50   Seeedstudio
+    Seeeduino Mega Protoshield Kit                       1.0?     9.90       1         10   Seeedstudio2
     MODULE 802.15.4 1MW W/WIRE ANT                       5.0?    19.00       2         38   Digi-Key
     XBee Explorer Regulated                              3.0?     9.95       2         10   Sparkfun
     XBee Explorer USB                                    N/A     24.95       1         25   Sparkfun
@@ -60,6 +61,7 @@ Ad astra / 955 / Soo-Hyun Yoo
     Sparkfun     - $117 + $4.75
 #   Digi-Key     - $42  + $9.35
 #   Seeedstudio  - $52  + $0
+    Seeedstudio2 - $10  + $3.35
 #   Amazon       - $61  + $8.48
 #   Amazon2      - $32  + $0
 #   McMaster     - $42  + $5.15
