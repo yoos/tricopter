@@ -36,13 +36,18 @@ class ITG3200 {
     uint16_t gBuffer[READ_SIZE];
     char gStr[512];
 
-    uint16_t gRaw[3];
-    float gVal[3];
-    float gZero[3];
+    uint16_t gRaw[3];   // Raw bits received from ITG-3200
+    float gVal[3];   // Bits mapped to [-1,1]
+
+    int rkIndex;
+    float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
+    float angle[3];   // Calculated angles of rotation
+
+    void UpdateRK();   // Update Runge-Kutta integrator values and calculate angle[].
 
 public:
     ITG3200(uint8_t);
-    void Poll();
+    void Poll();   // Get bits from ITG-3200 and update gVal[].
     float* Get();
     float Get(int);
 };

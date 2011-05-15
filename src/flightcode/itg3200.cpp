@@ -27,6 +27,10 @@ ITG3200::ITG3200(uint8_t range) {
     for (int i=0; i<READ_SIZE; i++) {
         gBuffer[i] = 0;
     }
+
+    rkIndex = 0;
+    rkVal = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}};
+    angle = {0, 0, 0};
 }
 
 void ITG3200::Poll() {
@@ -53,6 +57,24 @@ void ITG3200::Poll() {
         Serial.print("   GY: "); Serial.print(gVal[1]);
         Serial.print("   GZ: "); Serial.println(gVal[2]);
     #endif
+
+    UpdateRK();
+}
+
+void ITG3200::UpdateRK() {
+    for (int i=0; i<3; i++) {
+        rkVal[i][rkIndex] = gVal[i];
+        // Runge-Kutta integration
+        angle[i] = angle[i] + 1/6*(1*rkVal[i][rkIndex] + 
+                                   2*rkVal[i][(rkIndex+1)%4] +
+                                   2*rkVal[i][(rkIndex+2)%4] +
+                                   1*rkVal[i][(rkIndex+3)%4]);
+    }
+    rkIndex = (rkIndex + 1) % 4;
+
+    Serial.print("LX: "); Serial.print(angle[0]);
+    Serial.print("   LY: "); Serial.print(angle[1]);
+    Serial.print("   LZ: "); Serial.println(angle[2]);
 }
 
 float* ITG3200::Get() {
