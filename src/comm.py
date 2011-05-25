@@ -108,9 +108,9 @@ class TricWatchdog(threading.Thread):
 if __name__ == "__main__" :
     try:
         tricSub = TricSubscriber()
-        tricSub.start()
+        tricSub.start()   # Start subscriber thread.
         tricWatch = TricWatchdog()
-        tricWatch.start()
+        tricWatch.start()   # Start watchdog thread.
         raw_input("Hit <enter> to quit")
 
         # Stop the while loops
