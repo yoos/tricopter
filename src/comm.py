@@ -26,7 +26,7 @@ verboseOn = True
 armed = False
 
 axisSigns = [-1, 1, -1, 1, -1, 1]   # Axis sign flips
-axisValues = [126, 126, 126, 126]   # Keep Z value at non-zero so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
+axisValues = [126, 126, 126, 42]   # Keep Z value at some non-zero value so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 buttonValues = []
 
 rospy.init_node("tric_comm_node", anonymous=True)

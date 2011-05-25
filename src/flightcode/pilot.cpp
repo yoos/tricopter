@@ -4,11 +4,11 @@ Pilot::Pilot() {
     Serial.begin(BAUDRATE);
     hasFood = false;
     
-    // Assume serial inputs
+    // Assume serial inputs, all axes zeroed.
     serInput[SX] = 126;
     serInput[SY] = 126;
     serInput[ST] = 126;
-    serInput[SZ] = 1;
+    serInput[SZ] = 42;   // Keep Z value at some non-zero value so user is forced to adjust throttle before motors arm.
 
     #ifdef DEBUG
     Serial.println("Pilot here!");
@@ -83,6 +83,7 @@ void Pilot::Listen() {
 }
 
 void Pilot::Fly(System &mySystem) {
+    // Shift serial input values [1, 251] to correct range for each axis. Z stays positive for ease of calculation.
     axisVal[SX] = serInput[SX] - 126;   // [-125, 125]
     axisVal[SY] = serInput[SY] - 126;   // [-125, 125]
     axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
