@@ -118,17 +118,18 @@ void Pilot::Fly(System &mySystem) {
     }
     tailServoVal = 100 - 0.2*axisVal[ST];
 
-    Serial.print(millis());
-    Serial.print(": ");
+    // Serial.print(millis());
+    // Serial.print(": ");
+
     // Write to motors
     for (int i=0; i<3; i++) {
         mySystem.SetMotor(i, motorVal[i]);
-        Serial.print(motorVal[i]);
-        Serial.print("   ");
+        // Serial.print(motorVal[i]);
+        // Serial.print("   ");
     }
     mySystem.SetServo(tailServoVal);
-    Serial.print(tailServoVal);
-    Serial.println("");
+    // Serial.print(tailServoVal);
+    // Serial.println("");
 
     #ifdef DEBUG
     Serial.println("Pilot is flying.");

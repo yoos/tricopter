@@ -15,7 +15,7 @@ ITG3200::ITG3200(uint8_t range) {
     // Set Range
     readI2C(GYRADDR, 0x16, 1, gBuffer);
     gBuffer[1] = range;
-    gBuffer[1] = (gBuffer[1] << 3);   // See DS.
+    gBuffer[1] = (gBuffer[1] << 3);   // DS says this has to be 3 (+/- 2000 deg/s).
     gBuffer[0] |= gBuffer[1];
     sendI2C(GYRADDR, 0x16, gBuffer[0]);
 
@@ -40,10 +40,13 @@ void ITG3200::Poll() {
     gRaw[1] = ((gBuffer[2] << 8) | gBuffer[3]);
     gRaw[2] = ((gBuffer[4] << 8) | gBuffer[5]);
 
-    for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
+    // Convert raw values to a nice -1 to 1 range.
+    for (int i=0; i<3; i++) {
         float tmp;
         if (gRaw[i] >= 0x8000)   // If zero to negative rot. vel.: 2^16-1 to 2^15...
             tmp = -((signed) (0xFFFF - gRaw[i]));   // ...subtract from 2^16-1.
+        else
+            tmp = gRaw[i];
         switch (i) {
             case 0: gVal[0] = (tmp - GXOFFSET)/0x8000; break;   // Divide by maximum magnitude.
             case 1: gVal[1] = (tmp - GYOFFSET)/0x8000; break;
@@ -58,23 +61,23 @@ void ITG3200::Poll() {
         Serial.print("   GZ: "); Serial.println(gVal[2]);
     #endif
 
-    UpdateRK();
+    ITG3200::UpdateRK();   // Runge-Kutta integration
 }
 
 void ITG3200::UpdateRK() {
     for (int i=0; i<3; i++) {
         rkVal[i][rkIndex] = gVal[i];
         // Runge-Kutta integration
-        angle[i] = angle[i] + 1/6*(1*rkVal[i][rkIndex] + 
-                                   2*rkVal[i][(rkIndex+1)%4] +
-                                   2*rkVal[i][(rkIndex+2)%4] +
-                                   1*rkVal[i][(rkIndex+3)%4]);
+        angle[i] = angle[i] + (1*rkVal[i][rkIndex] + 
+                               2*rkVal[i][(rkIndex+1)%4] +
+                               2*rkVal[i][(rkIndex+2)%4] +
+                               1*rkVal[i][(rkIndex+3)%4])/6;
     }
-    rkIndex = (rkIndex + 1) % 4;
+    rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
 
-    Serial.print("LX: "); Serial.print(angle[0]);
-    Serial.print("   LY: "); Serial.print(angle[1]);
-    Serial.print("   LZ: "); Serial.println(angle[2]);
+    Serial.print("LX: "); Serial.print(gVal[0]);
+    Serial.print("   LY: "); Serial.print(gVal[1]);
+    Serial.print("   LZ: "); Serial.println(gVal[2]);
 }
 
 float* ITG3200::Get() {
