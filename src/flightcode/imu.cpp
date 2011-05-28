@@ -1,7 +1,7 @@
 #include "imu.h"
 
 IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
-             myGyr(0)   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s
+             myGyr(3)   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s
 {
     IMU::reset();
     #ifdef DEBUG
@@ -19,9 +19,9 @@ void IMU::Update() {
     Serial.print(myAcc.Get(AX)); Serial.print("  ");
     Serial.print(myAcc.Get(AY)); Serial.print("  ");
     Serial.print(myAcc.Get(AZ)); Serial.print("  ");
-    Serial.print(myGyr.GetRate(GX)); Serial.print("  ");
-    Serial.print(myGyr.GetRate(GY)); Serial.print("  ");
-    Serial.println(myGyr.GetRate(GZ));
+    Serial.print(myGyr.GetAngle(GX)); Serial.print("  ");
+    Serial.print(myGyr.GetAngle(GY)); Serial.print("  ");
+    Serial.println(myGyr.GetAngle(GZ));
 }
 
 void IMU::Get() {

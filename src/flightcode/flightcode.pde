@@ -31,6 +31,7 @@ int main(void) {
             nextRuntime += SYSINTRV;   // Increment by DT.
             if (Jasper.isAlive) {
                 Tric.Run();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
+                // Serial.println(millis());
                 Yeager.Fly(Tric);
 //              myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
             }
@@ -39,7 +40,6 @@ int main(void) {
             }
             Yeager.Listen();
             Jasper.Watch(Yeager.hasFood);
-            Serial.println(millis());
         }
     }
 

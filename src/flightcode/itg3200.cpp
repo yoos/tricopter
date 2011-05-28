@@ -3,10 +3,8 @@
 ITG3200::ITG3200(uint8_t range) {
     readI2C(GYRADDR, 0x00, 1, gBuffer);   // Who am I?
     
-    #ifdef DEBUG
-        Serial.print("ITG-3200 ID = ");
-        Serial.println((int) gBuffer[0]);
-    #endif
+    Serial.print("ITG-3200 ID = ");
+    Serial.println((int) gBuffer[0]);
 
     // Configure ITG-3200
     // Refer to DS Section 8: Register Description.
@@ -15,13 +13,11 @@ ITG3200::ITG3200(uint8_t range) {
     // Set Range
     readI2C(GYRADDR, 0x16, 1, gBuffer);
     gBuffer[1] = range;
-    gBuffer[1] = (gBuffer[1] << 3);   // See DS for index.
+    gBuffer[1] = (gBuffer[1] << 3);   // FS_SEL is on bits 4 and 3.
     gBuffer[0] |= gBuffer[1];
     sendI2C(GYRADDR, 0x16, gBuffer[0]);
 
-    #ifdef DEBUG
-        Serial.println("ITG-3200 configured!");
-    #endif
+    Serial.println("ITG-3200 configured!");
 
     // Zero buffer.
     for (int i=0; i<READ_SIZE; i++) {
@@ -66,7 +62,7 @@ void ITG3200::Poll() {
 
 void ITG3200::UpdateRK() {
     for (int i=0; i<3; i++) {
-        rkVal[i][rkIndex] = gVal[i];
+        rkVal[i][rkIndex] = gVal[i]*2000 * SYSINTRV/1000 * 8/7;   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
         // Runge-Kutta integration
         angle[i] = angle[i] + (1*rkVal[i][rkIndex] + 
                                2*rkVal[i][(rkIndex+1)%4] +
