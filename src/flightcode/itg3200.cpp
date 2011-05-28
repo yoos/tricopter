@@ -48,9 +48,9 @@ void ITG3200::Poll() {
         else
             tmp = gRaw[i];
         switch (i) {
-            case 0: gVal[0] = (tmp + GXOFFSET)/0x8000; break;   // Divide by maximum magnitude.
-            case 1: gVal[1] = (tmp + GYOFFSET)/0x8000; break;
-            case 2: gVal[2] = (tmp + GZOFFSET)/0x8000; break;
+            case 0: gVal[0] = (tmp - GXOFFSET)/0x8000; break;   // Divide by maximum magnitude.
+            case 1: gVal[1] = (tmp - GYOFFSET)/0x8000; break;
+            case 2: gVal[2] = (tmp - GZOFFSET)/0x8000; break;
             default: break;
         }
     }
