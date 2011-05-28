@@ -4,6 +4,14 @@
 #include "itg3200.cpp"
 #include "bma180.cpp"
 
+// Axis numbers
+#define AX 0
+#define AY 1
+#define AZ 2
+#define GX 0
+#define GY 1
+#define GZ 2
+
 class IMU {
     BMA180 myAcc;
     ITG3200 myGyr;

@@ -48,9 +48,9 @@ void ITG3200::Poll() {
         else
             tmp = gRaw[i];
         switch (i) {
-            case 0: gVal[0] = (tmp - GXOFFSET)/0x8000; break;   // Divide by maximum magnitude.
-            case 1: gVal[1] = (tmp - GYOFFSET)/0x8000; break;
-            case 2: gVal[2] = (tmp - GZOFFSET)/0x8000; break;
+            case 0: gVal[0] = (tmp + GXOFFSET)/0x8000; break;   // Divide by maximum magnitude.
+            case 1: gVal[1] = (tmp + GYOFFSET)/0x8000; break;
+            case 2: gVal[2] = (tmp + GZOFFSET)/0x8000; break;
             default: break;
         }
     }
@@ -75,9 +75,9 @@ void ITG3200::UpdateRK() {
     }
     rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
 
-    Serial.print("LX: "); Serial.print(angle[0]);
-    Serial.print("   LY: "); Serial.print(angle[1]);
-    Serial.print("   LZ: "); Serial.println(angle[2]);
+    // Serial.print("LX: "); Serial.print(angle[0]);
+    // Serial.print("   LY: "); Serial.print(angle[1]);
+    // Serial.print("   LZ: "); Serial.println(angle[2]);
 }
 
 float* ITG3200::Get() {
