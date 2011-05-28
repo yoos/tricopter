@@ -24,18 +24,23 @@ int main(void) {
     // Start system.
     System Tric;
 
+    unsigned long nextRuntime = 0;
+
     for (;;) {
-        Yeager.Listen();
-        Jasper.Watch(Yeager.hasFood);
-        if (Jasper.isAlive) {
-            Yeager.Fly(Tric);
-            Tric.Run();
-//          myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
+        if (millis() >= nextRuntime) {
+            nextRuntime += SYSINTRV;   // Increment by DT.
+            if (Jasper.isAlive) {
+                Tric.Run();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
+                Yeager.Fly(Tric);
+//              myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
+            }
+            else {
+                Tric.Die();
+            }
+            Yeager.Listen();
+            Jasper.Watch(Yeager.hasFood);
+            Serial.println(millis());
         }
-        else {
-            Tric.Die();
-        }
-        delay(25);   // TODO: Once everything's done, make system run at 40 Hz.
     }
 
     return 0;

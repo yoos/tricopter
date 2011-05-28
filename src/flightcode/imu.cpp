@@ -10,8 +10,8 @@ IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
 }
 
 void IMU::Update() {
-    myAcc.Poll();
     myGyr.Poll();
+    myAcc.Poll();
     #ifdef DEBUG
     Serial.println("IMU updated.");
     #endif
