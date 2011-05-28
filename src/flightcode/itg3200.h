@@ -48,8 +48,10 @@ class ITG3200 {
 public:
     ITG3200(uint8_t);
     void Poll();   // Get bits from ITG-3200 and update gVal[].
-    float* Get();
-    float Get(int);
+    float* GetRate();
+    float GetRate(int);
+    float* GetAngle();
+    float GetAngle(int);
 };
 
 #endif // GYRO_H

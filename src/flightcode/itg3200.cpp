@@ -80,11 +80,18 @@ void ITG3200::UpdateRK() {
     // Serial.print("   LZ: "); Serial.println(angle[2]);
 }
 
-float* ITG3200::Get() {
+float* ITG3200::GetRate() {
     return gVal;
 }
 
-float ITG3200::Get(int axis) {
+float ITG3200::GetRate(int axis) {
     return gVal[axis];
 }
 
+float* ITG3200::GetAngle() {
+    return angle;
+}
+
+float ITG3200::GetAngle(int axis) {
+    return angle[axis];
+}
