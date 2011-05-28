@@ -63,9 +63,9 @@ void BMA180::Poll() {
 //  Serial.println(aVal[0]);
         // sprintf(aStr, "AX: %5f  AY: %5f  AZ: %5f", aVal[0], aVal[1], aVal[2]);   // Interpret aRaw as unsigned int.
         // Serial.println(aStr);
-        Serial.print("AX: "); Serial.print(aVal[0]);
-        Serial.print("   AY: "); Serial.print(aVal[1]);
-        Serial.print("   AZ: "); Serial.println(aVal[2]);
+        // Serial.print("AX: "); Serial.print(aVal[0]);
+        // Serial.print("   AY: "); Serial.print(aVal[1]);
+        // Serial.print("   AZ: "); Serial.println(aVal[2]);
 }
 
 float* BMA180::Get() {

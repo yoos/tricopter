@@ -17,14 +17,10 @@ System::System() {
 void System::Run() {
     myIMU.Update();
     if (!armed) {   // Don't run unless armed!
-        #ifdef DEBUG
-        Serial.println("System: Motors not armed.");
-        #endif
+        // Serial.println("System: Motors not armed.");
         if (motorVal[MT] == TMIN && motorVal[MR] == TMIN && motorVal[ML] == TMIN) {
             armed = true;
-            #ifdef DEBUG
             Serial.println("System: Motors armed.");
-            #endif
         }
     }
     else {

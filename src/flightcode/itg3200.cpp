@@ -15,7 +15,7 @@ ITG3200::ITG3200(uint8_t range) {
     // Set Range
     readI2C(GYRADDR, 0x16, 1, gBuffer);
     gBuffer[1] = range;
-    gBuffer[1] = (gBuffer[1] << 3);   // DS says this has to be 3 (+/- 2000 deg/s).
+    gBuffer[1] = (gBuffer[1] << 3);   // See DS for index.
     gBuffer[0] |= gBuffer[1];
     sendI2C(GYRADDR, 0x16, gBuffer[0]);
 

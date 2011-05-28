@@ -1,7 +1,7 @@
 #include "imu.h"
 
 IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
-             myGyr(2)   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s
+             myGyr(0)   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s
 {
     IMU::reset();
     #ifdef DEBUG
@@ -15,17 +15,24 @@ void IMU::Update() {
     #ifdef DEBUG
     Serial.println("IMU updated.");
     #endif
+
+    Serial.print(myAcc.Get(AX)); Serial.print("  ");
+    Serial.print(myAcc.Get(AY)); Serial.print("  ");
+    Serial.print(myAcc.Get(AZ)); Serial.print("  ");
+    Serial.print(myGyr.GetRate(GX)); Serial.print("  ");
+    Serial.print(myGyr.GetRate(GY)); Serial.print("  ");
+    Serial.println(myGyr.GetRate(GZ));
 }
 
 void IMU::Get() {
-    angle = KH * (angle + myGyr.Get(1)*DT) + (1-KH) * myAcc.Get(0); // Doesn't work, but a start to complementary filtering?
+    angle = KH * (angle + myGyr.GetAngle(1)*DT) + (1-KH) * myAcc.Get(0); // Doesn't work, but a start to complementary filtering?
 }
 
 void IMU::deadReckoning() {
     // Update position and orientation regularly
     if (millis() - lastTime > IMU_SAMPLE_INTERVAL) {
         for (int i; i<3; i++) {
-            curRot[i] = curRot[i] + myGyr.Get(i) * (IMU_SAMPLE_INTERVAL/1000);
+            curRot[i] = curRot[i] + myGyr.GetRate(i) * (IMU_SAMPLE_INTERVAL/1000);
         }
     }
 
