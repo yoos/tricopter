@@ -75,9 +75,9 @@ void ITG3200::UpdateRK() {
     }
     rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
 
-    Serial.print("LX: "); Serial.print(gVal[0]);
-    Serial.print("   LY: "); Serial.print(gVal[1]);
-    Serial.print("   LZ: "); Serial.println(gVal[2]);
+    Serial.print("LX: "); Serial.print(angle[0]);
+    Serial.print("   LY: "); Serial.print(angle[1]);
+    Serial.print("   LZ: "); Serial.println(angle[2]);
 }
 
 float* ITG3200::Get() {
