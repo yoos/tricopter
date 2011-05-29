@@ -8,7 +8,7 @@
 #define REGADDR 0x1D
 
 // Calibration values
-#define GXOFFSET 150 // 312
+#define GXOFFSET 151 // 312
 #define GYOFFSET -42 // -90
 #define GZOFFSET 85 // 180
 

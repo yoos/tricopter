@@ -12,11 +12,11 @@
 #define TMAX 180   // Servo signal that registers as maximum throttle to ESC.
 
 #define BAUDRATE 57600
-#define IMU_SAMPLE_INTERVAL 25   // In milliseconds
+#define IMU_SAMPLE_INTERVAL 10   // In milliseconds
 #define GYRO_VREF 1
 #define ACCEL_VREF 1
 
-#define SYSINTRV 25   // System run interval in milliseconds
+#define SYSINTRV 10   // System run interval in milliseconds
 #define SERHEAD 255
 #define DOGBONE 254
 #define DOGLIFE 500   // Watchdog life in milliseconds

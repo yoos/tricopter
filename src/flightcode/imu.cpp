@@ -16,9 +16,9 @@ void IMU::Update() {
     Serial.println("IMU updated.");
     #endif
 
-    Serial.print(myAcc.Get(AX)); Serial.print("  ");
-    Serial.print(myAcc.Get(AY)); Serial.print("  ");
-    Serial.print(myAcc.Get(AZ)); Serial.print("  ");
+    // Serial.print(myAcc.Get(AX)); Serial.print("  ");
+    // Serial.print(myAcc.Get(AY)); Serial.print("  ");
+    // Serial.print(myAcc.Get(AZ)); Serial.print("  ");
     Serial.print(myGyr.GetAngle(GX)); Serial.print("  ");
     Serial.print(myGyr.GetAngle(GY)); Serial.print("  ");
     Serial.println(myGyr.GetAngle(GZ));
