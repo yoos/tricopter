@@ -37,6 +37,9 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
     for (int i=0; i<READ_SIZE; i++) {
         aBuffer[i] = 0;
     }
+
+    rkIndex = 0;
+    rkVal = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}};
 }
 
 void BMA180::Poll() {
@@ -66,6 +69,20 @@ void BMA180::Poll() {
         // Serial.print("AX: "); Serial.print(aVal[0]);
         // Serial.print("   AY: "); Serial.print(aVal[1]);
         // Serial.print("   AZ: "); Serial.println(aVal[2]);
+    
+    BMA180::UpdateRK();   // Runge-Kutta smoothing
+}
+
+// Smooth data.
+void BMA180::UpdateRK() {
+    for (int i=0; i<3; i++) {
+        rkVal[i][rkIndex] = aVal[i]*4;   // [-1,1] measures [-4g, 4g].
+        aVal[i] = (1*rkVal[i][rkIndex] +
+                2*rkVal[i][(rkIndex+1)%4] +
+                2*rkVal[i][(rkIndex+2)%4] +
+                1*rkVal[i][(rkIndex+3)%4])/6;
+    }
+    rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
 }
 
 float* BMA180::Get() {

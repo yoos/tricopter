@@ -44,6 +44,11 @@ class BMA180 {
     uint16_t aRaw[3];
     float aVal[3];
 
+    int rkIndex;
+    float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
+
+    void UpdateRK();   // Update Runge-Kutta integrator values and calculate smoothed aVal[].
+
 public:
     BMA180(uint8_t, uint8_t);
     void Poll();
