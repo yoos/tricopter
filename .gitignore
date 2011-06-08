@@ -1,2 +1,5 @@
 *.swp
 applet
+/build
+/msg_gen
+/src/tricopter
