@@ -6,18 +6,22 @@ System::System() {
     motor[MR].attach(PMR);
     motor[ML].attach(PML);
     tailServo.attach(PST);
-
-    // Kill motors/servos
-    for (int i=0; i<3; i++) {
-        motor[i].write(0);   // Send some value that is not minimum throttle.
-    }
-    tailServo.write(90);
 }
 
 void System::Run() {
     myIMU.Update();
-    if (!armed) {   // Don't run unless armed!
+    /* Don't run system unless armed!
+     * Pilot will monitor serial inputs and update System::motorVal[]. System 
+     * will send ESCs a "nonsense" value of 0 until it sees that all three 
+     * motor values are zerod. It will then consider itself armed and start 
+     * sending proper motor values.
+     */
+    if (!armed) {
         // Serial.println("System: Motors not armed.");
+        for (int i=0; i<3; i++) {
+            motor[i].write(0);   // Send some value that is not minimum throttle.
+        }
+        tailServo.write(90);
         if (motorVal[MT] == TMIN && motorVal[MR] == TMIN && motorVal[ML] == TMIN) {
             armed = true;
             Serial.println("System: Motors armed.");
