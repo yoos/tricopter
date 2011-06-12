@@ -44,23 +44,23 @@ void System::Run() {
     }
 }
 
-void System::Die() {
-    if (!armed) {
-        for (int i=0; i<3; i++) {
-            motor[i].write(TMIN);   // Send some value that is not minimum throttle.
-        }
-    }
-    else {
-        for (int i=0; i<3; i++) {
-            motorVal[i] = TMIN;   // This is inelegant. Is there a way to avoid running both of these?
-            motor[i].write(TMIN);
-        }
-        tailServo.write(90);
-        #ifdef DEBUG
-        Serial.println("System dead!");
-        #endif
-    }
-}
+// void System::Die() {
+//     if (!armed) {
+//         for (int i=0; i<3; i++) {
+//             motor[i].write(TMIN);   // Send some value that is not minimum throttle.
+//         }
+//     }
+//     else {
+//         for (int i=0; i<3; i++) {
+//             motorVal[i] = TMIN;   // This is inelegant. Is there a way to avoid running both of these?
+//             motor[i].write(TMIN);
+//         }
+//         tailServo.write(90);
+//         #ifdef DEBUG
+//         Serial.println("System dead!");
+//         #endif
+//     }
+// }
 
 void System::SetMotor(int mNum, int mVal) {
     motorVal[mNum] = mVal;

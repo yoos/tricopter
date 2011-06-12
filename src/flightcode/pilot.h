@@ -20,6 +20,7 @@ public:
     char* Read(char[]);
     void Listen();
     void Fly(System&);
+    void Abort(System&);
     
     bool hasFood;
 };

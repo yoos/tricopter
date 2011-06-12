@@ -8,14 +8,14 @@ class System {
     IMU myIMU;
     Servo motor[3];
     Servo tailServo;
-    bool armed;
     int motorVal[3];
     int tailServoVal;
 
 public:
+    bool armed;
     System();
     void Run();
-    void Die();
+    // void Die();
     void SetMotor(int, int);
     void SetServo(int);
 };

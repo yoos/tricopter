@@ -136,3 +136,20 @@ void Pilot::Fly(System &mySystem) {
     #endif
 }
 
+void Pilot::Abort(System &mySystem) {
+    if (!mySystem.armed) {
+        for (int i=0; i<3; i++) {
+            mySystem.SetMotor(i, motorVal[i]);
+        }
+    }
+    else {
+        for (int i=0; i<3; i++) {
+            mySystem.SetMotor(i, TMIN);
+        }
+        mySystem.SetServo(90);
+        #ifdef DEBUG
+        Serial.println("Pilot ejected!");
+        #endif
+    }
+}
+

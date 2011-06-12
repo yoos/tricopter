@@ -30,7 +30,8 @@ int main(void) {
 //              myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
             }
             else {
-                triSystem.Die();
+                triPilot.Abort(triSystem);   // Pilot will command system to stop and abort.
+                triSystem.Run();
             }
             triPilot.Listen();
             triWatchdog.Watch(triPilot.hasFood);
