@@ -8,7 +8,7 @@ Pilot::Pilot() {
     serInput[SX] = 126;
     serInput[SY] = 126;
     serInput[ST] = 126;
-    serInput[SZ] = 42;   // Keep Z value at some non-zero value so user is forced to adjust throttle before motors arm.
+    serInput[SZ] = 18;   // Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to adjust throttle before motors arm.
 
     #ifdef DEBUG
     Serial.println("Pilot here!");
