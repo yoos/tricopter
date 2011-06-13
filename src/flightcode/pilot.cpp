@@ -40,7 +40,10 @@ char* Pilot::Read(char sStr[]) {
 void Pilot::Listen() {
     while (Serial.available()) {
         serRead = Serial.read();
-        delayMicroseconds(150);   // Need delay to prevent Serial.read() from dropping bits.
+
+        // Need delay to prevent Serial.read() from dropping bits.
+        delayMicroseconds(150);
+
         if (serRead == DOGBONE) {   // Receive dogbone.
             hasFood = true;
         }
@@ -83,19 +86,20 @@ void Pilot::Listen() {
 }
 
 void Pilot::Fly(System &mySystem) {
-    // Shift serial input values [1, 251] to correct range for each axis. Z stays positive for ease of calculation.
+    /* Shift serial input values [1, 251] to correct range for each axis. Z 
+     * stays positive for ease of calculation. */
     axisVal[SX] = serInput[SX] - 126;   // [-125, 125]
     axisVal[SY] = serInput[SY] - 126;   // [-125, 125]
     axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
     axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
 
-//  for (int i=0; i<4; i++) {
-//      Serial.print(serInput[i]);
-//      Serial.print("   ");
-//  }
-//  Serial.println("");
-
-//  dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
+    // for (int i=0; i<4; i++) {
+    //     Serial.print(serInput[i]);
+    //     Serial.print("   ");
+    // }
+    // Serial.println("");
+    
+    // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
     // Intermediate calculations
     motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs. ints
@@ -137,14 +141,18 @@ void Pilot::Fly(System &mySystem) {
 }
 
 void Pilot::Abort(System &mySystem) {
-    motorVal[i] = TMIN;
+    /* When communication is lost, pilot should set all motorVal[] to TMIN and 
+     * tell system to set all motors to TMIN. Pilot should also tell system to 
+     * set armed status to false so that if communication resumes, throttle 
+     * must be reduced to zero before control is restored. */
     for (int i=0; i<3; i++) {
-        mySystem.SetMotor(i, motorVal[i]);
+        motorVal[i] = TMIN;
+        mySystem.SetMotor(i, TMIN);
+        mySystem.armed = false;
     }
     mySystem.SetServo(90);
     #ifdef DEBUG
     Serial.println("Pilot ejected!");
     #endif
-    }
 }
 
