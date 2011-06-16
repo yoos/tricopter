@@ -42,11 +42,11 @@ char* Pilot::Read(char sStr[]) {
 }
 
 void Pilot::Listen() {
-    while (Serial.available()) {
+    if (Serial.available()) {
         serRead = Serial.read();
 
         // Need delay to prevent Serial.read() from dropping bits.
-        delayMicroseconds(350);
+        delayMicroseconds(500);
         // Serial.println(serRead);
 
         if (serRead == DOGBONE) {   // Receive dogbone.
@@ -57,7 +57,7 @@ void Pilot::Listen() {
                 serRead = Serial.read();
                 // Serial.print(int(serRead));
                 // Serial.print("   ");
-                delayMicroseconds(350);
+                delayMicroseconds(500);
 
                 // if (serRead == SERHEAD) {   // Dropped byte?
                 //     // i = -1;   // Discard and start over.
@@ -77,14 +77,15 @@ void Pilot::Listen() {
                 else {
                     i = 10;
                     okayToFly = false;
-                    // Serial.print("Bad!");
+                    Serial.print("Bad!");
+                    Serial.flush();
                 }
             }
             // Serial.println("");
         }
         else {
             // #ifdef DEBUG
-            // Serial.print("Weird header!   ");   // Warn if something weird happens.
+            Serial.print("Weird header!   ");   // Warn if something weird happens.
             // Serial.print(int(serRead));
             // Serial.println("");
             // #endif

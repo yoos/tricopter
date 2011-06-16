@@ -16,7 +16,7 @@ from tricopter.msg import TricJoy
 
 # Comm values
 serialPort = "/dev/ttyUSB0"
-baudRate = 57600
+baudRate = 19200
 dataSendInterval = 0.05   # Interval between data sends in seconds
 dogFeedInterval = 0.1
 serHeader = chr(255)
@@ -33,7 +33,7 @@ rospy.init_node("tric_comm_node", anonymous=True)
 
 # Open serial connection
 try:
-    ser = serial.Serial(serialPort, baudRate)
+    ser = serial.Serial(serialPort, baudRate, timeout=0)
     rospy.loginfo("Arduino at %s", serialPort)
 except:
     rospy.logerr("No Arduino at %s!", serialPort)
@@ -67,7 +67,7 @@ def sendData(myStr):
         # ser.write(myStr)
         for i in range(0, len(myStr)):
             ser.write(myStr[i])
-            rospy.sleep(0.0009)
+            rospy.sleep(0.0001787)
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
