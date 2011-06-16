@@ -45,7 +45,8 @@ void Pilot::Listen() {
     if (Serial.available()) {
         serRead = Serial.read();
 
-        // Need delay to prevent Serial.read() from dropping bits.
+        // Need delay to prevent dropped bits. 500 microseconds is about as low
+        // as it will go.
         delayMicroseconds(500);
         // Serial.println(serRead);
 
@@ -57,7 +58,7 @@ void Pilot::Listen() {
                 serRead = Serial.read();
                 // Serial.print(int(serRead));
                 // Serial.print("   ");
-                delayMicroseconds(500);
+                delayMicroseconds(500);   // Delay to prevent dropped bits.
 
                 // if (serRead == SERHEAD) {   // Dropped byte?
                 //     // i = -1;   // Discard and start over.
@@ -78,6 +79,7 @@ void Pilot::Listen() {
                     i = 10;
                     okayToFly = false;
                     Serial.print("Bad!");
+                    // Flush remaining buffer to avoid taking in the wrong values.
                     Serial.flush();
                 }
             }
@@ -85,7 +87,7 @@ void Pilot::Listen() {
         }
         else {
             // #ifdef DEBUG
-            Serial.print("Weird header!   ");   // Warn if something weird happens.
+            // Serial.print("Weird header!   ");   // Warn if something weird happens.
             // Serial.print(int(serRead));
             // Serial.println("");
             // #endif
@@ -104,11 +106,11 @@ void Pilot::Fly(System &mySystem) {
         axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
         axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
     
-        for (int i=0; i<4; i++) {
-            Serial.print(serInput[i]);
-            Serial.print("   ");
-        }
-        Serial.println("");
+        // for (int i=0; i<4; i++) {
+        //     Serial.print(serInput[i]);
+        //     Serial.print("   ");
+        // }
+        // Serial.println("");
         
         // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
     

@@ -67,7 +67,7 @@ def sendData(myStr):
         # ser.write(myStr)
         for i in range(0, len(myStr)):
             ser.write(myStr[i])
-            rospy.sleep(0.0001787)
+            rospy.sleep(0.0001)   # Sometimes, a delay seems to help. Maybe?
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
