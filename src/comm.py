@@ -17,7 +17,7 @@ from tricopter.msg import TricJoy
 # Comm values
 serialPort = "/dev/ttyUSB0"
 baudRate = 57600
-dataSendInterval = 0.5   # Interval between data sends in seconds
+dataSendInterval = 0.05   # Interval between data sends in seconds
 dogFeedInterval = 0.1
 serHeader = chr(255)
 dogBone = chr(254)
@@ -54,6 +54,7 @@ def communicate():
     global armed
     if armed:
         sendData(serHeader + chr(axisValues[0]) + chr(axisValues[1]) + chr(axisValues[2]) + chr(axisValues[3]))
+        # sendData(serHeader + chr(126) + chr(126) + chr(126) + chr(74))
         if verboseOn: rospy.loginfo("A0: %s   A1: %s   A2: %s   A3: %s", axisValues[0], axisValues[1], axisValues[2], axisValues[3])
     elif not armed:
         rospy.loginfo("Move joystick throttle to minimum position in order to send motor arming signal.")
@@ -66,7 +67,7 @@ def sendData(myStr):
         # ser.write(myStr)
         for i in range(0, len(myStr)):
             ser.write(myStr[i])
-            rospy.sleep(0.1)
+            rospy.sleep(0.0005)
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 

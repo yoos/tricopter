@@ -6,10 +6,15 @@ System::System() {
     motor[MR].attach(PMR);
     motor[ML].attach(PML);
     tailServo.attach(PST);
+
+    motorVal[0] = 0;
+    motorVal[1] = 0;
+    motorVal[2] = 0;
+    motorVal[3] = 0;
 }
 
 void System::Run() {
-    myIMU.Update();
+    // myIMU.Update();
     /* Don't run system unless armed!
      * Pilot will monitor serial inputs and update System::motorVal[]. System 
      * will send ESCs a "nonsense" value of 0 until it sees that all three 
