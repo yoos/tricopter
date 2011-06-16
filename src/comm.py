@@ -17,7 +17,7 @@ from tricopter.msg import TricJoy
 # Comm values
 serialPort = "/dev/ttyUSB0"
 baudRate = 57600
-dataSendInterval = 0.02   # Interval between data sends in seconds
+dataSendInterval = 0.5   # Interval between data sends in seconds
 dogFeedInterval = 0.1
 serHeader = chr(255)
 dogBone = chr(254)
@@ -66,7 +66,7 @@ def sendData(myStr):
         # ser.write(myStr)
         for i in range(0, len(myStr)):
             ser.write(myStr[i])
-            rospy.sleep(0.0007)
+            rospy.sleep(0.1)
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
@@ -100,7 +100,7 @@ class TricWatchdog(threading.Thread):
     def run(self):
         while self.running and not rospy.is_shutdown():
             self.times += 1
-            sendData(dogBone)
+            # sendData(dogBone)
             # rospy.loginfo(self.times)
             rospy.sleep(dogFeedInterval)
             

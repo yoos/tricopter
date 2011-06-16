@@ -47,49 +47,50 @@ void Pilot::Listen() {
 
         // Need delay to prevent Serial.read() from dropping bits.
         delayMicroseconds(500);
+        Serial.println(serRead);
 
-        if (serRead == DOGBONE) {   // Receive dogbone.
-            hasFood = true;
-        }
-        else if (serRead == SERHEAD) {   // Receive header.
-            for (int i=0; i<PACKETSIZE; i++) {
-                serRead = Serial.read();
-                // Serial.print(int(serRead));
-                // Serial.print("   ");
-                delayMicroseconds(500);
+//      if (serRead == DOGBONE) {   // Receive dogbone.
+//          hasFood = true;
+//      }
+//      else if (serRead == SERHEAD) {   // Receive header.
+//          for (int i=0; i<PACKETSIZE; i++) {
+//              serRead = Serial.read();
+//              // Serial.print(int(serRead));
+//              // Serial.print("   ");
+//              delayMicroseconds(500);
 
-                // if (serRead == SERHEAD) {   // Dropped byte?
-                //     // i = -1;   // Discard and start over.
-                //     // Serial.println("Pilot detected packet drop.");
-                //     Serial.flush();
-                //     okayToFly = false;
-                // }
-                // else if (serRead == -1) {   // This happens when serial is empty.
-                //     // Serial.println("Pilot detected malformed packet.");
-                //     okayToFly = false;
-                // }
-                if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
-                    serInput[i] = serRead;
-                    // Serial.println("Pilot determined motor value.");
-                    okayToFly = true;
-                }
-                else {
-                    i = 10;
-                    okayToFly = false;
-                    Serial.print("Bad!");
-                }
-            }
-            // Serial.println("");
-        }
-        else {
-            // #ifdef DEBUG
-            // Serial.print("Weird header!   ");   // Warn if something weird happens.
-            // Serial.print(int(serRead));
-            // Serial.println("");
-            // #endif
-            okayToFly = false;
-        }
-        Serial.flush();
+//              // if (serRead == SERHEAD) {   // Dropped byte?
+//              //     // i = -1;   // Discard and start over.
+//              //     // Serial.println("Pilot detected packet drop.");
+//              //     Serial.flush();
+//              //     okayToFly = false;
+//              // }
+//              // else if (serRead == -1) {   // This happens when serial is empty.
+//              //     // Serial.println("Pilot detected malformed packet.");
+//              //     okayToFly = false;
+//              // }
+//              if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
+//                  serInput[i] = serRead;
+//                  // Serial.println("Pilot determined motor value.");
+//                  okayToFly = true;
+//              }
+//              else {
+//                  i = 10;
+//                  okayToFly = false;
+//                  Serial.print("Bad!");
+//              }
+//          }
+//          // Serial.println("");
+//      }
+//      else {
+//          // #ifdef DEBUG
+//          // Serial.print("Weird header!   ");   // Warn if something weird happens.
+//          // Serial.print(int(serRead));
+//          // Serial.println("");
+//          // #endif
+//          okayToFly = false;
+//      }
+//      Serial.flush();
     }
 }
 

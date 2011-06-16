@@ -20,21 +20,23 @@ int main(void) {
 
     unsigned long nextRuntime = 0;
 
+    triWatchdog.isAlive = true;
+
     for (;;) {
         if (millis() >= nextRuntime) {
             nextRuntime += SYSINTRV;   // Increment by DT.
-            if (triWatchdog.isAlive) {
-                triSystem.Run();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
-                // Serial.println(millis());
-                triPilot.Fly(triSystem);
+//          if (triWatchdog.isAlive) {
+//              triSystem.Run();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
+//              // Serial.println(millis());
+//              triPilot.Fly(triSystem);
 //              myServo.writeMicroseconds(motorInput[0] * 180/250 * 1000);
-            }
-            else {
-                triPilot.Abort(triSystem);   // Pilot will command system to stop and abort.
-                triSystem.Run();
-            }
+//          }
+//          else {
+//              triPilot.Abort(triSystem);   // Pilot will command system to stop and abort.
+//              triSystem.Run();
+//          }
             triPilot.Listen();
-            triWatchdog.Watch(triPilot.hasFood);
+//          triWatchdog.Watch(triPilot.hasFood);
         }
     }
 
