@@ -27,7 +27,7 @@ void System::Run() {
         Serial.print("_ ");
         #endif
         for (int i=0; i<3; i++) {
-            motor[i].write(0);   // Send some value that is not minimum throttle.
+            motor[i].write(TMIN);
             #ifdef REPORT_MOTORVAL
             Serial.print(motorVal[i]);
             Serial.print("   ");

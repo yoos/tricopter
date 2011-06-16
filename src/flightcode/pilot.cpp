@@ -133,7 +133,7 @@ void Pilot::Fly(System &mySystem) {
         for (int i=0; i<3; i++) {
             motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
         }
-        tailServoVal = 100 - 0.2*axisVal[ST];
+        tailServoVal = 70 - 0.6*axisVal[ST];
     
         // Serial.print(millis());
         // Serial.print(": ");

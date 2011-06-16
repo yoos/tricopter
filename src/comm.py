@@ -43,11 +43,15 @@ except:
 
 def callback(myJoy):
     global axisValues
-    # Calculate axis values.
-    axisValues[0] = int(250*(axisSigns[0] * myJoy.axes[0] + 1) / 2 + 1)   # Range 1-251 in order to send as char value
-    axisValues[1] = int(250*(axisSigns[1] * myJoy.axes[1] + 1) / 2 + 1)
-    axisValues[2] = int(250*(axisSigns[2] * myJoy.axes[2] + 1) / 2 + 1)
-    axisValues[3] = int(250*(axisSigns[3] * myJoy.axes[3] + 1) / 2 + 1)
+    """
+        Raw axis values are cubed to facilitate control at lower throttle 
+        levels. This is then mapped to [0, 1], which is then mapped to 
+        [0, 250], then finally shifted to [1, 251] to be sent as bytes.
+    """
+    axisValues[0] = int(250*(axisSigns[0] * myJoy.axes[0]**3 + 1) / 2 + 1)   # Range 1-251 in order to send as char value
+    axisValues[1] = int(250*(axisSigns[1] * myJoy.axes[1]**3 + 1) / 2 + 1)
+    axisValues[2] = int(250*(axisSigns[2] * myJoy.axes[2]**3 + 1) / 2 + 1)
+    axisValues[3] = int(250*(axisSigns[3] * myJoy.axes[3]**3 + 1) / 2 + 1)
     rospy.loginfo("Joystick moved!")
 
 def communicate():
@@ -101,7 +105,7 @@ class TricWatchdog(threading.Thread):
     def run(self):
         while self.running and not rospy.is_shutdown():
             self.times += 1
-            # sendData(dogBone)
+            sendData(dogBone)
             # rospy.loginfo(self.times)
             rospy.sleep(dogFeedInterval)
             
