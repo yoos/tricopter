@@ -4,6 +4,8 @@
 #include <Servo.h>
 #include "imu.cpp"
 
+#define REPORT_MOTORVAL
+
 class System {
     IMU myIMU;
     Servo motor[3];

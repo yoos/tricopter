@@ -18,30 +18,39 @@ void System::Run() {
      */
     if (!armed) {
         // Serial.println("System: Motors not armed.");
+        #ifdef REPORT_MOTORVAL
         Serial.print("_ ");
+        #endif
         for (int i=0; i<3; i++) {
             motor[i].write(0);   // Send some value that is not minimum throttle.
+            #ifdef REPORT_MOTORVAL
             Serial.print(motorVal[i]);
             Serial.print("   ");
+            #endif
         }
         tailServo.write(90);
+        #ifdef REPORT_MOTORVAL
         Serial.println(tailServoVal);
+        #endif
         if (motorVal[MT] == TMIN && motorVal[MR] == TMIN && motorVal[ML] == TMIN) {
             armed = true;
             Serial.println("System: Motors armed.");
         }
     }
     else {
+        #ifdef REPORT_MOTORVAL
         Serial.print("! ");
+        #endif
         for (int i=0; i<3; i++) {
             motor[i].write(motorVal[i]);   // Write motor values to motors.
+            #ifdef REPORT_MOTORVAL
             Serial.print(motorVal[i]);
             Serial.print("   ");
+            #endif
         }
         tailServo.write(tailServoVal);
+        #ifdef REPORT_MOTORVAL
         Serial.println(tailServoVal);
-        #ifdef DEBUG
-        Serial.println("System wrote to motors.");
         #endif
     }
 }
