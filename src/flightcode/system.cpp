@@ -18,6 +18,7 @@ void System::Run() {
      */
     if (!armed) {
         // Serial.println("System: Motors not armed.");
+        Serial.print("_ ");
         for (int i=0; i<3; i++) {
             motor[i].write(0);   // Send some value that is not minimum throttle.
             Serial.print(motorVal[i]);
@@ -31,6 +32,7 @@ void System::Run() {
         }
     }
     else {
+        Serial.print("! ");
         for (int i=0; i<3; i++) {
             motor[i].write(motorVal[i]);   // Write motor values to motors.
             Serial.print(motorVal[i]);

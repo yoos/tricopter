@@ -8,7 +8,10 @@ Pilot::Pilot() {
     serInput[SX] = 126;
     serInput[SY] = 126;
     serInput[ST] = 126;
-    serInput[SZ] = 18;   // Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to adjust throttle before motors arm.
+    /* Keep Z value at some non-zero value (albeit very low so the tricopter 
+     * doesn't fly off if something goes awry) so user is forced to adjust 
+     * throttle before motors arm. */
+    serInput[SZ] = 3;   
 
     #ifdef DEBUG
     Serial.println("Pilot here!");
@@ -42,7 +45,7 @@ void Pilot::Listen() {
         serRead = Serial.read();
 
         // Need delay to prevent Serial.read() from dropping bits.
-        delayMicroseconds(150);
+        delayMicroseconds(1000);
 
         if (serRead == DOGBONE) {   // Receive dogbone.
             hasFood = true;
@@ -54,17 +57,10 @@ void Pilot::Listen() {
             #endif
             for (int i=0; i<PACKETSIZE; i++) {
                 serRead = Serial.read();
-                delayMicroseconds(150);
-
-                #ifdef DEBUG
-                Serial.print("Pilot received motor control byte #");
-                Serial.print(i);
-                Serial.print(": ");
-                Serial.println(serRead);
-                #endif
+                delayMicroseconds(1000);
 
                 if (serRead == SERHEAD) {   // Dropped byte?
-//                  i = 0;   // Discard and start over.
+                    i = 0;   // Discard and start over.
                     Serial.println("Pilot detected packet drop.");
                 }
                 else if (serRead == -1) {   // This happens when serial is empty.
@@ -72,15 +68,15 @@ void Pilot::Listen() {
                 }
                 else if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
                     serInput[i] = serRead;
-                    #ifdef DEBUG
                     Serial.println("Pilot determined motor value.");
-                    #endif
                 }
             }
         }
         else {
+            // #ifdef DEBUG
             Serial.print("Weird header!");   // Warn if something weird happens.
             Serial.println("");
+            // #endif
         }
     }
 }
@@ -146,8 +142,8 @@ void Pilot::Abort(System &mySystem) {
      * set armed status to false so that if communication resumes, throttle 
      * must be reduced to zero before control is restored. */
     for (int i=0; i<3; i++) {
-        motorVal[i] = TMIN;
-        mySystem.SetMotor(i, TMIN);
+        motorVal[i] = 0;
+        mySystem.SetMotor(i, 0);
         mySystem.armed = false;
     }
     mySystem.SetServo(90);
