@@ -13,6 +13,7 @@ class Pilot {
     int tailServoVal;
     int mapLower, mapUpper;
 //  double dir;   // Direction in radians
+    bool okayToFly;
 
 public:
     Pilot();

@@ -20,8 +20,6 @@ int main(void) {
 
     unsigned long nextRuntime = 0;
 
-    triWatchdog.isAlive = true;
-
     for (;;) {
         if (millis() >= nextRuntime) {
             nextRuntime += SYSINTRV;   // Increment by DT.
@@ -36,7 +34,7 @@ int main(void) {
                 triSystem.Run();
             }
             triPilot.Listen();
-            // triWatchdog.Watch(triPilot.hasFood);
+            triWatchdog.Watch(triPilot.hasFood);
         }
     }
 
