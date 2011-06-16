@@ -16,7 +16,7 @@
 #define GYRO_VREF 1
 #define ACCEL_VREF 1
 
-#define SYSINTRV 20   // System run interval in milliseconds
+#define SYSINTRV 50   // System run interval in milliseconds
 #define SERHEAD 255
 #define DOGBONE 254
 #define DOGLIFE 500   // Watchdog life in milliseconds

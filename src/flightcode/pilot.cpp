@@ -90,7 +90,7 @@ void Pilot::Listen() {
             // #endif
             okayToFly = false;
         }
-        Serial.flush();
+        // Serial.flush();
     }
 }
 
