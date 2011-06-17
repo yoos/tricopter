@@ -17,6 +17,7 @@
 #define SMPLRT_DIV 0x15
 #define DLPF_FS 0x16
 #define INT_CFG 0x17
+#define TEMP_OUT 0x1B   // 0x1B is high bit, 0x1C is low bit.
 #define PWR_MGM 0x3E
 
 
@@ -33,11 +34,13 @@
 
 
 class ITG3200 {
-    uint16_t gBuffer[READ_SIZE];
+    byte gBuffer[10];   // Buffer for general use. Increase size as needed.
     char gStr[512];
 
     uint16_t gRaw[3];   // Raw bits received from ITG-3200
     float gVal[3];   // Bits mapped to [-1,1]
+    float temp;
+
 
     int rkIndex;
     float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes

@@ -1,6 +1,6 @@
 #include "bma180.h"
 
-BMA180::BMA180(uint8_t range, uint8_t bw) {
+BMA180::BMA180(byte range, byte bw) {
     readI2C(ACCADDR, 0x00, 1, aBuffer);
     
     #ifdef DEBUG
@@ -50,18 +50,21 @@ void BMA180::Poll() {
     aRaw[2] = (((aBuffer[5] << 8) | aBuffer[4]) >> 2);
 
     for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
-        float tmp;
+        Serial.print(aRaw[i]);
+        Serial.print("  ");
+        uint16_t tmp;
         if (aRaw[i] < 0x2000)   // If zero to negative accel.: 0 to 2^13-1...
             tmp = -((signed) aRaw[i]);   // ...negate after casting as signed int.
         else   // If zero to positive accel.: 2^14-1 to 2^13...
             tmp = 0x3FFF - aRaw[i];   // ...subtract from 2^14-1.
         switch (i) {
-            case 0: aVal[i] = (tmp - AXOFFSET)/0x2000; break;   // Divide by maximum magnitude.
-            case 1: aVal[i] = (tmp - AYOFFSET)/0x2000; break;
-            case 2: aVal[i] = (tmp - AZOFFSET)/0x2000; break;
+            case 0: aVal[i] = (float) (tmp - AXOFFSET)/0x2000; break;   // Divide by maximum magnitude.
+            case 1: aVal[i] = (float) (tmp - AYOFFSET)/0x2000; break;
+            case 2: aVal[i] = (float) (tmp - AZOFFSET)/0x2000; break;
             default: break;
         }
     }
+    Serial.println("");
 
 //  Serial.println(aVal[0]);
         // sprintf(aStr, "AX: %5f  AY: %5f  AZ: %5f", aVal[0], aVal[1], aVal[2]);   // Interpret aRaw as unsigned int.
@@ -70,7 +73,7 @@ void BMA180::Poll() {
         // Serial.print("   AY: "); Serial.print(aVal[1]);
         // Serial.print("   AZ: "); Serial.println(aVal[2]);
     
-    BMA180::UpdateRK();   // Runge-Kutta smoothing
+    // BMA180::UpdateRK();   // Runge-Kutta smoothing
 }
 
 // Smooth data.

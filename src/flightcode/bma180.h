@@ -39,7 +39,8 @@
 
 
 class BMA180 {
-    uint16_t aBuffer[READ_SIZE];   // Buffer to which we save data read from device
+    byte aBuffer[READ_SIZE];   // Buffer to which we save data read from device
+    uint16_t buff[6];
     char aStr[512];   // String buffer to organize data before sending to serial line
     uint16_t aRaw[3];
     float aVal[3];
@@ -50,7 +51,7 @@ class BMA180 {
     void UpdateRK();   // Update Runge-Kutta integrator values and calculate smoothed aVal[].
 
 public:
-    BMA180(uint8_t, uint8_t);
+    BMA180(byte, byte);
     void Poll();
     float* Get();
     float Get(int);

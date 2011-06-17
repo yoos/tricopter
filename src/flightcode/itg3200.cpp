@@ -1,6 +1,6 @@
 #include "itg3200.h"
 
-ITG3200::ITG3200(uint8_t range) {
+ITG3200::ITG3200(byte range) {
     readI2C(GYRADDR, 0x00, 1, gBuffer);   // Who am I?
     
     Serial.print("ITG-3200 ID = ");
@@ -35,6 +35,13 @@ void ITG3200::Poll() {
     gRaw[0] = ((gBuffer[0] << 8) | gBuffer[1]);   // Shift high byte to be high 8 bits and append with low byte.
     gRaw[1] = ((gBuffer[2] << 8) | gBuffer[3]);
     gRaw[2] = ((gBuffer[4] << 8) | gBuffer[5]);
+
+    // Read gyro temperature.
+    readI2C(GYRADDR, TEMP_OUT, 2, gBuffer);
+    Serial.print("GT: ");
+    temp = 35 + (((gBuffer[0] << 8) | gBuffer[1]) + 13200)/280.0;
+    Serial.print(temp);
+    Serial.print("   ");
 
     // Convert raw values to a nice -1 to 1 range.
     for (int i=0; i<3; i++) {
