@@ -21,9 +21,9 @@ void IMU::Update() {
     Serial.print(myAcc.Get(AY)); Serial.print("  ");
     Serial.print(myAcc.Get(AZ)); Serial.print("    ");
     Serial.print("Gyr: ");
-    Serial.print(myGyr.GetAngle(GX)); Serial.print("  ");
-    Serial.print(myGyr.GetAngle(GY)); Serial.print("  ");
-    Serial.print(myGyr.GetAngle(GZ)); Serial.print("    ");
+    Serial.print(myGyr.GetRate(GX)); Serial.print("  ");
+    Serial.print(myGyr.GetRate(GY)); Serial.print("  ");
+    Serial.print(myGyr.GetRate(GZ)); Serial.print("    ");
 }
 
 void IMU::Get() {

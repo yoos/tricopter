@@ -56,6 +56,7 @@ void ITG3200::Poll() {
             case 2: gVal[2] = (tmp - GZOFFSET)/0x8000; break;
             default: break;
         }
+        gVal[i] = gVal[i]*2000 * SYSINTRV/1000 * 8/7;   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
     }
 
     #ifdef DEBUG
@@ -70,12 +71,12 @@ void ITG3200::Poll() {
 // Smooth data.
 void ITG3200::UpdateRK() {
     for (int i=0; i<3; i++) {
-        rkVal[i][rkIndex] = gVal[i]*2000 * SYSINTRV/1000 * 8/7;   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
-        // Runge-Kutta integration
-        angle[i] = angle[i] + (1*rkVal[i][rkIndex] + 
-                               2*rkVal[i][(rkIndex+1)%4] +
-                               2*rkVal[i][(rkIndex+2)%4] +
-                               1*rkVal[i][(rkIndex+3)%4])/6;
+        rkVal[i][rkIndex] = gVal[i];
+        gVal[i] = (1*rkVal[i][rkIndex] + 
+                   2*rkVal[i][(rkIndex+1)%4] +
+                   2*rkVal[i][(rkIndex+2)%4] +
+                   1*rkVal[i][(rkIndex+3)%4])/6;
+        angle[i] = angle[i] + gVal[i];   // Integration.
     }
     rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
 
