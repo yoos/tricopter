@@ -35,7 +35,7 @@ void System::Run() {
         }
         tailServo.write(90);
         #ifdef REPORT_MOTORVAL
-        Serial.println(tailServoVal);
+        Serial.print(tailServoVal);
         #endif
         if (motorVal[MT] == TMIN && motorVal[MR] == TMIN && motorVal[ML] == TMIN) {
             armed = true;
@@ -55,7 +55,7 @@ void System::Run() {
         }
         tailServo.write(tailServoVal);
         #ifdef REPORT_MOTORVAL
-        Serial.println(tailServoVal);
+        Serial.print(tailServoVal);
         #endif
     }
 }

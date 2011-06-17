@@ -40,7 +40,6 @@
 
 class BMA180 {
     byte aBuffer[READ_SIZE];   // Buffer to which we save data read from device
-    uint16_t buff[6];
     char aStr[512];   // String buffer to organize data before sending to serial line
     uint16_t aRaw[3];
     float aVal[3];

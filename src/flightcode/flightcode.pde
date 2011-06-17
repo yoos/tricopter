@@ -34,6 +34,7 @@ int main(void) {
             }
             triPilot.Listen();
             triWatchdog.Watch(triPilot.hasFood);
+            Serial.println("");   // Send newline after every system iteration. TODO: Eventually implement a Telemetry class.
         }
     }
 
