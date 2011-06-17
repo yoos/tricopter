@@ -50,10 +50,11 @@ void Pilot::Listen() {
         delayMicroseconds(500);
         // Serial.println(serRead);
 
-        if (serRead == DOGBONE) {   // Receive dogbone.
+        // if (serRead == DOGBONE) {   // Receive dogbone.
+        //     hasFood = true;
+        // }
+        if (serRead == SERHEAD) {   // Receive header.
             hasFood = true;
-        }
-        else if (serRead == SERHEAD) {   // Receive header.
             for (int i=0; i<PACKETSIZE; i++) {
                 serRead = Serial.read();
                 // Serial.print(int(serRead));

@@ -9,7 +9,7 @@
 #define INPUT_MIN 1   // Minimum integer input value from joystick
 #define INPUT_MAX 251   // Maximum integer input value from joystick
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
-#define TMAX 170   // Servo signal that registers as maximum throttle to ESC.
+#define TMAX 70   // Servo signal that registers as maximum throttle to ESC.
 
 #define BAUDRATE 19200
 #define IMU_SAMPLE_INTERVAL 10   // In milliseconds
@@ -19,7 +19,7 @@
 #define SYSINTRV 10   // System run interval in milliseconds
 #define SERHEAD 255
 #define DOGBONE 254
-#define DOGLIFE 500   // Watchdog life in milliseconds
+#define DOGLIFE 300   // Watchdog life in milliseconds
 
 
 

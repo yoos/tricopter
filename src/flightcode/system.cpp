@@ -14,7 +14,7 @@ System::System() {
 }
 
 void System::Run() {
-    // myIMU.Update();
+    myIMU.Update();
     /* Don't run system unless armed!
      * Pilot will monitor serial inputs and update System::motorVal[]. System 
      * will send ESCs a "nonsense" value of 0 until it sees that all three 
