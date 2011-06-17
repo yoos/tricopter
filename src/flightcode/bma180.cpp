@@ -51,14 +51,18 @@ void BMA180::Poll() {
 
     for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
         float tmp;
+       
         if (aRaw[i] < 0x2000)   // If zero to negative accel.: 0 to 2^13-1...
             tmp = -((signed) aRaw[i]);   // ...negate after casting as signed int.
         else   // If zero to positive accel.: 2^14-1 to 2^13...
             tmp = 0x3FFF - aRaw[i];   // ...subtract from 2^14-1.
+        
+        // Account for accelerometer offset, divide by maximum magnitude, and 
+        // multiply by 4 to get values in range [-4g, 4g].
         switch (i) {
-            case 0: aVal[i] = (tmp - AXOFFSET)/0x2000; break;   // Divide by maximum magnitude.
-            case 1: aVal[i] = (tmp - AYOFFSET)/0x2000; break;
-            case 2: aVal[i] = (tmp - AZOFFSET)/0x2000; break;
+            case 0: aVal[i] = (tmp - AXOFFSET)/0x2000 * 4; break;
+            case 1: aVal[i] = (tmp - AYOFFSET)/0x2000 * 4; break;
+            case 2: aVal[i] = (tmp - AZOFFSET)/0x2000 * 4; break;
             default: break;
         }
     }
