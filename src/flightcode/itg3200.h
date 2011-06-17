@@ -46,8 +46,6 @@ class ITG3200 {
     float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
     float angle[3];   // Calculated angles of rotation
 
-    void UpdateRK();   // Update Runge-Kutta integrator values and calculate angle[].
-
 public:
     ITG3200(uint8_t);
     void Poll();   // Get bits from ITG-3200 and update gVal[].

@@ -65,11 +65,7 @@ void ITG3200::Poll() {
         Serial.print("   GZ: "); Serial.println(gVal[2]);
     #endif
 
-    ITG3200::UpdateRK();   // Runge-Kutta integration
-}
-
-// Smooth data.
-void ITG3200::UpdateRK() {
+    // Runge-Kutta smoothing and integration.
     for (int i=0; i<3; i++) {
         rkVal[i][rkIndex] = gVal[i];
         gVal[i] = (1*rkVal[i][rkIndex] + 

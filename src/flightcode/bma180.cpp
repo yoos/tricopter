@@ -74,11 +74,7 @@ void BMA180::Poll() {
         // Serial.print("   AY: "); Serial.print(aVal[1]);
         // Serial.print("   AZ: "); Serial.println(aVal[2]);
     
-    BMA180::UpdateRK();   // Runge-Kutta smoothing
-}
-
-// Smooth data.
-void BMA180::UpdateRK() {
+    // Runge-Kutta smoothing.
     for (int i=0; i<3; i++) {
         rkVal[i][rkIndex] = aVal[i];
         aVal[i] = (1*rkVal[i][rkIndex] +
