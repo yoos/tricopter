@@ -1,0 +1,93 @@
+# EESchema Netlist Version 1.1 created  Sat 18 Jun 2011 09:40:30 PM PDT
+(
+ ( /4DFD7C73 $noname$ P1 CONN_1
+  ( 1 N-000001 )
+ )
+ ( /4DFD7C7E $noname$ P2 CONN_1
+  ( 1 ? )
+ )
+ ( /4DFD6D4B $noname$ R1 R
+  ( 1 +5V )
+  ( 2 N-000001 )
+ )
+ ( /4DFD7BDD $noname$ R2 R
+  ( 1 +5V )
+  ( 2 N-000001 )
+ )
+ ( /4DFD7BE2 $noname$ R3 R
+  ( 1 +5V )
+  ( 2 N-000001 )
+ )
+ ( /4DFD7BE5 $noname$ R4 R
+  ( 1 +5V )
+  ( 2 N-000001 )
+ )
+ ( /4DFD7BE7 $noname$ R5 R
+  ( 1 +5V )
+  ( 2 N-000001 )
+ )
+ ( /4DFD7BEA $noname$ R6 R
+  ( 1 +5V )
+  ( 2 N-000001 )
+ )
+ ( /4DFD7BED $noname$ R7 R
+  ( 1 +5V )
+  ( 2 N-000001 )
+ )
+ ( /4DFD7BF0 $noname$ R8 R
+  ( 1 +5V )
+  ( 2 N-000001 )
+ )
+)
+*
+{ Allowed footprints by component:
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$endfootprintlist
+}
