@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.4 - April 2011
+  AeroQuad v2.4.1 - June 2011
   www.AeroQuad.com
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -197,7 +197,7 @@ public:
     float Aref =     5.0;
     batteryScaleFactor = ((Aref / 1024.0) * ((R1 + R2) / R2));
 #ifdef AeroQuad_Mini
-    diode = 0.0;
+    diode = 0.53; // measured with DMM
 #else    
     diode = 0.9; // measured with DMM
 #endif    

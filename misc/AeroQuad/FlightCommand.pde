@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.4 - April 2011
+  AeroQuad v2.4.1 - June 2011
   www.AeroQuad.com
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -42,7 +42,7 @@ void readPilotCommands() {
       accel.calibrate(); // defined in Accel.h
       //accel.setOneG(accel.getFlightData(ZAXIS));
       #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-        _flightAngle->calibrate();
+        flightAngle->calibrate();
       #endif
       zeroIntegralError();
       motors.pulseMotors(3);
@@ -80,13 +80,13 @@ void readPilotCommands() {
     //receiver.setZero(YAW, receiver.getRaw(YAW));
   }
   
-  #ifdef AeroQuad_Mini
+  #ifdef RateModeOnly
     flightMode = ACRO;
   #else
     // Check Mode switch for Acro or Stable
     if (receiver.getRaw(MODE) > 1500) {
       if (flightMode == ACRO) {
-        #if defined(AeroQuad_v18) || defined(AeroQuadMega_v2)
+        #if defined(AeroQuad_v18) || defined(AeroQuadMega_v2) || defined(AeroQuadMega_Wii)
           digitalWrite(LED2PIN, HIGH);
         #endif
         zeroIntegralError();

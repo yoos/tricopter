@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.4 - April 2011
+  AeroQuad v2.4.1 - June 2011
   www.AeroQuad.com
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -59,13 +59,25 @@ public:
 
   void _initialize(void) {
     xmitFactor = readFloat(XMITFACTOR_ADR);
-
-    for(byte channel = ROLL; channel < LASTCHANNEL; channel++) {
-      byte offset = 12*channel + NVM_TRANSMITTER_SCALE_OFFSET_SMOOTH;
-      mTransmitter[channel] = readFloat(offset+0);
-      bTransmitter[channel] = readFloat(offset+4);
-      transmitterSmooth[channel] = readFloat(offset+8);
-    }
+    
+    mTransmitter[0] = readFloat(RECEIVER_CHANNEL_0_SLOPE_ADR);
+    bTransmitter[0] = readFloat(RECEIVER_CHANNEL_0_OFFSET_ADR);
+    transmitterSmooth[0] = readFloat(RECEIVER_CHANNEL_0_SMOOTH_FACTOR_ADR);
+    mTransmitter[1] = readFloat(RECEIVER_CHANNEL_1_SLOPE_ADR);
+    bTransmitter[1] = readFloat(RECEIVER_CHANNEL_1_OFFSET_ADR);
+    transmitterSmooth[1] = readFloat(RECEIVER_CHANNEL_1_SMOOTH_FACTOR_ADR);
+    mTransmitter[2] = readFloat(RECEIVER_CHANNEL_2_SLOPE_ADR);
+    bTransmitter[2] = readFloat(RECEIVER_CHANNEL_2_OFFSET_ADR);
+    transmitterSmooth[2] = readFloat(RECEIVER_CHANNEL_2_SMOOTH_FACTOR_ADR);
+    mTransmitter[3] = readFloat(RECEIVER_CHANNEL_3_SLOPE_ADR);
+    bTransmitter[3] = readFloat(RECEIVER_CHANNEL_3_OFFSET_ADR);
+    transmitterSmooth[3] = readFloat(RECEIVER_CHANNEL_3_SMOOTH_FACTOR_ADR);
+    mTransmitter[4] = readFloat(RECEIVER_CHANNEL_4_SLOPE_ADR);
+    bTransmitter[4] = readFloat(RECEIVER_CHANNEL_4_OFFSET_ADR);
+    transmitterSmooth[4] = readFloat(RECEIVER_CHANNEL_4_SMOOTH_FACTOR_ADR);
+    mTransmitter[5] = readFloat(RECEIVER_CHANNEL_5_SLOPE_ADR);
+    bTransmitter[5] = readFloat(RECEIVER_CHANNEL_5_OFFSET_ADR);
+    transmitterSmooth[5] = readFloat(RECEIVER_CHANNEL_5_SMOOTH_FACTOR_ADR);
   }
 
   // returns non-smoothed non-scaled ADC data in PWM full range 1000-2000 values
@@ -243,8 +255,13 @@ SIGNAL(PCINT2_vect) {
   measurePulseWidthISR(2, 0); // PORT D
 }
 
+#ifdef AeroQuad_Paris_v3
+// defines arduino pins used for receiver in arduino pin numbering schema
+static byte receiverPin[6] = {4, 5, 6, 2, 7, 8}; // pins used for ROLL, PITCH, YAW, THROTTLE, MODE, AUX
+#else
 // defines arduino pins used for receiver in arduino pin numbering schema
 static byte receiverPin[6] = {2, 5, 6, 4, 7, 8}; // pins used for ROLL, PITCH, YAW, THROTTLE, MODE, AUX
+#endif
 
 class Receiver_AeroQuad : public Receiver {
 public:
