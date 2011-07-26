@@ -34,10 +34,16 @@
 
 
 class ITG3200 {
+    void Calibrate();
+
     byte gBuffer[10];   // Buffer for general use. Increase size as needed.
     char gStr[512];
 
+    int calIndex;   // Calibration index
+
     uint16_t gRaw[3];   // Raw bits received from ITG-3200
+    float tempData[3];   // Temporary storage of calibration data
+    float gZero[3];   // Zero values
     float gVal[3];   // Bits mapped to [-1,1]
     float temp;
 

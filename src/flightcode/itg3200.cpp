@@ -27,6 +27,11 @@ ITG3200::ITG3200(byte range) {
     rkIndex = 0;
     rkVal = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}};
     angle = {0, 0, 0};
+
+    // For calibration.
+    calIndex = 0;
+    tempData = {0, 0, 0};
+    gZero = {0, 0, 0};
 }
 
 void ITG3200::Poll() {
@@ -53,12 +58,12 @@ void ITG3200::Poll() {
             tmp = gRaw[i];
         switch (i) {
             // Divide by maximum magnitude.
-            case 0: gVal[0] = -(tmp - GXOFFSET)/0x8000; break;   // Negated.
-            case 1: gVal[1] = (tmp - GYOFFSET)/0x8000; break;
-            case 2: gVal[2] = (tmp - GZOFFSET)/0x8000; break;
+            case 0: gVal[0] = -tmp/0x8000; break;   // Negated.
+            case 1: gVal[1] =  tmp/0x8000; break;
+            case 2: gVal[2] =  tmp/0x8000; break;
             default: break;
         }
-        gVal[i] = gVal[i]*2000 * SYSINTRV/1000 * 8/7;   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
+        gVal[i] = gVal[i]*2000 * SYSINTRV/1000 * 8/7 - gZero[i];   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
     }
 
     #ifdef DEBUG
@@ -66,6 +71,11 @@ void ITG3200::Poll() {
         Serial.print("   GY: "); Serial.print(gVal[1]);
         Serial.print("   GZ: "); Serial.println(gVal[2]);
     #endif
+    
+    // Run calibration if before 25th system loop.
+    if (calIndex < 100) {
+        ITG3200::Calibrate();
+    }
 
     // Runge-Kutta smoothing and integration.
     for (int i=0; i<3; i++) {
@@ -81,6 +91,19 @@ void ITG3200::Poll() {
     // Serial.print("LX: "); Serial.print(angle[0]);
     // Serial.print("   LY: "); Serial.print(angle[1]);
     // Serial.print("   LZ: "); Serial.println(angle[2]);
+}
+
+void ITG3200::Calibrate() {
+    for (int i=0; i<3; i++) {
+        tempData[i] = tempData[i] + gVal[i];
+        if (calIndex == 99) {
+            gZero[i] = tempData[i]/100;
+        }
+    }
+    calIndex++;
+    Serial.print("  ZZZ ");
+    Serial.print(gZero[0]);
+    Serial.print(" ZZZ  ");
 }
 
 float* ITG3200::GetRate() {
