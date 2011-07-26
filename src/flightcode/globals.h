@@ -39,9 +39,9 @@
 #define DT 0
 
 // Pins
-#define PMT 2   // Tail motor
-#define PMR 3   // Right motor
-#define PML 4   // Left motor
+#define PMT 4   // Tail motor
+#define PMR 2   // Right motor
+#define PML 3   // Left motor
 #define PST 5   // Tail servo
 
 // BMA180 config

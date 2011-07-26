@@ -16,14 +16,14 @@ void IMU::Update() {
     Serial.println("IMU updated.");
     #endif
 
-    // Serial.print("Acc: ");
-    // Serial.print(myAcc.Get(AX)); Serial.print("  ");
-    // Serial.print(myAcc.Get(AY)); Serial.print("  ");
-    // Serial.print(myAcc.Get(AZ)); Serial.print("    ");
-    // Serial.print("Gyr: ");
-    // Serial.print(myGyr.GetRate(GX)); Serial.print("  ");
-    // Serial.print(myGyr.GetRate(GY)); Serial.print("  ");
-    // Serial.print(myGyr.GetRate(GZ)); Serial.print("    ");
+    Serial.print("Acc: ");
+    Serial.print(myAcc.Get(AX)); Serial.print("  ");
+    Serial.print(myAcc.Get(AY)); Serial.print("  ");
+    Serial.print(myAcc.Get(AZ)); Serial.print("    ");
+    Serial.print("Gyr: ");
+    Serial.print(myGyr.GetRate(GX)); Serial.print("  ");
+    Serial.print(myGyr.GetRate(GY)); Serial.print("  ");
+    Serial.print(myGyr.GetRate(GZ)); Serial.print("    ");
 }
 
 void IMU::Get() {

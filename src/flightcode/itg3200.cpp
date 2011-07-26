@@ -31,10 +31,11 @@ ITG3200::ITG3200(byte range) {
 
 void ITG3200::Poll() {
     readI2C(GYRADDR, REGADDR, READ_SIZE, gBuffer);
-
-    gRaw[0] = ((gBuffer[0] << 8) | gBuffer[1]);   // Shift high byte to be high 8 bits and append with low byte.
-    gRaw[1] = ((gBuffer[2] << 8) | gBuffer[3]);
-    gRaw[2] = ((gBuffer[4] << 8) | gBuffer[5]);
+    
+    // Shift high byte to be high 8 bits and append with low byte.
+    gRaw[1] = ((gBuffer[0] << 8) | gBuffer[1]);   // Tricopter Y axis is chip X axis.
+    gRaw[0] = ((gBuffer[2] << 8) | gBuffer[3]);   // Tricopter X axis is chip Y axis. Must be negated later!
+    gRaw[2] = ((gBuffer[4] << 8) | gBuffer[5]);   // Z axis is same.
 
     // Read gyro temperature.
     readI2C(GYRADDR, TEMP_OUT, 2, gBuffer);
@@ -51,7 +52,8 @@ void ITG3200::Poll() {
         else
             tmp = gRaw[i];
         switch (i) {
-            case 0: gVal[0] = (tmp - GXOFFSET)/0x8000; break;   // Divide by maximum magnitude.
+            // Divide by maximum magnitude.
+            case 0: gVal[0] = -(tmp - GXOFFSET)/0x8000; break;   // Negated.
             case 1: gVal[1] = (tmp - GYOFFSET)/0x8000; break;
             case 2: gVal[2] = (tmp - GZOFFSET)/0x8000; break;
             default: break;

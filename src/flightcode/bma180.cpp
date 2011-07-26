@@ -45,9 +45,9 @@ BMA180::BMA180(byte range, byte bw) {
 void BMA180::Poll() {
     readI2C(ACCADDR, REGADDR, READ_SIZE, aBuffer);   // Read acceleration data
 
-    aRaw[0] = ((aBuffer[1] << 6) | (aBuffer[0] >> 2));
-    aRaw[1] = ((aBuffer[3] << 6) | (aBuffer[2] >> 2));
-    aRaw[2] = ((aBuffer[5] << 6) | (aBuffer[4] >> 2));
+    aRaw[1] = ((aBuffer[1] << 6) | (aBuffer[0] >> 2));   // Tricopter Y axis is chip X axis.
+    aRaw[0] = ((aBuffer[3] << 6) | (aBuffer[2] >> 2));   // Tricopter X axis is chip Y axis. Must be negated later!
+    aRaw[2] = ((aBuffer[5] << 6) | (aBuffer[4] >> 2));   // Z axis is same.
 
     for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
         float tmp;
@@ -60,7 +60,7 @@ void BMA180::Poll() {
         // Account for accelerometer offset, divide by maximum magnitude, and 
         // multiply by 4 to get values in range [-4g, 4g].
         switch (i) {
-            case 0: aVal[i] = (tmp - AXOFFSET)/0x2000 * 4; break;
+            case 0: aVal[i] = -(tmp - AXOFFSET)/0x2000 * 4; break;   // Negated.
             case 1: aVal[i] = (tmp - AYOFFSET)/0x2000 * 4; break;
             case 2: aVal[i] = (tmp - AZOFFSET)/0x2000 * 4; break;
             default: break;
