@@ -7,10 +7,7 @@
 #define READ_SIZE 6   // Number of bytes to read each time
 #define REGADDR 0x1D
 
-// Calibration values
-#define GXOFFSET 0 // 151 // 312
-#define GYOFFSET 0 // -42 // -90
-#define GZOFFSET 0 // 85 // 180
+#define ENDCALIB 100   // Number of samples to factor into gyro calibration.
 
 // ITG-3200 address defines
 #define GYRADDR 0x69 // gyro address, binary = 11101001

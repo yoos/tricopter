@@ -72,8 +72,8 @@ void ITG3200::Poll() {
         Serial.print("   GZ: "); Serial.println(gVal[2]);
     #endif
     
-    // Run calibration if before 25th system loop.
-    if (calIndex < 100) {
+    // Run calibration loop.
+    if (calIndex < ENDCALIB) {
         ITG3200::Calibrate();
     }
 
@@ -84,7 +84,9 @@ void ITG3200::Poll() {
                    2*rkVal[i][(rkIndex+1)%4] +
                    2*rkVal[i][(rkIndex+2)%4] +
                    1*rkVal[i][(rkIndex+3)%4])/6;
-        angle[i] = angle[i] + gVal[i];   // Integration.
+        if (calIndex == ENDCALIB) {
+            angle[i] = angle[i] + gVal[i];   // Integration.
+        }
     }
     rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
 
@@ -96,14 +98,11 @@ void ITG3200::Poll() {
 void ITG3200::Calibrate() {
     for (int i=0; i<3; i++) {
         tempData[i] = tempData[i] + gVal[i];
-        if (calIndex == 99) {
-            gZero[i] = tempData[i]/100;
+        if (calIndex == ENDCALIB-1) {
+            gZero[i] = tempData[i]/ENDCALIB;
         }
     }
     calIndex++;
-    Serial.print("  ZZZ ");
-    Serial.print(gZero[0]);
-    Serial.print(" ZZZ  ");
 }
 
 float* ITG3200::GetRate() {
