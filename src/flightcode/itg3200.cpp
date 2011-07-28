@@ -32,11 +32,12 @@ ITG3200::ITG3200(byte range) {
     // For calibration.
     tempData = {0, 0, 0};
     gZero = {0, 0, 0};
+    calibrated = false;
 }
 
 void ITG3200::Calibrate(int sampleNum) {
     for (int i=0; i<sampleNum; i++) {
-        // ITG3200::Poll();
+        ITG3200::Poll();
         for (int j=0; j<3; j++) {
             tempData[j] = tempData[j] + gVal[j];
         }
@@ -44,6 +45,8 @@ void ITG3200::Calibrate(int sampleNum) {
     gZero[0] = tempData[0]/sampleNum;
     gZero[1] = tempData[1]/sampleNum;
     gZero[2] = tempData[2]/sampleNum;
+
+    calibrated = true;
 }
 
 void ITG3200::Poll() {
@@ -78,22 +81,22 @@ void ITG3200::Poll() {
         gVal[i] = gVal[i]*2000 * SYSINTRV/1000 * 8/7 - gZero[i];   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
     }
 
-    #ifdef DEBUG
-        Serial.print("GX: "); Serial.print(gVal[0]);
-        Serial.print("   GY: "); Serial.print(gVal[1]);
-        Serial.print("   GZ: "); Serial.println(gVal[2]);
-    #endif
+    // Serial.print("GX: "); Serial.print(gVal[0]);
+    // Serial.print("   GY: "); Serial.print(gVal[1]);
+    // Serial.print("   GZ: "); Serial.println(gVal[2]);
     
     // Runge-Kutta smoothing and integration.
-    for (int i=0; i<3; i++) {
-        rkVal[i][rkIndex] = gVal[i];
-        gVal[i] = (1*rkVal[i][rkIndex] + 
-                   2*rkVal[i][(rkIndex+1)%4] +
-                   2*rkVal[i][(rkIndex+2)%4] +
-                   1*rkVal[i][(rkIndex+3)%4])/6;
-        angle[i] = angle[i] + gVal[i];   // Integration.
+    if (calibrated) {
+        for (int i=0; i<3; i++) {
+            rkVal[i][rkIndex] = gVal[i];
+            gVal[i] = (1*rkVal[i][rkIndex] + 
+                       2*rkVal[i][(rkIndex+1)%4] +
+                       2*rkVal[i][(rkIndex+2)%4] +
+                       1*rkVal[i][(rkIndex+3)%4])/6;
+            angle[i] = angle[i] + gVal[i];   // Integration.
+        }
+        rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
     }
-    rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
 
     // Serial.print("LX: "); Serial.print(angle[0]);
     // Serial.print("   LY: "); Serial.print(angle[1]);

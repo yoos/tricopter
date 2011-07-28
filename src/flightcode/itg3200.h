@@ -33,6 +33,7 @@ class ITG3200 {
     char gStr[512];
 
     uint16_t gRaw[3];   // Raw bits received from ITG-3200
+    bool calibrated;   // Disable integration until calibration finishes.
     float tempData[3];   // Temporary storage of calibration data
     float gZero[3];   // Zero values
     float gVal[3];   // Bits mapped to [-1,1]

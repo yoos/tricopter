@@ -11,11 +11,8 @@ System::System() {
     motorVal[1] = 0;
     motorVal[2] = 0;
     motorVal[3] = 0;
-}
-
-void System::Init() {
-    myIMU.InitSensors();
-
+    
+    myIMU.Init();
 }
 
 void System::Run() {

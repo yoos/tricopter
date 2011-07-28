@@ -9,7 +9,7 @@ IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
     #endif
 }
 
-void IMU::InitSensors() {
+void IMU::Init() {
 /* Calibrate sensors if needed and find initial tricopter orientation. */
     myGyr.Calibrate(100);
 }
