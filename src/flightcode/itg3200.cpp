@@ -24,14 +24,26 @@ ITG3200::ITG3200(byte range) {
         gBuffer[i] = 0;
     }
 
+    // For Runge-Kutta integration.
     rkIndex = 0;
     rkVal = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}};
     angle = {0, 0, 0};
 
     // For calibration.
-    calIndex = 0;
     tempData = {0, 0, 0};
     gZero = {0, 0, 0};
+}
+
+void ITG3200::Calibrate(int sampleNum) {
+    for (int i=0; i<sampleNum; i++) {
+        // ITG3200::Poll();
+        for (int j=0; j<3; j++) {
+            tempData[j] = tempData[j] + gVal[j];
+        }
+    }
+    gZero[0] = tempData[0]/sampleNum;
+    gZero[1] = tempData[1]/sampleNum;
+    gZero[2] = tempData[2]/sampleNum;
 }
 
 void ITG3200::Poll() {
@@ -47,7 +59,7 @@ void ITG3200::Poll() {
     temp = 35 + (((gBuffer[0] << 8) | gBuffer[1]) + 13200)/280.0;
     Serial.print("GT: ");
     Serial.print(temp);
-    Serial.print("    ");
+    Serial.print("  ");
 
     // Convert raw values to a nice -1 to 1 range.
     for (int i=0; i<3; i++) {
@@ -72,11 +84,6 @@ void ITG3200::Poll() {
         Serial.print("   GZ: "); Serial.println(gVal[2]);
     #endif
     
-    // Run calibration loop.
-    if (calIndex < ENDCALIB) {
-        ITG3200::Calibrate();
-    }
-
     // Runge-Kutta smoothing and integration.
     for (int i=0; i<3; i++) {
         rkVal[i][rkIndex] = gVal[i];
@@ -84,25 +91,13 @@ void ITG3200::Poll() {
                    2*rkVal[i][(rkIndex+1)%4] +
                    2*rkVal[i][(rkIndex+2)%4] +
                    1*rkVal[i][(rkIndex+3)%4])/6;
-        if (calIndex == ENDCALIB) {
-            angle[i] = angle[i] + gVal[i];   // Integration.
-        }
+        angle[i] = angle[i] + gVal[i];   // Integration.
     }
     rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
 
     // Serial.print("LX: "); Serial.print(angle[0]);
     // Serial.print("   LY: "); Serial.print(angle[1]);
     // Serial.print("   LZ: "); Serial.println(angle[2]);
-}
-
-void ITG3200::Calibrate() {
-    for (int i=0; i<3; i++) {
-        tempData[i] = tempData[i] + gVal[i];
-        if (calIndex == ENDCALIB-1) {
-            gZero[i] = tempData[i]/ENDCALIB;
-        }
-    }
-    calIndex++;
 }
 
 float* ITG3200::GetRate() {

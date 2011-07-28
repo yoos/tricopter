@@ -7,8 +7,6 @@
 #define READ_SIZE 6   // Number of bytes to read each time
 #define REGADDR 0x1D
 
-#define ENDCALIB 100   // Number of samples to factor into gyro calibration.
-
 // ITG-3200 address defines
 #define GYRADDR 0x69 // gyro address, binary = 11101001
 #define SMPLRT_DIV 0x15
@@ -31,12 +29,8 @@
 
 
 class ITG3200 {
-    void Calibrate();
-
     byte gBuffer[10];   // Buffer for general use. Increase size as needed.
     char gStr[512];
-
-    int calIndex;   // Calibration index
 
     uint16_t gRaw[3];   // Raw bits received from ITG-3200
     float tempData[3];   // Temporary storage of calibration data
@@ -44,13 +38,13 @@ class ITG3200 {
     float gVal[3];   // Bits mapped to [-1,1]
     float temp;
 
-
     int rkIndex;
     float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
     float angle[3];   // Calculated angles of rotation
 
 public:
     ITG3200(uint8_t);
+    void Calibrate(int);
     void Poll();   // Get bits from ITG-3200 and update gVal[].
     float* GetRate();
     float GetRate(int);

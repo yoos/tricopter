@@ -26,6 +26,7 @@ class IMU {
 
 public:
     IMU();
+    void InitSensors();
     void Update();
     void Get();
     void deadReckoning();

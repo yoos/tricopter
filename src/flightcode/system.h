@@ -16,6 +16,7 @@ class System {
 public:
     bool armed;
     System();
+    void Init();
     void Run();
     // void Die();
     void SetMotor(int, int);

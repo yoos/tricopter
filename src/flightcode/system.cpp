@@ -13,6 +13,11 @@ System::System() {
     motorVal[3] = 0;
 }
 
+void System::Init() {
+    myIMU.InitSensors();
+
+}
+
 void System::Run() {
     myIMU.Update();
     /* Don't run system unless armed!
@@ -30,7 +35,7 @@ void System::Run() {
             motor[i].write(TMIN);
             #ifdef REPORT_MOTORVAL
             Serial.print(motorVal[i]);
-            Serial.print("   ");
+            Serial.print(" ");
             #endif
         }
         tailServo.write(90);
