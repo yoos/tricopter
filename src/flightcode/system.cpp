@@ -7,6 +7,10 @@ System::System() {
     motor[ML].attach(PML);
     tailServo.attach(PST);
 
+    motor[0].write(0);
+    motor[1].write(0);
+    motor[2].write(0);
+
     motorVal[0] = 0;
     motorVal[1] = 0;
     motorVal[2] = 0;
@@ -52,7 +56,7 @@ void System::Run() {
             motor[i].write(motorVal[i]);   // Write motor values to motors.
             #ifdef REPORT_MOTORVAL
             Serial.print(motorVal[i]);
-            Serial.print("   ");
+            Serial.print(" ");
             #endif
         }
         tailServo.write(tailServoVal);
