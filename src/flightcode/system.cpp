@@ -7,6 +7,7 @@ System::System() {
     motor[ML].attach(PML);
     tailServo.attach(PST);
 
+    // Write 0 to motors to prevent them from spinning up upon Seeeduino reset!
     motor[0].write(0);
     motor[1].write(0);
     motor[2].write(0);
@@ -14,7 +15,6 @@ System::System() {
     motorVal[0] = 0;
     motorVal[1] = 0;
     motorVal[2] = 0;
-    motorVal[3] = 0;
     
     myIMU.Init();
 }
