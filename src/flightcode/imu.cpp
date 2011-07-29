@@ -7,6 +7,16 @@ IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
     #ifdef DEBUG
     Serial.println("IMU here!");
     #endif
+
+    aVec = {0, 0, 0};
+    gVec = {0, 0, 0};
+
+    DCM = {{1, 0, 0},
+           {0, 1, 0},
+           {0, 0, 1}};
+    tmpMat = {{0, 0, 0},
+              {0, 0, 0},
+              {0, 0, 0}};
 }
 
 void IMU::Init() {
@@ -17,6 +27,10 @@ void IMU::Init() {
 void IMU::Update() {
     myGyr.Poll();
     myAcc.Poll();
+    for (int i=0; i<3; i++) {
+        aVec[i] = myAcc.Get(i);
+        gVec[i] = myGyr.GetRate(i);
+    }
     #ifdef DEBUG
     Serial.println("IMU updated.");
     #endif
