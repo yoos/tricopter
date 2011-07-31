@@ -41,8 +41,8 @@
 class BMA180 {
     byte aBuffer[READ_SIZE];   // Buffer to which we save data read from device
     char aStr[512];   // String buffer to organize data before sending to serial line
-    uint16_t aRaw[3];
-    float aVal[3];
+    uint16_t aRaw[3];   // Raw digital values.
+    float aVal[3];   // In g's
 
     int rkIndex;
     float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes

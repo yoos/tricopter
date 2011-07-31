@@ -8,19 +8,19 @@ IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
     Serial.println("IMU here!");
     #endif
 
-    aVec = {0, 0, 0};
-    gVec = {0, 0, 0};
-    oVec = {0, 0, 0};
-    oVecP = {0, 0, 0};
-    oVecI = {0, 0, 0};
-    tmpVec = {0, 0, 0};
+    // aVec = {0, 0, 0};
+    // gVec = {0, 0, 0};
+    // oVec = {0, 0, 0};
+    // oVecP = {0, 0, 0};
+    // oVecI = {0, 0, 0};
+    // tmpVec = {0, 0, 0};
 
-    DCM = {{1, 0, 0},
-           {0, 1, 0},
-           {0, 0, 1}};
-    tmpMat = {{0, 0, 0},
-              {0, 0, 0},
-              {0, 0, 0}};
+    // DCM = {{1, 0, 0},
+    //        {0, 1, 0},
+    //        {0, 0, 1}};
+    // tmpMat = {{0, 0, 0},
+    //           {0, 0, 0},
+    //           {0, 0, 0}};
 }
 
 void IMU::Init() {
@@ -32,10 +32,13 @@ void IMU::Update() {
     myGyr.Poll();
     myAcc.Poll();
 
-    for (int i=0; i<3; i++) {
-        aVec[i] = myAcc.Get(i);
-        gVec[i] = myGyr.GetRate(i);
-    }
+    adcAvg[0] = myAcc.Get(0);
+    adcAvg[1] = myAcc.Get(1);
+    adcAvg[2] = myAcc.Get(2);
+    adcAvg[3] = myGyr.GetRate(0);
+    adcAvg[4] = myGyr.GetRate(1);
+    adcAvg[5] = myGyr.GetRate(2);
+
 
     #ifdef DEBUG
     Serial.println("IMU updated.");

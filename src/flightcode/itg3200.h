@@ -36,7 +36,7 @@ class ITG3200 {
     bool calibrated;   // Disable integration until calibration finishes.
     float tempData[3];   // Temporary storage of calibration data
     float gZero[3];   // Zero values
-    float gVal[3];   // Bits mapped to [-1,1]
+    float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
     float temp;
 
     int rkIndex;

@@ -89,7 +89,7 @@ void BMA180::Poll() {
 }
 
 float* BMA180::Get() {
-    return aVal;
+    return aVal;   // In g's.
 }
 
 float BMA180::Get(int axis) {
