@@ -3,6 +3,7 @@
 
 #include "itg3200.cpp"
 #include "bma180.cpp"
+#include "triMath.h"
 
 // Axis numbers
 #define AX 0
@@ -16,8 +17,13 @@ class IMU {
     BMA180 myAcc;
     ITG3200 myGyr;
 
-    float aVec[3];   // Acceleration vector.
-    float gVec[3];   // Gyro vector.
+    float aVec[3];   // Acceleration vector (uncorrected outputs).
+    float gVec[3];   // Gyro vector (uncorrected outputs).
+    float oVec[3];   // Omega vector (calculated rotation rate vector; see p. 13 of DCM draft 2)
+    float oVecP[3];   // Omega vector P
+    float oVecI[3];   // Omega vector I
+    float tmpVec[3];   // Temporary vector for calculations.
+
     float angle;
 
     int lastTime;

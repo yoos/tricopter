@@ -33,6 +33,9 @@ BMA180::BMA180(byte range, byte bw) {
         Serial.println("BMA180 configured!");
     #endif
 
+    aRaw = {0, 0, 0};
+    aVal = {0, 0, 0};
+
     // Zero buffer.
     for (int i=0; i<READ_SIZE; i++) {
         aBuffer[i] = 0;

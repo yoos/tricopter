@@ -25,7 +25,7 @@ void vScale (float v[3], float scale, float vOut[3]) {
 }
 
 // Addition
-void Vector_Add (float v1[3], float v2[3], float vOut[3]) {
+void vAdd (float v1[3], float v2[3], float vOut[3]) {
     for (int i=0; i<3; i++) {
          vOut[i] = v1[i] + v2[i];
     }
@@ -38,7 +38,7 @@ void mProduct (float m1[3][3], float m2[3][3], float mOut[3][3]) {
     for (int i=0; i<3; i++) {
         for(int j=0; j<3; j++) {
             for(int k=0; k<3; k++) {
-                tmp[w] = m1[i][k] * m2[k][j];
+                tmp[k] = m1[i][k] * m2[k][j];
             }
             mOut[i][j] = tmp[0] + tmp[1] + tmp[2];
         }
