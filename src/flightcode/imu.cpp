@@ -26,19 +26,19 @@ IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
 void IMU::Init() {
 /* Calibrate sensors if needed and find initial tricopter orientation. */
     myGyr.Calibrate(100);
+    imu_init();
 }
 
 void IMU::Update() {
     myGyr.Poll();
     myAcc.Poll();
 
-    adcAvg[0] = myAcc.Get(0);
-    adcAvg[1] = myAcc.Get(1);
-    adcAvg[2] = myAcc.Get(2);
-    adcAvg[3] = myGyr.GetRate(0);
-    adcAvg[4] = myGyr.GetRate(1);
-    adcAvg[5] = myGyr.GetRate(2);
-
+    for (int i=0; i<3; i++) {
+        aVec[i] = myAcc.Get(i);
+        gVec[i] = myGyr.GetRate(i);
+    }
+    
+    imu_update();
 
     #ifdef DEBUG
     Serial.println("IMU updated.");
@@ -54,8 +54,8 @@ void IMU::Update() {
     // Serial.print(myGyr.GetAngle(GZ)); Serial.print("  ");
 }
 
-void IMU::Get() {
-    angle = KH * (angle + myGyr.GetAngle(1)*DT) + (1-KH) * myAcc.Get(0); // Doesn't work, but a start to complementary filtering?
+float* IMU::GetDCM() {
+    return dcmGyro;
 }
 
 void IMU::deadReckoning() {
