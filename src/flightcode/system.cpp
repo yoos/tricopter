@@ -19,6 +19,15 @@ System::System() {
     myIMU.Init();
 }
 
+void System::UpdateHoverPos(int* inputs[4]) {
+    
+    for (int i=0; i<3; i++) {
+        for (int j=0; j<3; j++) {
+            targetPos[i][j] = inputPos[i][j];
+        }
+    }
+}
+
 void System::Run() {
     myIMU.Update();
     /* Don't run system unless armed!

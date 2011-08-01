@@ -119,42 +119,44 @@ void Pilot::Fly(System &mySystem) {
     else {
         // Serial.println("Pilot not okay to fly.");
     }
-    
+
+    mySystem.UpdateHoverPos(axisVal);
+
     // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
-    // Intermediate calculations
-    motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs. ints
-    motorVal[MR] = axisVal[SZ] - 0.3333*axisVal[SY] - axisVal[SX]/sqrt(3);
-    motorVal[ML] = axisVal[SZ] - 0.3333*axisVal[SY] + axisVal[SX]/sqrt(3);
+    // // Intermediate calculations
+    // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs. ints
+    // motorVal[MR] = axisVal[SZ] - 0.3333*axisVal[SY] - axisVal[SX]/sqrt(3);
+    // motorVal[ML] = axisVal[SZ] - 0.3333*axisVal[SY] + axisVal[SX]/sqrt(3);
 
-    // Find max/min motor values
-    mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
-    mapUpper = mapUpper > motorVal[ML] ? mapUpper : motorVal[ML];
-    mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
-    mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
+    // // Find max/min motor values
+    // mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
+    // mapUpper = mapUpper > motorVal[ML] ? mapUpper : motorVal[ML];
+    // mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
+    // mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
 
-    // Find map boundaries (need to limit, but NOT fit, to [0, 250])
-    mapUpper = mapUpper > 250 ? mapUpper : 250;
-    mapLower = mapLower < 0 ? mapLower : 0;
+    // // Find map boundaries (need to limit, but NOT fit, to [0, 250])
+    // mapUpper = mapUpper > 250 ? mapUpper : 250;
+    // mapLower = mapLower < 0 ? mapLower : 0;
 
-    // Final calculations
-    for (int i=0; i<3; i++) {
-        motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
-    }
-    tailServoVal = 70 - 0.6*axisVal[ST];
+    // // Final calculations
+    // for (int i=0; i<3; i++) {
+    //     motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
+    // }
+    // tailServoVal = 70 - 0.6*axisVal[ST];
 
-    // Serial.print(millis());
-    // Serial.print(": ");
+    // // Serial.print(millis());
+    // // Serial.print(": ");
 
-    // Write to motors
-    for (int i=0; i<3; i++) {
-        mySystem.SetMotor(i, motorVal[i]);
-        // Serial.print(motorVal[i]);
-        // Serial.print("   ");
-    }
-    mySystem.SetServo(tailServoVal);
-    // Serial.print(tailServoVal);
-    // Serial.println("");
+    // // Write to motors
+    // for (int i=0; i<3; i++) {
+    //     mySystem.SetMotor(i, motorVal[i]);
+    //     // Serial.print(motorVal[i]);
+    //     // Serial.print("   ");
+    // }
+    // mySystem.SetServo(tailServoVal);
+    // // Serial.print(tailServoVal);
+    // // Serial.println("");
 
     #ifdef DEBUG
     Serial.println("Pilot is flying.");
@@ -166,12 +168,12 @@ void Pilot::Abort(System &mySystem) {
      * tell system to set all motors to TMIN. Pilot should also tell system to 
      * set armed status to false so that if communication resumes, throttle 
      * must be reduced to zero before control is restored. */
-    for (int i=0; i<3; i++) {
-        motorVal[i] = 0;
-        mySystem.SetMotor(i, 0);
-        mySystem.armed = false;
-    }
-    mySystem.SetServo(90);
+    // for (int i=0; i<3; i++) {
+    //     motorVal[i] = 0;
+    //     mySystem.SetMotor(i, 0);
+    //     mySystem.armed = false;
+    // }
+    // mySystem.SetServo(90);
     #ifdef DEBUG
     Serial.println("Pilot ejected!");
     #endif
