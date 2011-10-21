@@ -11,6 +11,7 @@
   <depend package="rospy"/>
   <!--<depend package="rosrt"/>-->
   <depend package="joy"/>
+  <depend package="sensor_msgs"/>
 
 </package>
 

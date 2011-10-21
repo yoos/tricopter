@@ -2,8 +2,8 @@
 <launch>
 
  <!-- joy node -->
-  <node respawn="true" pkg="joy" type="joy" name="triJoy" >
-    <param name="dev" type="string" value="/dev/input/js1" />
+  <node respawn="true" pkg="joy" type="joy_node" name="triJoy" >
+    <param name="dev" type="string" value="/dev/input/js0" />
     <param name="deadzone" value="0" />
   </node>
 
