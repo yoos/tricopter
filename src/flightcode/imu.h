@@ -44,7 +44,6 @@ class IMU {
 
 
     float dcmAcc[3][3];                //dcm matrix according to accelerometer
-    float dcmGyro[3][3];            //dcm matrix according to gyroscopes
     float dcmEst[3][3];                //estimated dcm matrix by fusion of accelerometer and gyro
 
     // For accelerometer
@@ -61,18 +60,19 @@ class IMU {
 
 
 public:
+    float dcmGyro[3][3];            //dcm matrix according to gyroscopes
+    
     IMU();
     void Init();
     void Update();
-    float GetDCM();
 
-    void DCMOrthonormalize(float*);
-    void DCMRotate(float*, float*);
     void deadReckoning();
-    void reset();
+    void Reset();
 };
 
 
+void imu_dcm_orthonormalize(float**);
+void imu_dcm_rotate(float dcm[3][3], float*);
 
 #endif
 

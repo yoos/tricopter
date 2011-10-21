@@ -18,14 +18,13 @@ void IMU::Init() {
     // tmpMat = {{0, 0, 0},
     //           {0, 0, 0},
     //           {0, 0, 0}};
-    IMU::reset();
+    IMU::Reset();
     #ifdef DEBUG
     Serial.println("IMU here!");
     #endif
 
 /* Calibrate sensors if needed and find initial tricopter orientation. */
     myGyr.Calibrate(100);
-    imu_init();
 
     unsigned char i, j;
     for (i=0; i<3; i++)
@@ -42,8 +41,6 @@ void IMU::Update() {
         gVec[i] = myGyr.GetRate(i);
     }
     
-    imu_update();
-
     #ifdef DEBUG
     Serial.println("IMU updated.");
     #endif
@@ -106,16 +103,12 @@ void IMU::Update() {
         w[i] = (w[i] + ACC_WEIGHT*wA[i] + MAG_WEIGHT*wM[i])/(1.0+ACC_WEIGHT+MAG_WEIGHT);
     }
     
-    IMU::DCMRotate(dcmGyro, w);
-}
-
-float* IMU::GetDCM() {
-    return dcmGyro;
+    imu_dcm_rotate(dcmGyro, w);
 }
 
 // XXX From PICQ: Bring DCM matrix in order - adjust values to make orthonormal (or at least closer to orthonormal)
 // Note: dcm and dcmResult can be the same.
-void IMU::DCMOrthonormalize(float dcm[3][3]) {
+void imu_dcm_orthonormalize(float dcm[3][3]) {
     //err = X . Y ,  X = X - err/2 * Y , Y = Y - err/2 * X  (DCMDraft2 Eqn.19)
     float err;
     vDotP((float*)(dcm[0]), (float*)(dcm[1]), err);
@@ -135,7 +128,7 @@ void IMU::DCMOrthonormalize(float dcm[3][3]) {
 
 // XXX From PICQ: rotate DCM matrix by a small rotation given by angular rotation vector w
 // See http://gentlenav.googlecode.com/files/DCMDraft2.pdf
-void IMU::DCMRotate(float dcm[3][3], float w[3]) {
+void imu_dcm_rotate(float dcm[3][3], float w[3]) {
     //float W[3][3];    
     //creates equivalent skew symetric matrix plus identity matrix
     //vector3d_skew_plus_identity((float*)w,(float*)W);
@@ -151,7 +144,7 @@ void IMU::DCMRotate(float dcm[3][3], float w[3]) {
     }        
 
     //make matrix orthonormal again
-    IMU::DCMOrthonormalize(dcm);
+    imu_dcm_orthonormalize(dcm);
 }
 
 
