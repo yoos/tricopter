@@ -12,3 +12,7 @@ Watchdog is fed at 10 Hz.
 Controls are sent at 20 Hz?
 
 
+Looks like I'm going to use pidquadcontroller code for IMU: code.google.com/p/picquadcontroller/source/browse/trunk/imu.h?r=7
+
+And AeroQuad code for PID.
+
