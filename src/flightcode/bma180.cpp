@@ -33,8 +33,10 @@ BMA180::BMA180(byte range, byte bw) {
         Serial.println("BMA180 configured!");
     #endif
 
-    aRaw = {0, 0, 0};
-    aVal = {0, 0, 0};
+    for (int i=0; i<3; i++) {
+        aRaw[i] = 0;
+        aVal[i] = 0;
+    }
 
     // Zero buffer.
     for (int i=0; i<READ_SIZE; i++) {
@@ -42,7 +44,9 @@ BMA180::BMA180(byte range, byte bw) {
     }
 
     rkIndex = 0;
-    rkVal = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}};
+    for (int i=0; i<3; i++)
+        for (int j=0; j<4; j++)
+            rkVal[i][j] = 0;
 }
 
 void BMA180::Poll() {

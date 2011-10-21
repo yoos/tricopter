@@ -13,12 +13,13 @@ class System {
     int motorVal[3];
     int tailServoVal;
 
-    float targetPos[3][3];   // Target position sent by Pilot.
+    float targetDCM[3][3];   // Target position DCM sent by Pilot.
 
 public:
     bool armed;
+
     System();
-    void UpdateHoverPos(int*);   // Pilot sends X, Y, and T inputs to system.
+    void UpdateHoverPos(int*);   // Pilot sends X, Y, T, and Z inputs to system.
     void Run();   // Control motors based on pilot and IMU inputs.
     // void Die();
     void SetMotor(int, int);

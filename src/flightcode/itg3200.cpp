@@ -1,6 +1,6 @@
 #include "itg3200.h"
 
-ITG3200::ITG3200(byte range) {
+ITG3200::ITG3200(uint8_t range) {
     readI2C(GYRADDR, 0x00, 1, gBuffer);   // Who am I?
     
     Serial.print("ITG-3200 ID = ");
@@ -26,12 +26,16 @@ ITG3200::ITG3200(byte range) {
 
     // For Runge-Kutta integration.
     rkIndex = 0;
-    rkVal = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}};
-    angle = {0, 0, 0};
+    for (int i=0; i<3; i++)
+        for (int j=0; j<4; j++)
+            rkVal[i][j] = 0;
 
-    // For calibration.
-    tempData = {0, 0, 0};
-    gZero = {0, 0, 0};
+    for (int i=0; i<3; i++) {
+        tempData[i] = 0;
+        gZero[i] = 0;
+        gVal[i] = 0;
+        angle[i] = 0;
+    }
     calibrated = false;
 }
 

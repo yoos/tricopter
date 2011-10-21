@@ -19,11 +19,11 @@ System::System() {
     myIMU.Init();
 }
 
-void System::UpdateHoverPos(int* inputs[4]) {
-    
+void System::UpdateHoverPos(int axisValues[4]) {
+    // TODO: Get DCM output from myIMU and do something here to calculate a reasonable target DCM based on axisValues[].
     for (int i=0; i<3; i++) {
         for (int j=0; j<3; j++) {
-            targetPos[i][j] = inputPos[i][j];
+            targetDCM[i][j] = 0;   // TODO: UpdateHoverPos should run a PID loop and determine targetDCM based on current DCM position reported by myIMU.
         }
     }
 }
@@ -61,6 +61,9 @@ void System::Run() {
         #ifdef REPORT_MOTORVAL
         Serial.print("! ");
         #endif
+
+        // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs .ints
+
         for (int i=0; i<3; i++) {
             motor[i].write(motorVal[i]);   // Write motor values to motors.
             #ifdef REPORT_MOTORVAL

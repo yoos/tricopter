@@ -37,11 +37,11 @@ class ITG3200 {
     float tempData[3];   // Temporary storage of calibration data
     float gZero[3];   // Zero values
     float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
+    float angle[3];   // Calculated angles of rotation
     float temp;
 
     int rkIndex;
     float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
-    float angle[3];   // Calculated angles of rotation
 
 public:
     ITG3200(uint8_t);
