@@ -98,7 +98,13 @@ int main(void) {
                 triPilot.Fly();
             }
             else {
-                triPilot.Abort();   // TODO: Do I even need this anymore?
+                // triPilot.Abort();   // TODO: Do I even need this anymore?
+                for (int i=0; i<3; i++) {
+                    motorVal[i] -= 10;   // Slowly turn off.
+                    if (motorVal[i] < 0) motorVal[i] = 0;
+                    motor[i].write(motorVal[i]);
+                }
+                
             }
 
             triPilot.Listen();
