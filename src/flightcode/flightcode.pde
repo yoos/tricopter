@@ -3,7 +3,9 @@
 #include "globals.h"
 #include "pilot.cpp"
 #include "watchdog.cpp"
-#include "system.cpp"
+#include "imu.cpp"
+
+#define REPORT_MOTORVAL
 
 int main(void) {
     init();   // For Arduino.
@@ -16,22 +18,91 @@ int main(void) {
     Watchdog triWatchdog(DOGLIFE);   // Timeout in ms.
 
     // Start system.
-    System triSystem;
+    IMU myIMU;
+    myIMU.Init();
 
+    Servo motor[3], tailServo;
+    motor[MT].attach(PMT);
+    motor[MR].attach(PMR);
+    motor[ML].attach(PML);
+    tailServo.attach(PST);
+    
+    // Variables
+    int motorVal[3], tailServoVal;
+    float targetDCM[3][3];   // Target position DCM sent by Pilot.
+
+    bool armed = false;
     unsigned long nextRuntime = 0;
+
+    // Write 0 to motors to prevent them from spinning up upon Seeeduino reset!
+    for (int i=0; i<3; i++) {
+        motor[i].write(0);
+        motorVal[i] = 0;
+    }
+
 
     for (;;) {
         if (millis() >= nextRuntime) {
             nextRuntime += SYSINTRV;   // Increment by DT.
-            if (triWatchdog.isAlive) {
-                triSystem.Run();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
-                // Serial.println(millis());
-                triPilot.Fly(triSystem);
+            myIMU.Update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
+            // Serial.println(millis());
+
+            /* Don't run system unless armed!
+             * Pilot will monitor serial inputs and update System::motorVal[]. System 
+             * will send ESCs a "nonsense" value of 0 until it sees that all three 
+             * motor values are zerod. It will then consider itself armed and start 
+             * sending proper motor values.
+             */
+            if (!armed) {
+                // Serial.println("System: Motors not armed.");
+                #ifdef REPORT_MOTORVAL
+                Serial.print("_ ");
+                #endif
+
+                for (int i=0; i<3; i++) {
+                    motor[i].write(TMIN);
+                    #ifdef REPORT_MOTORVAL
+                    Serial.print(motorVal[i]);
+                    Serial.print(" ");
+                    #endif
+                }
+                tailServo.write(90);
+
+                #ifdef REPORT_MOTORVAL
+                Serial.print(tailServoVal);
+                #endif
+
+                if (motorVal[MT] == TMIN && 
+                    motorVal[MR] == TMIN && 
+                    motorVal[ML] == TMIN) {
+                    armed = true;
+                    Serial.println("System: Motors armed.");
+                }
+            }
+            else if (triWatchdog.isAlive) {
+                #ifdef REPORT_MOTORVAL
+                Serial.print("! ");
+                #endif
+
+                // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs .ints
+
+                for (int i=0; i<3; i++) {
+                    motor[i].write(motorVal[i]);   // Write motor values to motors.
+                    #ifdef REPORT_MOTORVAL
+                    Serial.print(motorVal[i]);
+                    Serial.print(" ");
+                    #endif
+                }
+                tailServo.write(tailServoVal);
+                #ifdef REPORT_MOTORVAL
+                Serial.print(tailServoVal);
+                #endif
+                triPilot.Fly();
             }
             else {
-                triPilot.Abort(triSystem);   // Pilot will command system to stop and abort.
-                triSystem.Run();
+                triPilot.Abort();   // TODO: Do I even need this anymore?
             }
+
             triPilot.Listen();
             triWatchdog.Watch(triPilot.hasFood);
             Serial.println("");   // Send newline after every system iteration. TODO: Eventually implement a Telemetry class.

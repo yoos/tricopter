@@ -98,7 +98,7 @@ void Pilot::Listen() {
     }
 }
 
-void Pilot::Fly(System &mySystem) {
+void Pilot::Fly() {
     if (okayToFly) {   // Update axisVal only if okayToFly is true.
         /* Shift serial input values [1, 251] to correct range for each axis. Z 
          * stays positive for ease of calculation. */
@@ -120,7 +120,7 @@ void Pilot::Fly(System &mySystem) {
         // Serial.println("Pilot not okay to fly.");
     }
 
-    mySystem.UpdateHoverPos(axisVal);
+    // mySystem.UpdateHoverPos(axisVal); TODO: Implement this later.
 
     // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
@@ -163,7 +163,7 @@ void Pilot::Fly(System &mySystem) {
     #endif
 }
 
-void Pilot::Abort(System &mySystem) {
+void Pilot::Abort() {
     /* When communication is lost, pilot should set all motorVal[] to TMIN and 
      * tell system to set all motors to TMIN. Pilot should also tell system to 
      * set armed status to false so that if communication resumes, throttle 

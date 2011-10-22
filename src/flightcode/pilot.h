@@ -2,7 +2,6 @@
 #define PILOT_H
 
 #include "globals.h"
-#include "system.h"
 
 class Pilot {
     char commStr[];
@@ -20,8 +19,8 @@ public:
     int Send(char[]);
     char* Read(char[]);
     void Listen();
-    void Fly(System&);
-    void Abort(System&);
+    void Fly();
+    void Abort();
     
     bool hasFood;
 };
