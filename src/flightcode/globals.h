@@ -67,7 +67,7 @@ float targetDCM[3][3];   // Target position DCM sent by Pilot.
 
 // Constants
 
-#define PI 3.1415926535
+#define PI 3.141592653589793238462643383279502884197f
 
 void zeroStr(char *sStr) {
     for (int i=0; i<128; i++) {
