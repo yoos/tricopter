@@ -26,9 +26,8 @@ void IMU::Init() {
 /* Calibrate sensors if needed and find initial tricopter orientation. */
     myGyr.Calibrate(100);
 
-    unsigned char i, j;
-    for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
+    for (int i=0; i<3; i++)
+        for (int j=0; j<3; j++)
             dcmGyro[i][j] = (i==j) ? 1.0 : 0.0;
 }
 
@@ -39,6 +38,11 @@ void IMU::Update() {
     for (int i=0; i<3; i++) {
         aVec[i] = myAcc.Get(i);
         gVec[i] = myGyr.GetRate(i);
+        //Serial.print("(");
+        //Serial.print(aVec[i]);
+        //Serial.print("  ");
+        //Serial.print(gVec[i]);
+        //Serial.print(")  ");
     }
     
     #ifdef DEBUG
@@ -56,7 +60,6 @@ void IMU::Update() {
 
 
     // XXX Following code from PICQ
-    int i;
     
     //---------------
     // I,J,K unity vectors of global coordinate system I-North,J-West,K-zenith
@@ -73,9 +76,9 @@ void IMU::Update() {
     //Gravity vector is the reverse of K unity vector of global system expressed in local coordinates
     //K vector coincides with the z coordinate of body's i,j,k vectors expressed in global coordinates (K.i , K.j, K.k)
     //Acc can estimate global K vector(zenith) measured in body's coordinate systems (the reverse of gravitation vector)
-    Kacc[0] = aVec[0]; // -getAcclOutput(0);    
-    Kacc[1] = aVec[1]; // -getAcclOutput(1);
-    Kacc[2] = aVec[2]; // -getAcclOutput(2);
+    Kacc[0] = aVec[0];
+    Kacc[1] = aVec[1];
+    Kacc[2] = aVec[2];
     vNorm(Kacc);
     //calculate correction vector to bring dcmGyro's K vector closer to Acc vector (K vector according to accelerometer)
     vCrossP(dcmGyro[2], Kacc, wA);    // wA = Kgyro x     Kacc , rotation needed to bring Kacc to Kgyro
@@ -94,16 +97,36 @@ void IMU::Update() {
     //---------------
     //dcmGyro
     //---------------
-    w[0] = -gVec[1];    //rotation rate about accelerometer's X axis (GY output) in rad/ms
-    w[1] = -gVec[0];    //rotation rate about accelerometer's Y axis (GX output) in rad/ms
-    w[2] = -gVec[2];    //rotation rate about accelerometer's Z axis (GZ output) in rad/ms
-    for (i=0; i<3; i++) {
-        w[i] *= SYSINTRV;                //scale by elapsed time to get angle in radians
+    w[0] = gVec[0];   //rotation rate about accelerometer's X axis (GY output) in rad/ms
+    w[1] = gVec[1];   //rotation rate about accelerometer's Y axis (GX output) in rad/ms
+    w[2] = gVec[2];   //rotation rate about accelerometer's Z axis (GZ output) in rad/ms
+    for (int i=0; i<3; i++) {
+        w[i] *= SYSINTRV/1000;   //scale by elapsed time (in s) to get angle in radians
         //compute weighted average with the accelerometer correction vector
         w[i] = (w[i] + ACC_WEIGHT*wA[i] + MAG_WEIGHT*wM[i])/(1.0+ACC_WEIGHT+MAG_WEIGHT);
     }
+    Serial.print("(");
+    Serial.print(w[0]*1000);
+    Serial.print("  ");
+    Serial.print(w[1]*1000);
+    Serial.print("  ");
+    Serial.print(w[2]*1000);
+    Serial.print(")");
     
     imu_dcm_rotate(dcmGyro, w);
+
+    for (int i=0; i<3; i++) {
+        for (int j=0; j<3; j++) {
+            targetDCM[i][j] = dcmGyro[i][j];
+        }
+        //Serial.print("(");
+        //Serial.print(dcmGyro[i][0]);
+        //Serial.print("  ");
+        //Serial.print(dcmGyro[i][1]);
+        //Serial.print("  ");
+        //Serial.print(dcmGyro[i][2]);
+        //Serial.print(")  ");
+    }
 }
 
 void IMU::deadReckoning() {
