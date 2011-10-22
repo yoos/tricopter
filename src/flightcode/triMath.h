@@ -30,12 +30,12 @@ void vAdd (float v1[3], float v2[3], float vOut[3]) {
 }
 
 // Calculate modulus of vector = sqrt(x^2 + y^2 + z^2)
-void vMod (float v[3], float modOut) {
+void vMod (float v[3], float &modOut) {
     float tmp;
     tmp = v[0] * v[0];
     tmp += v[1] * v[1];
     tmp += v[2] * v[2];
-    modOut = tmp;
+    modOut = sqrt(tmp);
 }
 
 // Normalize vector to a vector with same direction, mod 1
