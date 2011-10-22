@@ -11,8 +11,8 @@ from signal import signal, SIGINT
 # ROS stuff
 import roslib; roslib.load_manifest("tricopter")
 import rospy
-from joy.msg import Joy
-from tricopter.msg import TricJoy
+from sensor_msgs.msg import Joy
+# from tricopter.msg import TricJoy
 
 # Comm values
 serialPort = "/dev/ttyUSB0"
@@ -24,19 +24,20 @@ dogBone = chr(254)
 verboseOn = True
 
 armed = False
+printString = ""
 
 axisSigns = [-1, 1, -1, 1, -1, 1]   # Axis sign flips
-axisValues = [126, 126, 126, 2]   # Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
+axisValues = [126, 126, 126, 3]   # Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 buttonValues = []
 
-rospy.init_node("tric_comm_node", anonymous=True)
+rospy.init_node("tric_comm", anonymous=True)
 
 # Open serial connection
 try:
     ser = serial.Serial(serialPort, baudRate, timeout=0)
-    rospy.loginfo("Arduino at %s", serialPort)
+    rospy.loginfo("Serial at %s", serialPort)
 except:
-    rospy.logerr("No Arduino at %s!", serialPort)
+    rospy.logerr("Serial unavailable at %s!", serialPort)
 
 
 ############################ ROS get joystick input ###########################
@@ -59,12 +60,13 @@ def communicate():
     if armed:
         sendData(serHeader + chr(axisValues[0]) + chr(axisValues[1]) + chr(axisValues[2]) + chr(axisValues[3]))
         # sendData(serHeader + chr(126) + chr(126) + chr(126) + chr(74))
-        if verboseOn: rospy.loginfo("A0: %s   A1: %s   A2: %s   A3: %s", axisValues[0], axisValues[1], axisValues[2], axisValues[3])
+        if verboseOn: printString += ["A0: %s   A1: %s   A2: %s   A3: %s", axisValues[0], axisValues[1], axisValues[2], axisValues[3]]
     elif not armed:
         rospy.loginfo("Move joystick throttle to minimum position in order to send motor arming signal.")
         if axisValues[3] == 1:   # If throttle is at minimum position
             armed = True
             rospy.loginfo("Joystick throttle at minimum! Motors armed!")
+    readData()
     
 def sendData(myStr):
     try:
@@ -75,6 +77,13 @@ def sendData(myStr):
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
+def readData():
+    try:
+        while ser.inWaiting() != 0:
+            RX = ser.readline()
+        printString += RX
+    except:
+        return 0
 
 class TricSubscriber(threading.Thread):
     def __init__(self):
@@ -95,6 +104,7 @@ class TricCommunicator(threading.Thread):
             self.times += 1
             communicate()
             rospy.loginfo(self.times)
+            rospy.loginfo(printString)
             rospy.sleep(dataSendInterval)
 
 class TricWatchdog(threading.Thread):

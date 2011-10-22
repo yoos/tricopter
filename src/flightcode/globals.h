@@ -3,6 +3,8 @@
 
 // Variables
 int armed;
+int motorVal[3], tailServoVal;
+float targetDCM[3][3];   // Target position DCM sent by Pilot.
 
 
 // Configurables

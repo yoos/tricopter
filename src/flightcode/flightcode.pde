@@ -28,8 +28,6 @@ int main(void) {
     tailServo.attach(PST);
     
     // Variables
-    int motorVal[3], tailServoVal;
-    float targetDCM[3][3];   // Target position DCM sent by Pilot.
 
     armed = -2000/SYSINTRV;   // Pilot will add 1 to the armed value every time it receives the arming numbers from comm. Arming numbers will have to be sent for a total of 2000 ms before this variable is positive (and therefore true).
     unsigned long nextRuntime = 0;
