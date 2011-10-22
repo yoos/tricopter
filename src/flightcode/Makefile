@@ -43,9 +43,6 @@ AVRDUDE_PROGRAMMER = stk500v1
 MCU = atmega1280
 F_CPU = 16000000
 
-############################################################################
-# Below here nothing should be changed...
-
 VERSION=22
 ARDUINO = $(INSTALL_DIR)/hardware/arduino/cores/arduino
 ARDUINO_LIBS = $(INSTALL_DIR)/libraries/{ArduinoTestSuite,EEPROM,Ethernet,Firmata,LiquidCrystal,Matrix,SD,Servo,SoftwareSerial,SPI,Sprite,Stepper,Wire}
@@ -163,13 +160,13 @@ build: elf hex
 
 #applet_files: $(TARGET).pde
 applet/$(TARGET).cpp: $(TARGET).pde
-	# Here is the "preprocessing".
-	# It creates a .cpp file based with the same name as the .pde file.
-	# On top of the new .cpp file comes the WProgram.h header.
-	# and prototypes for setup() and Loop()
-	# Then the .cpp file will be compiled. Errors during compile will
-	# refer to this new, automatically generated, file.
-	# Not the original .pde file you actually edit...
+# Here is the "preprocessing".
+# It creates a .cpp file based with the same name as the .pde file.
+# On top of the new .cpp file comes the WProgram.h header.
+# and prototypes for setup() and Loop()
+# Then the .cpp file will be compiled. Errors during compile will
+# refer to this new, automatically generated, file.
+# Not the original .pde file you actually edit...
 	test -d applet || mkdir applet
 	echo -ne '#include "WProgram.h"\n#include "EEPROM.cpp"\n#include "LiquidCrystal.cpp"\n#include "Matrix.cpp"\n#include "Servo.cpp"\n#include "SoftwareSerial.cpp"\n#include "Sprite.cpp"\n#include "Stepper.cpp"\n#include "Wire.cpp"\n\n' > applet/$(TARGET).cpp
 #	echo 'void setup();' >> applet/$(TARGET).cpp
@@ -187,7 +184,7 @@ upload: applet/$(TARGET).hex
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 
 
-	# Display size of file.
+# Display size of file.
 HEXSIZE = $(SIZE) --target=$(FORMAT) applet/$(TARGET).hex
 ELFSIZE = $(SIZE)  applet/$(TARGET).elf
 sizebefore:
@@ -231,15 +228,12 @@ extcoff: $(TARGET).elf
 .elf.sym:
 	$(NM) -n $< > $@
 
-	# Link: create ELF output file from library.
+# Link: create ELF output file from library.
 #applet/$(TARGET).elf: $(TARGET).pde applet/core.a
 applet/$(TARGET).elf: applet/$(TARGET).o applet/core.a
 	$(LD) $(ALL_LDFLAGS) -o $@ applet/$(TARGET).o -lm applet/core.a
-
 applet/core.a: $(OBJ_MODULES)
 	@for i in $(OBJ_MODULES); do echo $(AR) rcs applet/core.a $$i; $(AR) rcs applet/core.a $$i; done
-
-
 
 # Compile: create object files from C++ source files.
 .cpp.o:
@@ -249,16 +243,13 @@ applet/core.a: $(OBJ_MODULES)
 .c.o:
 	$(CC) -c $(ALL_CFLAGS) $< -o $@
 
-
 # Compile: create assembler files from C source files.
 .c.s:
 	$(CC) -S $(ALL_CFLAGS) $< -o $@
 
-
 # Assemble: create object files from assembler source files.
 .S.o:
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
-
 
 # Automatic dependencies
 %.d: %.c
@@ -266,7 +257,6 @@ applet/core.a: $(OBJ_MODULES)
 
 %.d: %.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< | sed "s;$(notdir $*).o:;$*.o $*.d:;" > $@
-
 
 # Target: clean project.
 clean:
