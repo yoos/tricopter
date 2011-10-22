@@ -54,7 +54,7 @@ void Pilot::Listen() {
         //     hasFood = true;
         // }
         if (serRead == SERHEAD) {   // Receive header.
-            hasFood = true;
+            hasFood = true;   // Prepare food for watchdog.
             for (int i=0; i<PACKETSIZE; i++) {
                 serRead = Serial.read();
                 // Serial.print(int(serRead));
@@ -100,6 +100,8 @@ void Pilot::Listen() {
 
 void Pilot::Fly() {
     if (okayToFly) {   // Update axisVal only if okayToFly is true.
+        // mySystem.UpdateHoverPos(axisVal); TODO: Implement this later.
+
         /* Shift serial input values [1, 251] to correct range for each axis. Z 
          * stays positive for ease of calculation. */
         axisVal[SX] = serInput[SX] - 126;   // [-125, 125]
@@ -112,51 +114,38 @@ void Pilot::Fly() {
         //     Serial.print("   ");
         // }
         // Serial.println("");
-    
-        okayToFly = false;
 
+        // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
+
+        // Intermediate calculations
+        motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs. ints
+        motorVal[MR] = axisVal[SZ] - 0.3333*axisVal[SY] - axisVal[SX]/sqrt(3);
+        motorVal[ML] = axisVal[SZ] - 0.3333*axisVal[SY] + axisVal[SX]/sqrt(3);
+
+        // Find max/min motor values
+        mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
+        mapUpper = mapUpper > motorVal[ML] ? mapUpper : motorVal[ML];
+        mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
+        mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
+
+        // Find map boundaries (need to limit, but NOT fit, to [0, 250])
+        mapUpper = mapUpper > 250 ? mapUpper : 250;
+        mapLower = mapLower < 0 ? mapLower : 0;
+
+        // Final calculations
+        for (int i=0; i<3; i++) {
+            motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
+        }
+        tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
+
+        // Serial.print(millis());
+        // Serial.print(": ");
+
+        okayToFly = false;
     }
     else {
         // Serial.println("Pilot not okay to fly.");
     }
-
-    // mySystem.UpdateHoverPos(axisVal); TODO: Implement this later.
-
-    // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
-
-    // // Intermediate calculations
-    // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs. ints
-    // motorVal[MR] = axisVal[SZ] - 0.3333*axisVal[SY] - axisVal[SX]/sqrt(3);
-    // motorVal[ML] = axisVal[SZ] - 0.3333*axisVal[SY] + axisVal[SX]/sqrt(3);
-
-    // // Find max/min motor values
-    // mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
-    // mapUpper = mapUpper > motorVal[ML] ? mapUpper : motorVal[ML];
-    // mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
-    // mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
-
-    // // Find map boundaries (need to limit, but NOT fit, to [0, 250])
-    // mapUpper = mapUpper > 250 ? mapUpper : 250;
-    // mapLower = mapLower < 0 ? mapLower : 0;
-
-    // // Final calculations
-    // for (int i=0; i<3; i++) {
-    //     motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
-    // }
-    // tailServoVal = 70 - 0.6*axisVal[ST];
-
-    // // Serial.print(millis());
-    // // Serial.print(": ");
-
-    // // Write to motors
-    // for (int i=0; i<3; i++) {
-    //     mySystem.SetMotor(i, motorVal[i]);
-    //     // Serial.print(motorVal[i]);
-    //     // Serial.print("   ");
-    // }
-    // mySystem.SetServo(tailServoVal);
-    // // Serial.print(tailServoVal);
-    // // Serial.println("");
 
     #ifdef DEBUG
     Serial.println("Pilot is flying.");

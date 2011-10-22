@@ -15,6 +15,7 @@ float targetDCM[3][3];   // Target position DCM sent by Pilot.
 #define INPUT_MAX 251   // Maximum integer input value from joystick
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
 #define TMAX 70   // Servo signal that registers as maximum throttle to ESC.
+#define TAIL_SERVO_DEFAULT_POSITION 70
 
 #define BAUDRATE 19200
 #define IMU_SAMPLE_INTERVAL 10   // In milliseconds

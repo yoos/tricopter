@@ -24,7 +24,7 @@ dogBone = chr(254)
 verboseOn = True
 
 armed = False
-printString = ""
+printString = ''
 
 axisSigns = [-1, 1, -1, 1, -1, 1]   # Axis sign flips
 axisValues = [126, 126, 126, 3]   # Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
@@ -57,10 +57,11 @@ def callback(myJoy):
 
 def communicate():
     global armed
+    global printString
     if armed:
         sendData(serHeader + chr(axisValues[0]) + chr(axisValues[1]) + chr(axisValues[2]) + chr(axisValues[3]))
         # sendData(serHeader + chr(126) + chr(126) + chr(126) + chr(74))
-        if verboseOn: printString += ["A0: %s   A1: %s   A2: %s   A3: %s", axisValues[0], axisValues[1], axisValues[2], axisValues[3]]
+        # if verboseOn: printString += ["A0: %s   A1: %s   A2: %s   A3: %s" % (axisValues[0], axisValues[1], axisValues[2], axisValues[3])]
     elif not armed:
         rospy.loginfo("Move joystick throttle to minimum position in order to send motor arming signal.")
         if axisValues[3] == 1:   # If throttle is at minimum position
@@ -78,6 +79,7 @@ def sendData(myStr):
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
 
 def readData():
+    global printString
     try:
         while ser.inWaiting() != 0:
             RX = ser.readline()
@@ -95,12 +97,14 @@ class TricSubscriber(threading.Thread):
             rospy.spin()
 
 class TricCommunicator(threading.Thread):
+    global printString
     def __init__(self):
         threading.Thread.__init__(self)
         self.running = True
         self.times = 0
     def run(self):
         while self.running and not rospy.is_shutdown():
+            printString = ''
             self.times += 1
             communicate()
             rospy.loginfo(self.times)

@@ -82,6 +82,11 @@ int main(void) {
                 Serial.print("! ");
                 #endif
 
+                /* The pilot communicates with base and updates motorVal and 
+                 * tailServoVal according to the joystick axis values it 
+                 * receives. */
+                triPilot.Fly();
+
                 // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs .ints
 
                 for (int i=0; i<3; i++) {
@@ -95,7 +100,6 @@ int main(void) {
                 #ifdef REPORT_MOTORVAL
                 Serial.print(tailServoVal);
                 #endif
-                triPilot.Fly();
             }
             else {
                 // triPilot.Abort();   // TODO: Do I even need this anymore?

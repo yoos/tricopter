@@ -8,8 +8,6 @@ class Pilot {
     int serRead;
     int serInput[PACKETSIZE];
     int axisVal[PACKETSIZE];
-    int motorVal[3];
-    int tailServoVal;
     int mapLower, mapUpper;
 //  double dir;   // Direction in radians
     bool okayToFly;
