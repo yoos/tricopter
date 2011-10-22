@@ -106,6 +106,27 @@ void IMU::Update() {
     imu_dcm_rotate(dcmGyro, w);
 }
 
+void IMU::deadReckoning() {
+    // Update position and orientation regularly
+    if (millis() - lastTime > IMU_SAMPLE_INTERVAL) {
+        for (int i; i<3; i++) {
+            curRot[i] = curRot[i] + myGyr.GetRate(i) * (IMU_SAMPLE_INTERVAL/1000);
+        }
+    }
+
+    // Update X position
+//  curPos[0] = accel.getX()*sec(gyro.getY         );
+
+}
+
+void IMU::Reset() {
+    for (int i; i<3; i++) {
+        curRot[i] = 0;
+        curPos[i] = 0;
+    }
+}
+
+
 // XXX From PICQ: Bring DCM matrix in order - adjust values to make orthonormal (or at least closer to orthonormal)
 // Note: dcm and dcmResult can be the same.
 void imu_dcm_orthonormalize(float dcm[3][3]) {
@@ -145,26 +166,5 @@ void imu_dcm_rotate(float dcm[3][3], float w[3]) {
 
     //make matrix orthonormal again
     imu_dcm_orthonormalize(dcm);
-}
-
-
-void IMU::deadReckoning() {
-    // Update position and orientation regularly
-    if (millis() - lastTime > IMU_SAMPLE_INTERVAL) {
-        for (int i; i<3; i++) {
-            curRot[i] = curRot[i] + myGyr.GetRate(i) * (IMU_SAMPLE_INTERVAL/1000);
-        }
-    }
-
-    // Update X position
-//  curPos[0] = accel.getX()*sec(gyro.getY         );
-
-}
-
-void IMU::Reset() {
-    for (int i; i<3; i++) {
-        curRot[i] = 0;
-        curPos[i] = 0;
-    }
 }
 
