@@ -1,23 +1,6 @@
 
 Code for Seeeduino-based tricopter.
 
-
-need to install pyserial and pygame modules.
-
-seeeduino should keep a logfile.
-
-
-Calculations are done at 40 Hz.
-Watchdog is fed at 10 Hz.
-Controls are sent at 20 Hz?
-
-
-Looks like I'm going to use pidquadcontroller code for IMU: code.google.com/p/picquadcontroller/source/browse/trunk/imu.h?r=7
-
-And AeroQuad code for PID.
-
-
-
 The control system works something like this:
 
 ################################################################################
@@ -63,4 +46,14 @@ The control system works something like this:
 #                                 ************                                 #
 #                                                                              #
 ################################################################################
+
+
+Calculations are done at 100 Hz.
+Controls are sent at 40 Hz.
+
+
+Some todos:
+* Seeeduino should keep a logfile.
+* Looks like I'm going to use pidquadcontroller code for IMU (http://code.google.com/p/picquadcontroller/source/browse/trunk/imu.h?r=7) and AeroQuad code for PID. Make these work.
+
 

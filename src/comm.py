@@ -17,7 +17,7 @@ from sensor_msgs.msg import Joy
 # Comm values
 serialPort = "/dev/ttyUSB0"
 baudRate = 19200
-dataSendInterval = 0.05   # Interval between data sends in seconds
+dataSendInterval = 0.025   # Interval between data sends in seconds
 dogFeedInterval = 0.1
 serHeader = chr(255)
 dogBone = chr(254)
