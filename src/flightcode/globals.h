@@ -1,77 +1,89 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-// Variables
+// #define DEBUG
+
+/*****************************************************************************
+ * Variables
+ *****************************************************************************/
+
 int armed;
 int motorVal[3], tailServoVal;
 float currentDCM[3][3];   // Current position DCM calculated by IMU.
 float targetDCM[3][3];   // Target position DCM calculated by Pilot.
 
 
-// Configurables
+/*****************************************************************************
+ * Serial: everything that has to do with TX/RX.
+ *****************************************************************************/
 
-// #define DEBUG
-#define PACKETSIZE 4   // Each packet contains header plus X, Y, Twist, and Z.
-#define INPUT_MIN 1   // Minimum integer input value from joystick
-#define INPUT_MAX 251   // Maximum integer input value from joystick
+#define BAUDRATE 19200   // Fiddle with this. The XBee sometimes seems to have trouble with high baudrates like 57600.
+
+#define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
+#define PACKETSIZE 4     // Each packet contains header plus X, Y, Twist, and Z.
+#define INPUT_MIN  1     // Minimum integer input value from joystick.
+#define INPUT_MAX  251   // Maximum integer input value from joystick.
+#define SX 0   // Serial byte location for joystick X axis.
+#define SY 1   // Serial byte location for joystick Y axis.
+#define ST 2   // Serial byte location for joystick T (twist) axis.
+#define SZ 3   // Serial byte location for joystick Z axis.
+
+
+/*****************************************************************************
+ * Software configuration: any parameter that is purely code-related or is
+ * relatively frequently changed.
+ *****************************************************************************/
+
+#define SYSINTRV 10   // System loop interval in milliseconds.
+#define DOGLIFE 300   // Watchdog life in milliseconds.
+
+#define DCM_COEFF 90   // Scale current-to-target DCM difference.
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
 #define TMAX 70   // Servo signal that registers as maximum throttle to ESC.
+
+#define MT 0   // Tail motor array index.
+#define MR 1   // Right motor array index.
+#define ML 2   // Left motor array index.
+
+
+/*****************************************************************************
+ * Hardware configuration: any parameter that is changed so infrequently that
+ * it may as well be hard-coded.
+ *****************************************************************************/
+
+#define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
+#define MOTOR_R_OFFSET 0   // Speed offset for right motor.
+#define MOTOR_L_OFFSET 0   // Speed offset for left motor.
 #define TAIL_SERVO_DEFAULT_POSITION 70
-#define DCM_COEFF 90   // Scale current-to-target DCM difference.
 
-#define BAUDRATE 19200
-#define IMU_SAMPLE_INTERVAL 10   // In milliseconds
-#define GYRO_VREF 1
-#define ACCEL_VREF 1
-
-#define SYSINTRV 10   // System run interval in milliseconds
-#define SERHEAD 255
-#define DOGBONE 254
-#define DOGLIFE 300   // Watchdog life in milliseconds
+#define PMT 4   // Tail motor pin.
+#define PMR 2   // Right motor pin.
+#define PML 3   // Left motor pin.
+#define PST 5   // Tail servo pin.
 
 
+/*****************************************************************************
+ * Flight modes: not yet implemented.
+ *****************************************************************************/
 
-// Serial axis array index values
-#define SX 0
-#define SY 1
-#define ST 2
-#define SZ 3
-
-// Motors array index values
-#define MT 0   // Tail motor
-#define MR 1   // Right motor
-#define ML 2   // Left motor
-
-// IMU constants
-#define KH 0
-#define DT 0
-
-// Pins
-#define PMT 4   // Tail motor
-#define PMR 2   // Right motor
-#define PML 3   // Left motor
-#define PST 5   // Tail servo
-
-// BMA180 config
-#define RANGEMASK 0x0E
-#define BWMASK 0xF0
+//#define OFF 0
+//#define IDLE 1
+//#define HOVER 2
+//#define ACRO 3
+//#define AUTO 4
+//#define AUTO_HOVER 5
 
 
-// Flight modes
-
-#define OFF 0
-#define IDLE 1
-#define HOVER 2
-#define ACRO 3
-#define AUTO 4
-#define AUTO_HOVER 5
-
-
-// Constants
+/*****************************************************************************
+ * Constants
+ *****************************************************************************/
 
 #define PI 3.141592653589793238462643383279502884197f
 
-// Functions
+
+/*****************************************************************************
+ * Functions
+ *****************************************************************************/
 
 void zeroStr(char *sStr) {
     for (int i=0; i<128; i++) {
@@ -79,7 +91,7 @@ void zeroStr(char *sStr) {
     }
 }
 
-/* Basic print function from http://www.arduino.cc/playground/Main/Printf */
+// Basic print function from http://www.arduino.cc/playground/Main/Printf
 void p(char *fmt, ... ){
     char tmp[128]; // resulting string limited to 128 chars
     va_list args;

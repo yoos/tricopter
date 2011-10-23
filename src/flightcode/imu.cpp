@@ -126,18 +126,18 @@ void IMU::Update() {
     //}
 }
 
-void IMU::deadReckoning() {
-    // Update position and orientation regularly
-    if (millis() - lastTime > IMU_SAMPLE_INTERVAL) {
-        for (int i; i<3; i++) {
-            curRot[i] = curRot[i] + myGyr.GetRate(i) * (IMU_SAMPLE_INTERVAL/1000);
-        }
-    }
-
-    // Update X position
-//  curPos[0] = accel.getX()*sec(gyro.getY         );
-
-}
+//void IMU::deadReckoning() {
+//    // Update position and orientation regularly
+//    if (millis() - lastTime > IMU_SAMPLE_INTERVAL) {
+//        for (int i; i<3; i++) {
+//            curRot[i] = curRot[i] + myGyr.GetRate(i) * (IMU_SAMPLE_INTERVAL/1000);
+//        }
+//    }
+//
+//    // Update X position
+////  curPos[0] = accel.getX()*sec(gyro.getY         );
+//
+//}
 
 void IMU::Reset() {
     for (int i; i<3; i++) {

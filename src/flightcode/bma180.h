@@ -4,9 +4,11 @@
 #include "i2c.h"
 #include "globals.h"
 
-#define ACCADDR 0x40   // BMA180 device address
-#define READ_SIZE 6   // Number of bytes to read at a time
-#define REGADDR ACCXLSB
+#define ACCADDR 0x40   // BMA180 device address.
+#define READ_SIZE 6   // Number of bytes to read at a time.
+#define REGADDR ACCXLSB   // Location of accelerometer data register.
+#define RANGEMASK 0x0E   // TODO: Figure out what this is (forgot).
+#define BWMASK 0xF0      // TODO: Figure out what this is (forgot).
 
 // Calibration values
 #define AXOFFSET 0

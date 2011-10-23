@@ -81,8 +81,8 @@ def sendData(myStr):
 def readData():
     global printString
     try:
-        while ser.inWaiting() != 0:
-            RX = ser.readline()
+        while ser.inWaiting() > 0:
+            RX = ser.readline()   # TODO: Try changing this to ser.read(1)?
         printString += RX
     except:
         return 0

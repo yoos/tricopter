@@ -66,7 +66,7 @@ public:
     void Init();
     void Update();
 
-    void deadReckoning();
+    //void deadReckoning();
     void Reset();
 };
 

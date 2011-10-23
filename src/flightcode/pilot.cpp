@@ -141,9 +141,9 @@ void Pilot::Fly() {
         // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
         // Intermediate calculations TODO: Move this to system code.
-        motorVal[MT] = axisVal[SZ] - DCM_COEFF*0.6667*(targetDCM[2][1]-currentDCM[2][1]);   // Watch out for floats vs. ints
-        motorVal[MR] = axisVal[SZ] + DCM_COEFF*0.3333*(targetDCM[2][1]-currentDCM[2][1]) + DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0])/sqrt(3);
-        motorVal[ML] = axisVal[SZ] + DCM_COEFF*0.3333*(targetDCM[2][1]-currentDCM[2][1]) - DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0])/sqrt(3);
+        motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] - 0.6667*DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]);   // Watch out for floats vs. ints
+        motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]) + DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0])/sqrt(3);
+        motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]) - DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0])/sqrt(3);
 
         //Serial.print("(");
         //Serial.print(motorVal[MT]);
