@@ -110,6 +110,9 @@ void Pilot::Listen() {
 }
 
 void Pilot::Fly() {
+    Serial.print("(");
+    Serial.print(numGoodComm);
+    Serial.print(")  ");
     if (okayToFly) {   // Update axisVal only if okayToFly is true.
         // mySystem.UpdateHoverPos(axisVal); TODO: Implement this later.
 
@@ -197,16 +200,15 @@ void Pilot::Fly() {
 }
 
 void Pilot::Abort() {
-    /* When communication is lost, pilot should set all motorVal[] to TMIN and 
-     * tell system to set all motors to TMIN. Pilot should also tell system to 
-     * set armed status to false so that if communication resumes, throttle 
-     * must be reduced to zero before control is restored. */
-    // for (int i=0; i<3; i++) {
-    //     motorVal[i] = 0;
-    //     mySystem.SetMotor(i, 0);
-    //     mySystem.armed = false;
-    // }
-    // mySystem.SetServo(90);
+    /* When communication is lost, pilot should set a bunch of stuff to safe
+     * values. */
+    serInput[SX] = 126;
+    serInput[SY] = 126;
+    serInput[ST] = 126;
+    serInput[SZ] = 3;
+    okayToFly = false;
+    mySystem.SetServo(90);
+    
     #ifdef DEBUG
     Serial.println("Pilot ejected!");
     #endif

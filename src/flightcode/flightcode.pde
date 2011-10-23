@@ -29,7 +29,7 @@ int main(void) {
     
     // Variables
 
-    armed = -2000/SYSINTRV;   // Pilot will add 1 to the armed value every time it receives the arming numbers from comm. Arming numbers will have to be sent for a total of 2000 ms before this variable is positive (and therefore true).
+    armed = (-2000/SYSINTRV);   // Pilot will add 1 to the armed value every time it receives the arming numbers from comm. Arming numbers will have to be sent for a total of 2000 ms before this variable is positive (and therefore true).
     unsigned long nextRuntime = 0;
 
     // Write 0 to motors to prevent them from spinning up upon Seeeduino reset!
@@ -59,22 +59,29 @@ int main(void) {
             //Serial.print(currentDCM[2][2]);
             //Serial.print(")  ");
 
+            triPilot.Listen();
+            /* The pilot communicates with base and updates motorVal and 
+             * tailServoVal according to the joystick axis values it 
+             * receives. */
+            triPilot.Fly();
+            triWatchdog.Watch(triPilot.hasFood);
+
             /* Don't run system unless armed!
              * Pilot will monitor serial inputs and update System::motorVal[]. System 
              * will send ESCs a "nonsense" value of 0 until it sees that all three 
              * motor values are zerod. It will then consider itself armed and start 
              * sending proper motor values.
              */
-            if (!armed) {
+            if (armed < 0) {   // First check that system is armed.
                 // Serial.println("System: Motors not armed.");
                 #ifdef REPORT_MOTORVAL
-                Serial.print("_ ");
+                Serial.print(armed);
                 #endif
 
                 for (int i=0; i<3; i++) {
-                    motor[i].write(TMIN);
+                    motor[i].write(TMIN);   // Disregard what Pilot says and write TMIN.
                     #ifdef REPORT_MOTORVAL
-                    Serial.print(motorVal[i]);
+                    Serial.print(motorVal[i]);   // ..and hopefully Pilot has sense and won't be trying to do anything dangerous.
                     Serial.print(" ");
                     #endif
                 }
@@ -87,19 +94,14 @@ int main(void) {
                 if (motorVal[MT] == TMIN && 
                     motorVal[MR] == TMIN && 
                     motorVal[ML] == TMIN) {
-                    armed++;
+                    armed++;   // Once Pilot shows some sense, arm.
                     Serial.println("System: Motors armed.");
                 }
             }
-            else if (triWatchdog.isAlive) {
+            else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
                 #ifdef REPORT_MOTORVAL
                 Serial.print("! ");
                 #endif
-
-                /* The pilot communicates with base and updates motorVal and 
-                 * tailServoVal according to the joystick axis values it 
-                 * receives. */
-                triPilot.Fly();
 
                 // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs .ints
 
@@ -115,8 +117,10 @@ int main(void) {
                 Serial.print(tailServoVal);
                 #endif
             }
-            else {
+            else {   // ..otherwise, die.
                 // triPilot.Abort();   // TODO: Do I even need this anymore?
+                if (armed > 0)
+                    armed = -2000/SYSINTRV;   // Set armed status back off.
                 for (int i=0; i<3; i++) {
                     motorVal[i] -= 10;   // Slowly turn off.
                     if (motorVal[i] < 16) motorVal[i] = 16;
@@ -124,8 +128,6 @@ int main(void) {
                 }
             }
 
-            triPilot.Listen();
-            triWatchdog.Watch(triPilot.hasFood);
             Serial.println("");   // Send newline after every system iteration. TODO: Eventually implement a Telemetry class.
         }
     }

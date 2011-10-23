@@ -77,6 +77,7 @@ def sendData(myStr):
             rospy.sleep(0.0001)   # Sometimes, a delay seems to help. Maybe?
     except:
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
+        # TODO: Comm should do something to ensure safety when it loses connection.
 
 def readData():
     global printString
