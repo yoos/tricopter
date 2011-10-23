@@ -45,14 +45,14 @@ except:
 def callback(myJoy):
     global axisValues
     """
-        Raw axis values are cubed to facilitate control at lower throttle 
-        levels. This is then mapped to [0, 1], which is then mapped to 
-        [0, 250], then finally shifted to [1, 251] to be sent as bytes.
+        Raw axis values [-1, 1] are mapped to [0, 1] then cubed to facilitate
+        fine control. This is then mapped to [0, 250], which is finally shifted
+        to [1, 251] to be sent as bytes.
     """
-    axisValues[0] = int(250*(axisSigns[0] * myJoy.axes[0]**3 + 1) / 2 + 1)  # X
-    axisValues[1] = int(250*(axisSigns[1] * myJoy.axes[1]**3 + 1) / 2 + 1)  # Y
-    axisValues[2] = int(250*(axisSigns[2] * myJoy.axes[2]**3 + 1) / 2 + 1)  # T
-    axisValues[3] = int(250*(axisSigns[3] * myJoy.axes[3]**3 + 1) / 2 + 1)  # Z
+    axisValues[0] = int(250*((axisSigns[0] * myJoy.axes[0] + 1) / 2) ** 3 + 1)  # X
+    axisValues[1] = int(250*((axisSigns[1] * myJoy.axes[1] + 1) / 2) ** 3 + 1)  # Y
+    axisValues[2] = int(250*((axisSigns[2] * myJoy.axes[2] + 1) / 2) ** 3 + 1)  # T
+    axisValues[3] = int(250*((axisSigns[3] * myJoy.axes[3] + 1) / 2) ** 3 + 1)  # Z
     rospy.loginfo("Joystick moved!")
 
 def communicate():
@@ -67,7 +67,7 @@ def communicate():
         if axisValues[3] == 1:   # If throttle is at minimum position
             armed = True
             rospy.loginfo("Joystick throttle at minimum! Motors armed!")
-    readData()
+    # readData()   # TODO: make this work.
     
 def sendData(myStr):
     try:
