@@ -23,6 +23,9 @@ Pilot::Pilot() {
             targetDCM[i][j] = currentDCM[i][j];
         }
     }
+
+    numGoodComm = 0;   // Number of good communication packets.
+    numBadComm = 0;   // Number of bad communication packets.
 }
 
 // int Pilot::Send(char sStr[]) {
@@ -81,10 +84,12 @@ void Pilot::Listen() {
                     serInput[i] = serRead;
                     // Serial.println("Pilot determined motor value.");
                     okayToFly = true;
+                    numGoodComm++;
                 }
                 else {
                     i = 10;
                     okayToFly = false;
+                    numBadComm++;
                     Serial.print("Bad!");
                     // Flush remaining buffer to avoid taking in the wrong values.
                     Serial.flush();

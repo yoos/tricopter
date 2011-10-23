@@ -11,6 +11,8 @@ class Pilot {
     int mapLower, mapUpper;
 //  double dir;   // Direction in radians
     bool okayToFly;
+    long numGoodComm;
+    long numBadComm;
 
 public:
     Pilot();
