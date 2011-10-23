@@ -112,6 +112,8 @@ void Pilot::Listen() {
 void Pilot::Fly() {
     Serial.print("(");
     Serial.print(numGoodComm);
+    Serial.print("/");
+    Serial.print(numBadComm);
     Serial.print(")  ");
     if (okayToFly) {   // Update axisVal only if okayToFly is true.
         // mySystem.UpdateHoverPos(axisVal); TODO: Implement this later.

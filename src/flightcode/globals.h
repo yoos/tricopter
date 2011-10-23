@@ -40,6 +40,8 @@ float targetDCM[3][3];   // Target position DCM calculated by Pilot.
 #define DCM_COEFF 90   // Scale current-to-target DCM difference.
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
 #define TMAX 70   // Servo signal that registers as maximum throttle to ESC.
+#define TIME_TO_ARM 2000   // This divided by SYSINTRV determines how long it takes to arm the system.
+#define MOTOR_ARM_THRESHOLD 3   // This is added to TMIN to determine whether or not to arm the system.
 
 #define MT 0   // Tail motor array index.
 #define MR 1   // Right motor array index.
