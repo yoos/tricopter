@@ -64,9 +64,9 @@ void ITG3200::Poll() {
     // Read gyro temperature.
     readI2C(GYRADDR, TEMP_OUT, 2, gBuffer);
     temp = 35 + (((gBuffer[0] << 8) | gBuffer[1]) + 13200)/280.0;
-    Serial.print("GT: ");
-    Serial.print(temp);
-    Serial.print("  ");
+    //Serial.print("GT: ");
+    //Serial.print(temp);
+    //Serial.print("  ");
 
     // Convert raw values to a nice -1 to 1 range.
     for (int i=0; i<3; i++) {
