@@ -39,9 +39,9 @@ void IMU::Update() {
         aVec[i] = myAcc.Get(i);
         gVec[i] = myGyr.GetRate(i);
         //Serial.print("(");
-        //Serial.print(aVec[i]);
+        //Serial.print(aVec[i]*1000);
         //Serial.print("  ");
-        //Serial.print(gVec[i]);
+        //Serial.print(gVec[i]*1000);
         //Serial.print(")  ");
     }
     
@@ -76,9 +76,9 @@ void IMU::Update() {
     //Gravity vector is the reverse of K unity vector of global system expressed in local coordinates
     //K vector coincides with the z coordinate of body's i,j,k vectors expressed in global coordinates (K.i , K.j, K.k)
     //Acc can estimate global K vector(zenith) measured in body's coordinate systems (the reverse of gravitation vector)
-    Kacc[0] = aVec[0];
-    Kacc[1] = aVec[1];
-    Kacc[2] = aVec[2];
+    Kacc[0] = -aVec[0];
+    Kacc[1] = -aVec[1];
+    Kacc[2] = -aVec[2];
     vNorm(Kacc);
     //calculate correction vector to bring dcmGyro's K vector closer to Acc vector (K vector according to accelerometer)
     vCrossP(dcmGyro[2], Kacc, wA);    // wA = Kgyro x     Kacc , rotation needed to bring Kacc to Kgyro
@@ -105,13 +105,13 @@ void IMU::Update() {
         //compute weighted average with the accelerometer correction vector
         w[i] = (w[i] + ACC_WEIGHT*wA[i] + MAG_WEIGHT*wM[i])/(1.0+ACC_WEIGHT+MAG_WEIGHT);
     }
-    Serial.print("(");
-    Serial.print(w[0]*1000);
-    Serial.print("  ");
-    Serial.print(w[1]*1000);
-    Serial.print("  ");
-    Serial.print(w[2]*1000);
-    Serial.print(")");
+    //Serial.print("(");
+    //Serial.print(w[0]*1000);
+    //Serial.print("  ");
+    //Serial.print(w[1]*1000);
+    //Serial.print("  ");
+    //Serial.print(w[2]*1000);
+    //Serial.print(")");
     
     imu_dcm_rotate(dcmGyro, w);
 
@@ -119,13 +119,13 @@ void IMU::Update() {
         for (int j=0; j<3; j++) {
             targetDCM[i][j] = dcmGyro[i][j];
         }
-        //Serial.print("(");
-        //Serial.print(dcmGyro[i][0]);
-        //Serial.print("  ");
-        //Serial.print(dcmGyro[i][1]);
-        //Serial.print("  ");
-        //Serial.print(dcmGyro[i][2]);
-        //Serial.print(")  ");
+        Serial.print("(");
+        Serial.print(dcmGyro[i][0]*1000);
+        Serial.print("  ");
+        Serial.print(dcmGyro[i][1]*1000);
+        Serial.print("  ");
+        Serial.print(dcmGyro[i][2]*1000);
+        Serial.print(")  ");
     }
 }
 

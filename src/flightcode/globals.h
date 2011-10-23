@@ -69,12 +69,23 @@ float targetDCM[3][3];   // Target position DCM sent by Pilot.
 
 #define PI 3.141592653589793238462643383279502884197f
 
+// Functions
+
 void zeroStr(char *sStr) {
     for (int i=0; i<128; i++) {
         sStr[i] = 0;
     }
 }
 
+/* Basic print function from http://www.arduino.cc/playground/Main/Printf */
+void p(char *fmt, ... ){
+    char tmp[128]; // resulting string limited to 128 chars
+    va_list args;
+    va_start (args, fmt );
+    vsnprintf(tmp, 128, fmt, args);
+    va_end (args);
+    Serial.print(tmp);
+}
 
 #endif // GLOBALS_H
 

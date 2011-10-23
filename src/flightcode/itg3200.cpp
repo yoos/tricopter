@@ -77,12 +77,14 @@ void ITG3200::Poll() {
             tmp = gRaw[i];
         switch (i) {
             // Divide by maximum magnitude.
-            case 0: gVal[0] = -tmp/0x8000; break;   // Negated.
-            case 1: gVal[1] =  tmp/0x8000; break;
-            case 2: gVal[2] =  tmp/0x8000; break;
+            case 0: gVal[0] = -(tmp - GXOFFSET)/0x8000; break;   // Negated.
+            case 1: gVal[1] =  (tmp - GYOFFSET)/0x8000; break;
+            case 2: gVal[2] =  (tmp - GZOFFSET)/0x8000; break;
             default: break;
         }
         gVal[i] = gVal[i]*2000 * SYSINTRV/1000 * 8/7 - gZero[i];   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
+        //Serial.print(gVal[i]*1000);
+        //Serial.print("  ");
     }
 
     // Serial.print("GX: "); Serial.print(gVal[0]);
