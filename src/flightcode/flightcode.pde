@@ -108,7 +108,6 @@ int main(void) {
                     if (motorVal[i] < 0) motorVal[i] = 0;
                     motor[i].write(motorVal[i]);
                 }
-                
             }
 
             triPilot.Listen();

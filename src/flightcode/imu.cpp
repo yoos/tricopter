@@ -117,15 +117,15 @@ void IMU::Update() {
 
     for (int i=0; i<3; i++) {
         for (int j=0; j<3; j++) {
-            targetDCM[i][j] = dcmGyro[i][j];
+            currentDCM[i][j] = dcmGyro[i][j];
         }
-        Serial.print("(");
-        Serial.print(dcmGyro[i][0]*1000);
-        Serial.print("  ");
-        Serial.print(dcmGyro[i][1]*1000);
-        Serial.print("  ");
-        Serial.print(dcmGyro[i][2]*1000);
-        Serial.print(")  ");
+        //Serial.print("(");
+        //Serial.print(currentDCM[i][0]*1000);
+        //Serial.print("  ");
+        //Serial.print(currentDCM[i][1]*1000);
+        //Serial.print("  ");
+        //Serial.print(currentDCM[i][2]*1000);
+        //Serial.print(")  ");
     }
 }
 
