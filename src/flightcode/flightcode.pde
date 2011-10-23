@@ -77,7 +77,7 @@ int main(void) {
              */
             #ifdef REPORT_MOTORVAL
             Serial.print(armed);
-            Serial.print("  ");
+            Serial.print(" ");
             #endif
             if (armed < 1) {   // First check that system is armed.
                 // Serial.println("System: Motors not armed.");
@@ -99,14 +99,10 @@ int main(void) {
                     abs(motorVal[MR] - TMIN) < MOTOR_ARM_THRESHOLD && 
                     abs(motorVal[ML] - TMIN) < MOTOR_ARM_THRESHOLD) {
                     armed++;   // Once Pilot shows some sense, arm.
-                    Serial.print("  Arming motors..");
+                    Serial.print("  A");
                 }
             }
             else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
-                #ifdef REPORT_MOTORVAL
-                Serial.print("! ");
-                #endif
-
                 // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs .ints
 
                 for (int i=0; i<3; i++) {
@@ -126,8 +122,8 @@ int main(void) {
                 if (armed >= 1)
                     armed = (int) -(TIME_TO_ARM/SYSINTRV-1);   // Set armed status back off.
                 for (int i=0; i<3; i++) {
-                    motorVal[i] -= 10;   // Slowly turn off.
-                    if (motorVal[i] < 16) motorVal[i] = 16;
+                    motorVal[i] -= 5;   // Slowly turn off.
+                    if (motorVal[i] < 0) motorVal[i] = 0;
                     motor[i].write(motorVal[i]);
                 }
                 tailServoVal = 90;
