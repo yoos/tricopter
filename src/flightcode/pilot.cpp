@@ -207,7 +207,6 @@ void Pilot::Abort() {
     serInput[ST] = 126;
     serInput[SZ] = 3;
     okayToFly = false;
-    mySystem.SetServo(90);
     
     #ifdef DEBUG
     Serial.println("Pilot ejected!");

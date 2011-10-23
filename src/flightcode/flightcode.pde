@@ -126,6 +126,8 @@ int main(void) {
                     if (motorVal[i] < 16) motorVal[i] = 16;
                     motor[i].write(motorVal[i]);
                 }
+                tailServoVal = 90;
+                tailServo.write(tailServoVal);
             }
 
             Serial.println("");   // Send newline after every system iteration. TODO: Eventually implement a Telemetry class.
