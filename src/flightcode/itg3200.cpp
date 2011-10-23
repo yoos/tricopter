@@ -83,6 +83,7 @@ void ITG3200::Poll() {
             default: break;
         }
         gVal[i] = gVal[i]*2000 * SYSINTRV/1000 * 8/7 - gZero[i];   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
+        if (abs(gVal[i]*1000) < 10) gVal[i] = 0;
         //Serial.print(gVal[i]*1000);
         //Serial.print("  ");
     }
