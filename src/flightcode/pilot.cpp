@@ -123,10 +123,12 @@ void Pilot::Fly() {
         axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
         axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
 
-        // for (int i=0; i<4; i++) {
-        //     Serial.print(serInput[i]);
-        //     Serial.print("   ");
-        // }
+        //Serial.print("(");
+        //for (int i=0; i<4; i++) {
+        //    Serial.print(serInput[i]);
+        //    Serial.print("  ");
+        //}
+        //Serial.print(")");
         // Serial.println("");
 
         for (int i=0; i<2; i++) {   // First two rows of targetDCM and currentDCM should be identical until I figure out how to use all of currentDCM.
@@ -207,6 +209,7 @@ void Pilot::Abort() {
     serInput[ST] = 126;
     serInput[SZ] = 3;
     okayToFly = false;
+    tailServoVal = 90;
     
     #ifdef DEBUG
     Serial.println("Pilot ejected!");

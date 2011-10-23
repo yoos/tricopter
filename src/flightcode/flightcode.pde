@@ -72,12 +72,12 @@ int main(void) {
              * motor values are zerod. It will then consider itself armed and start 
              * sending proper motor values.
              */
+            #ifdef REPORT_MOTORVAL
+            Serial.print(armed);
+            Serial.print("  ");
+            #endif
             if (armed < 0) {   // First check that system is armed.
                 // Serial.println("System: Motors not armed.");
-                #ifdef REPORT_MOTORVAL
-                Serial.print(armed);
-                #endif
-
                 for (int i=0; i<3; i++) {
                     motor[i].write(TMIN);   // Disregard what Pilot says and write TMIN.
                     #ifdef REPORT_MOTORVAL
