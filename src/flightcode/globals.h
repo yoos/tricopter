@@ -17,6 +17,7 @@ float targetDCM[3][3];   // Target position DCM calculated by Pilot.
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
 #define TMAX 70   // Servo signal that registers as maximum throttle to ESC.
 #define TAIL_SERVO_DEFAULT_POSITION 70
+#define DCM_COEFF 90   // Scale current-to-target DCM difference.
 
 #define BAUDRATE 19200
 #define IMU_SAMPLE_INTERVAL 10   // In milliseconds

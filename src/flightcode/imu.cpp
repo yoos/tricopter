@@ -28,7 +28,7 @@ void IMU::Init() {
 
     for (int i=0; i<3; i++)
         for (int j=0; j<3; j++)
-            dcmGyro[i][j] = (i==j) ? 1.0 : 0.0;
+            currentDCM[i][j] = (i==j) ? 1.0 : 0.0;
 }
 
 void IMU::Update() {
@@ -80,22 +80,22 @@ void IMU::Update() {
     Kacc[1] = -aVec[1];
     Kacc[2] = -aVec[2];
     vNorm(Kacc);
-    //calculate correction vector to bring dcmGyro's K vector closer to Acc vector (K vector according to accelerometer)
-    vCrossP(dcmGyro[2], Kacc, wA);    // wA = Kgyro x     Kacc , rotation needed to bring Kacc to Kgyro
+    //calculate correction vector to bring currentDCM's K vector closer to Acc vector (K vector according to accelerometer)
+    vCrossP(currentDCM[2], Kacc, wA);    // wA = Kgyro x     Kacc , rotation needed to bring Kacc to Kgyro
 
     //---------------
     //Magnetomer
     //---------------
-    //calculate correction vector to bring dcmGyro's I vector closer to Mag vector (I vector according to magnetometer)
+    //calculate correction vector to bring currentDCM's I vector closer to Mag vector (I vector according to magnetometer)
     //in the absense of magnetometer let's assume North vector (I) is always in XZ plane of the device (y coordinate is 0)
-    Imag[0] = sqrt(1-dcmGyro[0][2]*dcmGyro[0][2]);
+    Imag[0] = sqrt(1-currentDCM[0][2]*currentDCM[0][2]);
     Imag[1] = 0;
-    Imag[2] = dcmGyro[0][2];
+    Imag[2] = currentDCM[0][2];
     
-    vCrossP(dcmGyro[0], Imag, wM);    // wM = Igyro x Imag, roation needed to bring Imag to Igyro
+    vCrossP(currentDCM[0], Imag, wM);    // wM = Igyro x Imag, roation needed to bring Imag to Igyro
 
     //---------------
-    //dcmGyro
+    //currentDCM
     //---------------
     w[0] = gVec[0];   //rotation rate about accelerometer's X axis (GY output) in rad/ms
     w[1] = gVec[1];   //rotation rate about accelerometer's Y axis (GX output) in rad/ms
@@ -113,20 +113,17 @@ void IMU::Update() {
     //Serial.print(w[2]*1000);
     //Serial.print(")");
     
-    imu_dcm_rotate(dcmGyro, w);
+    imu_dcm_rotate(currentDCM, w);
 
-    for (int i=0; i<3; i++) {
-        for (int j=0; j<3; j++) {
-            currentDCM[i][j] = dcmGyro[i][j];
-        }
-        //Serial.print("(");
-        //Serial.print(currentDCM[i][0]*1000);
-        //Serial.print("  ");
-        //Serial.print(currentDCM[i][1]*1000);
-        //Serial.print("  ");
-        //Serial.print(currentDCM[i][2]*1000);
-        //Serial.print(")  ");
-    }
+    //for (int i=2; i<3; i++) {
+    //    Serial.print("(");
+    //    Serial.print(currentDCM[i][0]*1000);
+    //    Serial.print("  ");
+    //    Serial.print(currentDCM[i][1]*1000);
+    //    Serial.print("  ");
+    //    Serial.print(currentDCM[i][2]*1000);
+    //    Serial.print(")  ");
+    //}
 }
 
 void IMU::deadReckoning() {

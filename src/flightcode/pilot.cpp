@@ -17,6 +17,12 @@ Pilot::Pilot() {
     #ifdef DEBUG
     Serial.println("Pilot here!");
     #endif
+
+    for (int i=0; i<3; i++) {
+        for (int j=0; j<3; j++) {
+            targetDCM[i][j] = currentDCM[i][j];
+        }
+    }
 }
 
 // int Pilot::Send(char sStr[]) {
@@ -108,19 +114,44 @@ void Pilot::Fly() {
         axisVal[SY] = serInput[SY] - 126;   // [-125, 125]
         axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
         axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
-    
+
         // for (int i=0; i<4; i++) {
         //     Serial.print(serInput[i]);
         //     Serial.print("   ");
         // }
         // Serial.println("");
 
+        for (int i=0; i<2; i++) {   // First two rows of targetDCM and currentDCM should be identical until I figure out how to use all of currentDCM.
+            for (int j=0; j<3; j++) {
+                targetDCM[i][j] = currentDCM[i][j];
+            }
+        }
+
+        targetDCM[2][0] = -axisVal[SX]*cos(PI/4)/125; //map(axisVal[SX], -125, 125, -cos(PI/4), cos(PI/4));
+        targetDCM[2][1] = -axisVal[SY]*cos(PI/4)/125; //map(axisVal[SY], -125, 125, -cos(PI/4), cos(PI/4));
+        targetDCM[2][2] = sqrt(1 - pow(targetDCM[2][0],2) - pow(targetDCM[2][1],2));
+        //Serial.print("(");
+        //Serial.print(targetDCM[2][0]);
+        //Serial.print("  ");
+        //Serial.print(targetDCM[2][1]);
+        //Serial.print("  ");
+        //Serial.print(targetDCM[2][2]);
+        //Serial.print(")");
+
         // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
-        // Intermediate calculations
-        motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs. ints
-        motorVal[MR] = axisVal[SZ] - 0.3333*axisVal[SY] - axisVal[SX]/sqrt(3);
-        motorVal[ML] = axisVal[SZ] - 0.3333*axisVal[SY] + axisVal[SX]/sqrt(3);
+        // Intermediate calculations TODO: Move this to system code.
+        motorVal[MT] = axisVal[SZ] - DCM_COEFF*0.6667*(targetDCM[2][1]-currentDCM[2][1]);   // Watch out for floats vs. ints
+        motorVal[MR] = axisVal[SZ] + DCM_COEFF*0.3333*(targetDCM[2][1]-currentDCM[2][1]) + DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0])/sqrt(3);
+        motorVal[ML] = axisVal[SZ] + DCM_COEFF*0.3333*(targetDCM[2][1]-currentDCM[2][1]) - DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0])/sqrt(3);
+
+        //Serial.print("(");
+        //Serial.print(motorVal[MT]);
+        //Serial.print("  ");
+        //Serial.print(motorVal[MR]);
+        //Serial.print("  ");
+        //Serial.print(motorVal[ML]);
+        //Serial.print(")");
 
         // Find max/min motor values
         mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
@@ -137,6 +168,14 @@ void Pilot::Fly() {
             motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
         }
         tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
+
+        //Serial.print("(");
+        //Serial.print(motorVal[MT]);
+        //Serial.print("  ");
+        //Serial.print(motorVal[MR]);
+        //Serial.print("  ");
+        //Serial.print(motorVal[ML]);
+        //Serial.print(")");
 
         // Serial.print(millis());
         // Serial.print(": ");

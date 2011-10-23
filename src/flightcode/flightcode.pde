@@ -45,6 +45,20 @@ int main(void) {
             myIMU.Update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
             // Serial.println(millis());
 
+            //Serial.print("(");
+            //Serial.print(targetDCM[2][0]);
+            //Serial.print(" ");
+            //Serial.print(targetDCM[2][1]);
+            //Serial.print(" ");
+            //Serial.print(targetDCM[2][2]);
+            //Serial.print(" ");
+            //Serial.print(currentDCM[2][0]);
+            //Serial.print(" ");
+            //Serial.print(currentDCM[2][1]);
+            //Serial.print(" ");
+            //Serial.print(currentDCM[2][2]);
+            //Serial.print(")  ");
+
             /* Don't run system unless armed!
              * Pilot will monitor serial inputs and update System::motorVal[]. System 
              * will send ESCs a "nonsense" value of 0 until it sees that all three 
@@ -105,7 +119,7 @@ int main(void) {
                 // triPilot.Abort();   // TODO: Do I even need this anymore?
                 for (int i=0; i<3; i++) {
                     motorVal[i] -= 10;   // Slowly turn off.
-                    if (motorVal[i] < 0) motorVal[i] = 0;
+                    if (motorVal[i] < 16) motorVal[i] = 16;
                     motor[i].write(motorVal[i]);
                 }
             }

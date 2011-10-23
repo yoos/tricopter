@@ -7,7 +7,7 @@ class Pilot {
     char commStr[];
     int serRead;
     int serInput[PACKETSIZE];
-    int axisVal[PACKETSIZE];
+    float axisVal[PACKETSIZE];
     int mapLower, mapUpper;
 //  double dir;   // Direction in radians
     bool okayToFly;
