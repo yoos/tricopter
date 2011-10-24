@@ -41,9 +41,9 @@ int main(void) {
 
     for (;;) {
         if (millis() >= nextRuntime) {
-            Serial.print("(");
-            Serial.print(nextRuntime);
-            Serial.print(")  ");
+            //Serial.print("(");
+            //Serial.print(nextRuntime);
+            //Serial.print(") ");
             nextRuntime += SYSINTRV;   // Increment by DT.
             myIMU.Update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
             // Serial.println(millis());
@@ -79,8 +79,16 @@ int main(void) {
             Serial.print(armed);
             Serial.print(" ");
             #endif
+            //Serial.print("(");
+            //Serial.print(gVal[0]);
+            //Serial.print(" ");
+            //Serial.print(gVal[1]);
+            //Serial.print(" ");
+            //Serial.print(gVal[2]);
+            //Serial.print(")");
             if (armed < 1) {   // First check that system is armed.
                 // Serial.println("System: Motors not armed.");
+                Serial.print("_ ");
                 for (int i=0; i<3; i++) {
                     motor[i].write(TMIN);   // Disregard what Pilot says and write TMIN.
                     #ifdef REPORT_MOTORVAL
@@ -99,12 +107,13 @@ int main(void) {
                     abs(motorVal[MR] - TMIN) < MOTOR_ARM_THRESHOLD && 
                     abs(motorVal[ML] - TMIN) < MOTOR_ARM_THRESHOLD) {
                     armed++;   // Once Pilot shows some sense, arm.
-                    Serial.print("  A");
+                    Serial.print(" A");
                 }
             }
             else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
                 // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs .ints
 
+                Serial.print("! ");
                 for (int i=0; i<3; i++) {
                     motor[i].write(motorVal[i]);   // Write motor values to motors.
                     #ifdef REPORT_MOTORVAL

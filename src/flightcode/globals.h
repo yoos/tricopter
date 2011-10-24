@@ -11,6 +11,7 @@ int armed;
 int motorVal[3], tailServoVal;
 float currentDCM[3][3];   // Current position DCM calculated by IMU.
 float targetDCM[3][3];   // Target position DCM calculated by Pilot.
+float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 
 
 /*****************************************************************************
@@ -38,8 +39,9 @@ float targetDCM[3][3];   // Target position DCM calculated by Pilot.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
 
 #define DCM_COEFF 90   // Scale current-to-target DCM difference.
+#define GYRO_COEFF 10   // Try to stabilize craft.
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
-#define TMAX 70   // Servo signal that registers as maximum throttle to ESC.
+#define TMAX 90   // Servo signal that registers as maximum throttle to ESC.
 #define TIME_TO_ARM 2000   // This divided by SYSINTRV determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 3   // This is added to TMIN to determine whether or not to arm the system.
 
@@ -53,10 +55,10 @@ float targetDCM[3][3];   // Target position DCM calculated by Pilot.
  * it may as well be hard-coded.
  *****************************************************************************/
 
-#define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
+#define MOTOR_T_OFFSET 3   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define TAIL_SERVO_DEFAULT_POSITION 70
+#define TAIL_SERVO_DEFAULT_POSITION 60
 
 #define PMT 4   // Tail motor pin.
 #define PMR 2   // Right motor pin.

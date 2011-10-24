@@ -153,9 +153,9 @@ void Pilot::Fly() {
         // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
         // Intermediate calculations TODO: Move this to system code.
-        motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] - 0.6667*DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]);   // Watch out for floats vs. ints
-        motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]) + DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0])/sqrt(3);
-        motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]) - DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0])/sqrt(3);
+        motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] - DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]));   // Watch out for floats vs. ints
+        motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1])) + (GYRO_COEFF*gVal[1] + DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0]))/sqrt(3);
+        motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1])) + (GYRO_COEFF*gVal[1] - DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0]))/sqrt(3);
 
         //Serial.print("(");
         //Serial.print(motorVal[MT]);
@@ -180,6 +180,7 @@ void Pilot::Fly() {
             motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
         }
         tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
+        tailServoVal = map(tailServoVal, TAIL_SERVO_DEFAULT_POSITION-125*0.5, TAIL_SERVO_DEFAULT_POSITION+125*0.5, 0, TAIL_SERVO_DEFAULT_POSITION+125*0.5);
 
         //Serial.print("(");
         //Serial.print(motorVal[MT]);
