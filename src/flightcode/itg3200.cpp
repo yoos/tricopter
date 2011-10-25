@@ -50,6 +50,7 @@ void ITG3200::Calibrate(int sampleNum) {
     gZero[1] = tempData[1]/sampleNum;
     gZero[2] = tempData[2]/sampleNum;
 
+    Serial.println("Gyro calibration complete!");
     calibrated = true;
 }
 

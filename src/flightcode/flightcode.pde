@@ -5,7 +5,7 @@
 #include "watchdog.cpp"
 #include "imu.cpp"
 
-#define REPORT_MOTORVAL
+// #define REPORT_MOTORVAL
 
 int main(void) {
     init();   // For Arduino.
@@ -75,10 +75,8 @@ int main(void) {
              * motor values are zerod. It will then consider itself armed and start 
              * sending proper motor values.
              */
-            #ifdef REPORT_MOTORVAL
             Serial.print(armed);
             Serial.print(" ");
-            #endif
             //Serial.print("(");
             //Serial.print(gVal[0]);
             //Serial.print(" ");
@@ -139,6 +137,13 @@ int main(void) {
                 tailServo.write(tailServoVal);
             }
 
+            Serial.print(" (");
+            Serial.print(commandPitch);
+            Serial.print(" ");
+            Serial.print(commandRoll);
+            Serial.print(" ");
+            Serial.print(gVal[0]);
+            Serial.print(") ");
             //Serial.print("(");
             //Serial.print(targetAngle[0]);
             //Serial.print(" ");

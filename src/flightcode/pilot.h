@@ -2,6 +2,7 @@
 #define PILOT_H
 
 #include "globals.h"
+#include "pid.h"
 
 class Pilot {
     int serRead;

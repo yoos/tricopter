@@ -8,8 +8,10 @@
  *****************************************************************************/
 
 int armed;
-int motorVal[3], tailServoVal;
+float motorVal[3], tailServoVal;
 char commStr[250];   // String to be sent out to base.
+float commandPitch;   // Pitch command to be processed through PID.
+float commandRoll;   // Roll command to be processed through PID.
 float currentDCM[3][3];   // Current position DCM calculated by IMU.
 float targetDCM[3][3];   // Target position DCM calculated by Pilot.
 float currentAngle[2];   // TEST: Current angle.
@@ -21,7 +23,7 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  * Serial: everything that has to do with TX/RX.
  *****************************************************************************/
 
-#define BAUDRATE 19200   // Fiddle with this. The XBee sometimes seems to have trouble with high baudrates like 57600.
+#define BAUDRATE 115200   // Fiddle with this. The XBee sometimes seems to have trouble with high baudrates like 57600.
 
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
 #define PACKETSIZE 4     // Each packet contains header plus X, Y, Twist, and Z.
@@ -42,8 +44,8 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 #define DOGLIFE 300   // Watchdog life in milliseconds.
 
 #define DCM_COEFF 90   // Scale current-to-target DCM difference.
-#define GYRO_COEFF 10   // Try to stabilize craft.
-#define ACCEL_COEFF 120   // TEST: Try to stabilize craft.
+#define GYRO_COEFF 15   // Try to stabilize craft.
+//#define ACCEL_COEFF 90   // TEST: Try to stabilize craft.
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
 #define TMAX 90   // Servo signal that registers as maximum throttle to ESC.
 #define TIME_TO_ARM 2000   // This divided by SYSINTRV determines how long it takes to arm the system.
@@ -62,7 +64,10 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 #define MOTOR_T_OFFSET 3   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define TAIL_SERVO_DEFAULT_POSITION 60
+#define MOTOR_T_SCALE  1.03   // Scale speed of tail motor.
+#define MOTOR_R_SCALE  1   // Scale speed of right motor.
+#define MOTOR_L_SCALE  1   // Scale speed of left motor.
+#define TAIL_SERVO_DEFAULT_POSITION 50
 
 #define PMT 4   // Tail motor pin.
 #define PMR 2   // Right motor pin.
@@ -80,6 +85,14 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 //#define ACRO 3
 //#define AUTO 4
 //#define AUTO_HOVER 5
+
+
+/*****************************************************************************
+ * Definitions
+ *****************************************************************************/
+
+#define PITCH 0   // X axis index for PID struct.
+#define ROLL 1   // Y axis index for PID struct.
 
 
 /*****************************************************************************

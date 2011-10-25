@@ -14,6 +14,13 @@ Pilot::Pilot() {
      * throttle before motors arm. */
     serInput[SZ] = 3;   
 
+    PID[PITCH].P = 60;
+    PID[PITCH].I = 0;
+    PID[PITCH].D = 0;   // AeroQuad has -300 for this. Why?
+    PID[ROLL].P  = 60;
+    PID[ROLL].I  = 0;
+    PID[ROLL].D  = 0;
+
     #ifdef DEBUG
     Serial.println("Pilot here!");
     #endif
@@ -127,8 +134,8 @@ void Pilot::Fly() {
         //targetDCM[2][0] = -axisVal[SX]*cos(PI/4)/125; //map(axisVal[SX], -125, 125, -cos(PI/4), cos(PI/4));
         //targetDCM[2][1] = -axisVal[SY]*cos(PI/4)/125; //map(axisVal[SY], -125, 125, -cos(PI/4), cos(PI/4));
         //targetDCM[2][2] = sqrt(1 - pow(targetDCM[2][0],2) - pow(targetDCM[2][1],2));
-        targetAngle[0] = axisVal[SX]/125*PI/4;
-        targetAngle[1] = axisVal[SY]/125*PI/4;
+        targetAngle[PITCH] = axisVal[SY]/125*PI/6;
+        targetAngle[ROLL] = axisVal[SX]/125*PI/6;
         //Serial.print("(");
         //Serial.print(targetDCM[2][0]);
         //Serial.print("  ");
@@ -137,16 +144,17 @@ void Pilot::Fly() {
         //Serial.print(targetDCM[2][2]);
         //Serial.print(")");
 
-        // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
-
         // Intermediate calculations TODO: Move this to system code.
         //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] - DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]));   // Watch out for floats vs. ints
         //motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1])) + (GYRO_COEFF*gVal[1] + DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0]))/sqrt(3);
         //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1])) + (GYRO_COEFF*gVal[1] - DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0]))/sqrt(3);
 
-        motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + ACCEL_COEFF*(targetAngle[1]-currentAngle[1]));   // Watch out for floats vs. ints
-        motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] - ACCEL_COEFF*(targetAngle[1]-currentAngle[1])) + (GYRO_COEFF*gVal[1] - ACCEL_COEFF*(targetAngle[0]-currentAngle[0]))/sqrt(3);
-        motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] - ACCEL_COEFF*(targetAngle[1]-currentAngle[1])) + (GYRO_COEFF*gVal[1] + ACCEL_COEFF*(targetAngle[0]-currentAngle[0]))/sqrt(3);
+        commandPitch = updatePID(targetAngle[PITCH], currentAngle[PITCH], PID[PITCH]);
+        commandRoll  = updatePID(targetAngle[ROLL], currentAngle[ROLL], PID[ROLL]);
+
+        motorVal[MT] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
+        motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
+        motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
 
         //Serial.print("(");
         //Serial.print(motorVal[MT]);
