@@ -29,6 +29,8 @@ void IMU::Init() {
     for (int i=0; i<3; i++)
         for (int j=0; j<3; j++)
             currentDCM[i][j] = (i==j) ? 1.0 : 0.0;
+    currentAngle[0] = 0;
+    currentAngle[1] = 0;
 }
 
 void IMU::Update() {
@@ -44,6 +46,10 @@ void IMU::Update() {
         //Serial.print(gVec[i]*1000);
         //Serial.print(")  ");
     }
+
+    // XXX: just while I test...
+    currentAngle[0] = atan2(aVec[0], -aVec[2]);   // Roll
+    currentAngle[1] = atan2(aVec[1], -aVec[2]);   // Pitch
     
     #ifdef DEBUG
     Serial.println("IMU updated.");

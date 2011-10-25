@@ -4,7 +4,6 @@
 #include "globals.h"
 
 class Pilot {
-    char commStr[];
     int serRead;
     int serInput[PACKETSIZE];
     float axisVal[PACKETSIZE];
@@ -16,9 +15,8 @@ class Pilot {
 
 public:
     Pilot();
-    int Send(char[]);
-    char* Read(char[]);
     void Listen();
+    void Talk();
     void Fly();
     void Abort();
     

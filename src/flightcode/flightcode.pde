@@ -139,6 +139,15 @@ int main(void) {
                 tailServo.write(tailServoVal);
             }
 
+            //Serial.print("(");
+            //Serial.print(targetAngle[0]);
+            //Serial.print(" ");
+            //Serial.print(targetAngle[1]);
+            //Serial.print(" ");
+            //Serial.print(currentAngle[0]);
+            //Serial.print(" ");
+            //Serial.print(currentAngle[1]);
+            //Serial.print(")");
             Serial.println("");   // Send newline after every system iteration. TODO: Eventually implement a Telemetry class.
         }
     }

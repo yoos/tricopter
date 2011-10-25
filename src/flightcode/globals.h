@@ -9,8 +9,11 @@
 
 int armed;
 int motorVal[3], tailServoVal;
+char commStr[250];   // String to be sent out to base.
 float currentDCM[3][3];   // Current position DCM calculated by IMU.
 float targetDCM[3][3];   // Target position DCM calculated by Pilot.
+float currentAngle[2];   // TEST: Current angle.
+float targetAngle[2];   // TEST: Target angle.
 float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 
 
@@ -40,6 +43,7 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 
 #define DCM_COEFF 90   // Scale current-to-target DCM difference.
 #define GYRO_COEFF 10   // Try to stabilize craft.
+#define ACCEL_COEFF 120   // TEST: Try to stabilize craft.
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
 #define TMAX 90   // Servo signal that registers as maximum throttle to ESC.
 #define TIME_TO_ARM 2000   // This divided by SYSINTRV determines how long it takes to arm the system.
@@ -90,7 +94,7 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  *****************************************************************************/
 
 void zeroStr(char *sStr) {
-    for (int i=0; i<128; i++) {
+    for (int i=0; i<sizeof(sStr); i++) {
         sStr[i] = 0;
     }
 }

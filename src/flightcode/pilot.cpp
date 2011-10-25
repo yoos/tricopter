@@ -26,29 +26,9 @@ Pilot::Pilot() {
 
     numGoodComm = 0;   // Number of good communication packets.
     numBadComm = 0;   // Number of bad communication packets.
+    targetAngle[0] = 0;
+    targetAngle[1] = 0;
 }
-
-// int Pilot::Send(char sStr[]) {
-//     zeroStr(commStr);
-//     for (int i=0; i<128; i++) {
-//         commStr[i] = sStr[i];
-//     }
-//    
-//     Serial.println(commStr);
-// 
-//     return 0;
-// }
-// 
-// char* Pilot::Read(char sStr[]) {
-//     zeroStr(commStr);
-//     int i = 0;
-//     while (Serial.available() > 0) {
-//         commStr[i] = sStr[i];
-//         i++;
-//     }
-// 
-//     return commStr;
-// }
 
 void Pilot::Listen() {
     if (Serial.available()) {
@@ -109,6 +89,11 @@ void Pilot::Listen() {
     }
 }
 
+void Pilot::Talk() {
+    
+
+}
+
 void Pilot::Fly() {
     //Serial.print("(");
     //Serial.print(numGoodComm);
@@ -139,9 +124,11 @@ void Pilot::Fly() {
             }
         }
 
-        targetDCM[2][0] = -axisVal[SX]*cos(PI/4)/125; //map(axisVal[SX], -125, 125, -cos(PI/4), cos(PI/4));
-        targetDCM[2][1] = -axisVal[SY]*cos(PI/4)/125; //map(axisVal[SY], -125, 125, -cos(PI/4), cos(PI/4));
-        targetDCM[2][2] = sqrt(1 - pow(targetDCM[2][0],2) - pow(targetDCM[2][1],2));
+        //targetDCM[2][0] = -axisVal[SX]*cos(PI/4)/125; //map(axisVal[SX], -125, 125, -cos(PI/4), cos(PI/4));
+        //targetDCM[2][1] = -axisVal[SY]*cos(PI/4)/125; //map(axisVal[SY], -125, 125, -cos(PI/4), cos(PI/4));
+        //targetDCM[2][2] = sqrt(1 - pow(targetDCM[2][0],2) - pow(targetDCM[2][1],2));
+        targetAngle[0] = axisVal[SX]/125*PI/4;
+        targetAngle[1] = axisVal[SY]/125*PI/4;
         //Serial.print("(");
         //Serial.print(targetDCM[2][0]);
         //Serial.print("  ");
@@ -153,9 +140,13 @@ void Pilot::Fly() {
         // dir = atan2(axisVal[SY], axisVal[SX]);   // May need this eventually for IMU.
 
         // Intermediate calculations TODO: Move this to system code.
-        motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] - DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]));   // Watch out for floats vs. ints
-        motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1])) + (GYRO_COEFF*gVal[1] + DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0]))/sqrt(3);
-        motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1])) + (GYRO_COEFF*gVal[1] - DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0]))/sqrt(3);
+        //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] - DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]));   // Watch out for floats vs. ints
+        //motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1])) + (GYRO_COEFF*gVal[1] + DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0]))/sqrt(3);
+        //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1])) + (GYRO_COEFF*gVal[1] - DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0]))/sqrt(3);
+
+        motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + ACCEL_COEFF*(targetAngle[1]-currentAngle[1]));   // Watch out for floats vs. ints
+        motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] - ACCEL_COEFF*(targetAngle[1]-currentAngle[1])) + (GYRO_COEFF*gVal[1] - ACCEL_COEFF*(targetAngle[0]-currentAngle[0]))/sqrt(3);
+        motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] - ACCEL_COEFF*(targetAngle[1]-currentAngle[1])) + (GYRO_COEFF*gVal[1] + ACCEL_COEFF*(targetAngle[0]-currentAngle[0]))/sqrt(3);
 
         //Serial.print("(");
         //Serial.print(motorVal[MT]);
