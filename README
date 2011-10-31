@@ -24,7 +24,7 @@ The control system works something like this:
 # *   - Camera            *            *                                     * #
 # *   - GPS               *            *                  ON                 * #
 # *   - Lights            *            *                                     * #
-# *************************            *           SSEEEDUINO MEGA           * #
+# *************************            *            SEEEDUINO MEGA           * #
 #                             .------- *                                     * #
 #                             |        *                                     * #
 # ************                | .----- *                                     * #
