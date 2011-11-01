@@ -31,6 +31,7 @@ int main(void) {
 
     armed = (int) -(TIME_TO_ARM/SYSINTRV-1);   // Pilot will add 1 to the armed value every time it receives the arming numbers from comm. Arming numbers will have to be sent for a total of 2000 ms before this variable is positive (and therefore true).
     unsigned long nextRuntime = 0;
+    teleCount = 0;
 
     // Write 0 to motors to prevent them from spinning up upon Seeeduino reset!
     for (int i=0; i<3; i++) {
@@ -41,28 +42,16 @@ int main(void) {
 
     for (;;) {
         if (millis() >= nextRuntime) {
-            Serial.print(armed);
-            Serial.print(" ");
-            //Serial.print("(");
-            //Serial.print(nextRuntime);
-            //Serial.print(") ");
+            if (teleCount == TELEMETRY_REST_INTERVAL) teleCount = 0;
+            else teleCount++;
+
+            serPrint("%d ", armed);
+            //serPrint("(%d) ", nextRuntime);
             nextRuntime += SYSINTRV;   // Increment by DT.
             myIMU.Update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
-            // Serial.println(millis());
 
-            //Serial.print("(");
-            //Serial.print(targetDCM[2][0]);
-            //Serial.print(" ");
-            //Serial.print(targetDCM[2][1]);
-            //Serial.print(" ");
-            //Serial.print(targetDCM[2][2]);
-            //Serial.print(" ");
-            //Serial.print(currentDCM[2][0]);
-            //Serial.print(" ");
-            //Serial.print(currentDCM[2][1]);
-            //Serial.print(" ");
-            //Serial.print(currentDCM[2][2]);
-            //Serial.print(")  ");
+            //serPrint("(%f, %f, %f) ", targetDCM[2][0], targetDCM[2][1], targetDCM[2][2]);
+            //serPrint("(%f, %f, %f) ", currentDCM[2][0], currentDCM[2][1], currentDCM[2][2]);
 
             triPilot.Listen();
             /* The pilot communicates with base and updates motorVal and 
@@ -78,19 +67,18 @@ int main(void) {
              * sending proper motor values.
              */
             if (armed < 1) {   // First check that system is armed.
-                // Serial.println("System: Motors not armed.");
-                Serial.print("_ ");
+                // serPrint("System: Motors not armed.\n");
+                serPrint("_ ");
                 for (int i=0; i<3; i++) {
                     motor[i].write(TMIN);   // Disregard what Pilot says and write TMIN.
                     #ifdef REPORT_MOTORVAL
-                    Serial.print(motorVal[i]);   // ..and hopefully Pilot has sense and won't be trying to do anything dangerous.
-                    Serial.print(" ");
+                    serPrint("%d ", motorVal[i]);   // ..and hopefully Pilot has sense and won't be trying to do anything dangerous.
                     #endif
                 }
                 tailServo.write(90);
 
                 #ifdef REPORT_MOTORVAL
-                Serial.print(tailServoVal);
+                serPrint("%d ", tailServoVal);
                 #endif
 
                 // Check that motor values set by Pilot are within the arming threshold.
@@ -98,23 +86,22 @@ int main(void) {
                     abs(motorVal[MR] - TMIN) < MOTOR_ARM_THRESHOLD && 
                     abs(motorVal[ML] - TMIN) < MOTOR_ARM_THRESHOLD) {
                     armed++;   // Once Pilot shows some sense, arm.
-                    Serial.print(" A");
+                    serPrint("A ");
                 }
             }
             else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
                 // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs .ints
 
-                Serial.print("! ");
+                serPrint("! ");
                 for (int i=0; i<3; i++) {
                     motor[i].write(motorVal[i]);   // Write motor values to motors.
                     #ifdef REPORT_MOTORVAL
-                    Serial.print(motorVal[i]);
-                    Serial.print(" ");
+                    serPrint("%d ", motorVal[i]);
                     #endif
                 }
                 tailServo.write(tailServoVal);
                 #ifdef REPORT_MOTORVAL
-                Serial.print(tailServoVal);
+                serPrint(tailServoVal);
                 #endif
             }
             else {   // ..otherwise, die.
@@ -130,23 +117,11 @@ int main(void) {
                 tailServo.write(tailServoVal);
             }
 
-            Serial.print(" (");
-            Serial.print(commandPitch);
-            Serial.print(" ");
-            Serial.print(commandRoll);
-            Serial.print(" ");
-            Serial.print(gVal[0]);
-            Serial.print(") ");
-            //Serial.print("(");
-            //Serial.print(targetAngle[0]);
-            //Serial.print(" ");
-            //Serial.print(targetAngle[1]);
-            //Serial.print(" ");
-            //Serial.print(currentAngle[0]);
-            //Serial.print(" ");
-            //Serial.print(currentAngle[1]);
-            //Serial.print(")");
-            Serial.println("");   // Send newline after every system iteration. TODO: Eventually implement a Telemetry class.
+            serPrint(" (%d, %d, %f)  ", commandPitch, commandRoll, gVal[0]);
+
+            //serPrint("(%f, %f) ", targetAngle[0], targetAngle[1]);
+            //serPrint("(%f, %f) ", currentAngle[0], currentAngle[1]);
+            serPrint("\n");   // Send newline after every system iteration. TODO: Eventually implement a Telemetry class.
         }
     }
 

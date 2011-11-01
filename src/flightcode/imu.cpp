@@ -20,7 +20,7 @@ void IMU::Init() {
     //           {0, 0, 0}};
     IMU::Reset();
     #ifdef DEBUG
-    Serial.println("IMU here!");
+    serPrint("IMU here!\n");
     #endif
 
 /* Calibrate sensors if needed and find initial tricopter orientation. */
@@ -40,34 +40,16 @@ void IMU::Update() {
     for (int i=0; i<3; i++) {
         aVec[i] = myAcc.Get(i);
         gVec[i] = myGyr.GetRate(i);
-        //Serial.print("(");
-        //Serial.print(aVec[i]*1000);
-        //Serial.print("  ");
-        //Serial.print(gVec[i]*1000);
-        //Serial.print(")  ");
     }
 
     // XXX: just while I test...
     currentAngle[PITCH] = atan2(aVec[1], -aVec[2]);   // Pitch
     currentAngle[ROLL]  = atan2(aVec[0], -aVec[2]);   // Roll
-    Serial.print("[");
-    Serial.print(currentAngle[PITCH]);
-    Serial.print(" ");
-    Serial.print(currentAngle[ROLL]);
-    Serial.print("] ");
+    serPrint("[%f, %f] ", currentAngle[PITCH], currentAngle[ROLL]);
     
     #ifdef DEBUG
-    Serial.println("IMU updated.");
+    serPrint("IMU updated.\n");
     #endif
-
-    // Serial.print("A: ");
-    // Serial.print(myAcc.Get(AX)); Serial.print(" ");
-    // Serial.print(myAcc.Get(AY)); Serial.print(" ");
-    // Serial.print(myAcc.Get(AZ)); Serial.print("  ");
-    // Serial.print("G: ");
-    // Serial.print(myGyr.GetAngle(GX)); Serial.print(" ");
-    // Serial.print(myGyr.GetAngle(GY)); Serial.print(" ");
-    // Serial.print(myGyr.GetAngle(GZ)); Serial.print("  ");
 
 
     // XXX Following code from PICQ
@@ -116,24 +98,12 @@ void IMU::Update() {
         //compute weighted average with the accelerometer correction vector
         w[i] = (w[i] + ACC_WEIGHT*wA[i] + MAG_WEIGHT*wM[i])/(1.0+ACC_WEIGHT+MAG_WEIGHT);
     }
-    //Serial.print("(");
-    //Serial.print(w[0]*1000);
-    //Serial.print("  ");
-    //Serial.print(w[1]*1000);
-    //Serial.print("  ");
-    //Serial.print(w[2]*1000);
-    //Serial.print(")");
+    //serPrint("(%f, %f, %f) ", w[0]*1000, w[1]*1000, w[2]*1000);
     
     imu_dcm_rotate(currentDCM, w);
 
     //for (int i=2; i<3; i++) {
-    //    Serial.print("(");
-    //    Serial.print(currentDCM[i][0]*1000);
-    //    Serial.print("  ");
-    //    Serial.print(currentDCM[i][1]*1000);
-    //    Serial.print("  ");
-    //    Serial.print(currentDCM[i][2]*1000);
-    //    Serial.print(")  ");
+    //    serPrint("(%f, %f, %f) ", currentDCM[i][0]*1000, currentDCM[i][1]*1000, currentDCM[i][2]*1000);
     //}
 }
 

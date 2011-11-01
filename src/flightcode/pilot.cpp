@@ -22,7 +22,7 @@ Pilot::Pilot() {
     PID[ROLL].D  = 0;
 
     #ifdef DEBUG
-    Serial.println("Pilot here!");
+    serPrint("Pilot here!\n");
     #endif
 
     for (int i=0; i<3; i++) {
@@ -44,7 +44,6 @@ void Pilot::Listen() {
         // Need delay to prevent dropped bits. 500 microseconds is about as low
         // as it will go.
         delayMicroseconds(500);
-        // Serial.println(serRead);
 
         // if (serRead == DOGBONE) {   // Receive dogbone.
         //     hasFood = true;
@@ -53,23 +52,21 @@ void Pilot::Listen() {
             hasFood = true;   // Prepare food for watchdog.
             for (int i=0; i<PACKETSIZE; i++) {
                 serRead = Serial.read();
-                // Serial.print(int(serRead));
-                // Serial.print("   ");
                 delayMicroseconds(500);   // Delay to prevent dropped bits.
 
                 // if (serRead == SERHEAD) {   // Dropped byte?
                 //     // i = -1;   // Discard and start over.
-                //     // Serial.println("Pilot detected packet drop.");
+                //     // serPrint("Pilot detected packet drop.\n");
                 //     Serial.flush();
                 //     okayToFly = false;
                 // }
                 // else if (serRead == -1) {   // This happens when serial is empty.
-                //     // Serial.println("Pilot detected malformed packet.");
+                //     // serPrint("Pilot detected malformed packet.\n");
                 //     okayToFly = false;
                 // }
                 if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
                     serInput[i] = serRead;
-                    // Serial.println("Pilot determined motor value.");
+                    // serPrint("Pilot determined motor value.\n");
                     okayToFly = true;
                     numGoodComm++;
                 }
@@ -77,18 +74,15 @@ void Pilot::Listen() {
                     i = 10;
                     okayToFly = false;
                     numBadComm++;
-                    Serial.print("Bad!");
+                    serPrint("Bad!");
                     // Flush remaining buffer to avoid taking in the wrong values.
                     Serial.flush();
                 }
             }
-            // Serial.println("");
         }
         else {
             // #ifdef DEBUG
-            // Serial.print("Weird header!   ");   // Warn if something weird happens.
-            // Serial.print(int(serRead));
-            // Serial.println("");
+            // serPrint("Weird header! %d\n", (int) serRead);   // Warn if something weird happens.
             // #endif
             okayToFly = false;
         }
@@ -102,11 +96,7 @@ void Pilot::Talk() {
 }
 
 void Pilot::Fly() {
-    //Serial.print("(");
-    //Serial.print(numGoodComm);
-    //Serial.print("/");
-    //Serial.print(numBadComm);
-    //Serial.print(")  ");
+    //serPrint("(%d/%d) ", numGoodComm, numBadComm);
     if (okayToFly) {   // Update axisVal only if okayToFly is true.
         // mySystem.UpdateHoverPos(axisVal); TODO: Implement this later.
 
@@ -117,13 +107,11 @@ void Pilot::Fly() {
         axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
         axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
 
-        //Serial.print("(");
+        //serPrint("(");
         //for (int i=0; i<4; i++) {
-        //    Serial.print(serInput[i]);
-        //    Serial.print("  ");
+        //    serPrint("%d ", serInput[i]);
         //}
-        //Serial.print(")");
-        // Serial.println("");
+        //serPrint(")");
 
         for (int i=0; i<2; i++) {   // First two rows of targetDCM and currentDCM should be identical until I figure out how to use all of currentDCM.
             for (int j=0; j<3; j++) {
@@ -136,13 +124,7 @@ void Pilot::Fly() {
         //targetDCM[2][2] = sqrt(1 - pow(targetDCM[2][0],2) - pow(targetDCM[2][1],2));
         targetAngle[PITCH] = axisVal[SY]/125*PI/6;
         targetAngle[ROLL] = axisVal[SX]/125*PI/6;
-        //Serial.print("(");
-        //Serial.print(targetDCM[2][0]);
-        //Serial.print("  ");
-        //Serial.print(targetDCM[2][1]);
-        //Serial.print("  ");
-        //Serial.print(targetDCM[2][2]);
-        //Serial.print(")");
+        //serPrint("(%f, %f, %f) ", targetDCM[2][0], targetDCM[2][1], targetDCM[2][2]);
 
         // Intermediate calculations TODO: Move this to system code.
         //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] - DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]));   // Watch out for floats vs. ints
@@ -156,13 +138,7 @@ void Pilot::Fly() {
         motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
         motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
 
-        //Serial.print("(");
-        //Serial.print(motorVal[MT]);
-        //Serial.print("  ");
-        //Serial.print(motorVal[MR]);
-        //Serial.print("  ");
-        //Serial.print(motorVal[ML]);
-        //Serial.print(")");
+        //serPrint("(%d %d %d) ", motorVal[MT], motorVal[MR], motorVal[ML]);
 
         // Find max/min motor values
         mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
@@ -181,25 +157,18 @@ void Pilot::Fly() {
         tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
         tailServoVal = map(tailServoVal, TAIL_SERVO_DEFAULT_POSITION-125*0.5, TAIL_SERVO_DEFAULT_POSITION+125*0.5, 0, TAIL_SERVO_DEFAULT_POSITION+125*0.5);
 
-        //Serial.print("(");
-        //Serial.print(motorVal[MT]);
-        //Serial.print("  ");
-        //Serial.print(motorVal[MR]);
-        //Serial.print("  ");
-        //Serial.print(motorVal[ML]);
-        //Serial.print(")");
+        //serPrint("(%d %d %d) ", motorVal[MT], motorVal[MR], motorVal[ML]);
 
-        // Serial.print(millis());
-        // Serial.print(": ");
+        // serPrint("%d: ", millis());
 
         okayToFly = false;
     }
     else {
-        // Serial.println("Pilot not okay to fly.");
+        // serPrint("Pilot not okay to fly.\n");
     }
 
     #ifdef DEBUG
-    Serial.println("Pilot is flying.");
+    serPrint("Pilot is flying.\n");
     #endif
 }
 
@@ -214,7 +183,7 @@ void Pilot::Abort() {
     tailServoVal = 90;
     
     #ifdef DEBUG
-    Serial.println("Pilot ejected!");
+    serPrint("Pilot ejected!\n");
     #endif
 }
 

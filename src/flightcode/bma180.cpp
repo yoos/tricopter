@@ -3,8 +3,7 @@
 BMA180::BMA180(byte range, byte bw) {
     readI2C(ACCADDR, 0x00, 1, aBuffer);
     
-    Serial.print("BMA180 ID = ");
-    Serial.println((int) aBuffer[0]);
+    serPrint("BMA180 ID = %d\n", (int) aBuffer[0]);
     
     // Set ee_w bit
     readI2C(ACCADDR, CTRLREG0, 1, aBuffer);
@@ -27,7 +26,7 @@ BMA180::BMA180(byte range, byte bw) {
     aBuffer[0] |= aBuffer[1];
     sendI2C(ACCADDR, OLSB1, aBuffer[0]);   // Write new range data, keep other bits the same.
 
-    Serial.println("BMA180 configured!");
+    serPrint("BMA180 configured!\n");
 
     for (int i=0; i<3; i++) {
         aRaw[i] = 0;
@@ -70,13 +69,6 @@ void BMA180::Poll() {
         }
     }
 
-//  Serial.println(aVal[0]);
-        // sprintf(aStr, "AX: %5f  AY: %5f  AZ: %5f", aVal[0], aVal[1], aVal[2]);   // Interpret aRaw as unsigned int.
-        // Serial.println(aStr);
-        // Serial.print("AX: "); Serial.print(aVal[0]);
-        // Serial.print("   AY: "); Serial.print(aVal[1]);
-        // Serial.print("   AZ: "); Serial.println(aVal[2]);
-    
     // Runge-Kutta smoothing.
     for (int i=0; i<3; i++) {
         rkVal[i][rkIndex] = aVal[i];
