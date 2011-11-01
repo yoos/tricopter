@@ -1,6 +1,8 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include <avr/pgmspace.h>
+
 // #define DEBUG
 
 /*****************************************************************************
@@ -8,6 +10,7 @@
  *****************************************************************************/
 
 int armed;
+int teleCount;   // Used to send telemetry every TELEMETRY_REST_INTERVAL.
 float motorVal[3], tailServoVal;
 char commStr[250];   // String to be sent out to base.
 float commandPitch;   // Pitch command to be processed through PID.
@@ -42,6 +45,7 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 
 #define SYSINTRV 10   // System loop interval in milliseconds.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
+#define TELEMETRY_REST_INTERVAL 10   // Send telemetry every so often instead of at every system loop.
 
 #define DCM_COEFF 90   // Scale current-to-target DCM difference.
 #define GYRO_COEFF 15   // Try to stabilize craft.
@@ -112,15 +116,26 @@ void zeroStr(char *sStr) {
     }
 }
 
-// Basic print function from http://www.arduino.cc/playground/Main/Printf
-void p(char *fmt, ... ){
-    char tmp[128]; // resulting string limited to 128 chars
+// From http://www.utopiamechanicus.com/399/low-memory-serial-print/
+void StreamPrint_progmem(Print &out, PGM_P format, ...) {
+    // program memory version of printf - copy of format string and result share a buffer
+    // so as to avoid too much memory use
+    char formatString[128], *ptr;
+    strncpy_P(formatString, format, sizeof(formatString));   // copy in from program mem
+    // null terminate - leave last char since we might need it in worst case for result's \0
+    formatString[sizeof(formatString)-2] = '\0';
+    ptr=&formatString[strlen(formatString)+1]; // our result buffer...
     va_list args;
-    va_start (args, fmt );
-    vsnprintf(tmp, 128, fmt, args);
-    va_end (args);
-    Serial.print(tmp);
+    va_start(args, format);
+    vsnprintf(ptr, sizeof(formatString)-1-strlen(formatString), formatString, args);
+    va_end(args);
+    formatString[sizeof(formatString)-1] = '\0';
+    out.print(ptr);
 }
+
+#define serPrint(format, ...) StreamPrint_progmem(Serial,PSTR(format),##__VA_ARGS__)
+#define Streamprint(stream,format, ...) StreamPrint_progmem(stream,PSTR(format),##__VA_ARGS__)
+                          
 
 #endif // GLOBALS_H
 
