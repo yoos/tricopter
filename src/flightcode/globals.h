@@ -23,7 +23,7 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  * Serial: everything that has to do with TX/RX.
  *****************************************************************************/
 
-#define BAUDRATE 115200   // Fiddle with this. The XBee sometimes seems to have trouble with high baudrates like 57600.
+#define BAUDRATE 57600   // Fiddle with this. The XBee sometimes seems to have trouble with high baudrates like 57600.
 
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
 #define PACKETSIZE 4     // Each packet contains header plus X, Y, Twist, and Z.

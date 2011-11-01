@@ -2,7 +2,7 @@
 
 import serial
 
-ser = serial.Serial("/dev/ttyUSB0", 115200)
+ser = serial.Serial("/dev/ttyUSB0", 57600)
 
 while 1:
     while ser.inWaiting() > 0:

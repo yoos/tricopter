@@ -16,7 +16,7 @@ Pilot::Pilot() {
 
     PID[PITCH].P = 60;
     PID[PITCH].I = 0;
-    PID[PITCH].D = 0;   // AeroQuad has -300 for this. Why?
+    PID[PITCH].D = 0;
     PID[ROLL].P  = 60;
     PID[ROLL].I  = 0;
     PID[ROLL].D  = 0;

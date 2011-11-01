@@ -41,6 +41,8 @@ int main(void) {
 
     for (;;) {
         if (millis() >= nextRuntime) {
+            Serial.print(armed);
+            Serial.print(" ");
             //Serial.print("(");
             //Serial.print(nextRuntime);
             //Serial.print(") ");
@@ -75,15 +77,6 @@ int main(void) {
              * motor values are zerod. It will then consider itself armed and start 
              * sending proper motor values.
              */
-            Serial.print(armed);
-            Serial.print(" ");
-            //Serial.print("(");
-            //Serial.print(gVal[0]);
-            //Serial.print(" ");
-            //Serial.print(gVal[1]);
-            //Serial.print(" ");
-            //Serial.print(gVal[2]);
-            //Serial.print(")");
             if (armed < 1) {   // First check that system is armed.
                 // Serial.println("System: Motors not armed.");
                 Serial.print("_ ");
