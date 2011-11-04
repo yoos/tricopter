@@ -12,7 +12,6 @@ from signal import signal, SIGINT
 import roslib; roslib.load_manifest("tricopter")
 import rospy
 from sensor_msgs.msg import Joy
-# from tricopter.msg import TricJoy
 
 # Comm values
 serialPort = "/dev/ttyUSB0"
