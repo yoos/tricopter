@@ -1,1 +1,1 @@
-../flightcode/globals.h
+../../globals.h

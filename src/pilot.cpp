@@ -22,7 +22,7 @@ Pilot::Pilot() {
     PID[ROLL].D  = 0;
 
     #ifdef DEBUG
-    serPrint("Pilot here!\n");
+    spln("Pilot here!");
     #endif
 
     for (int i=0; i<3; i++) {
@@ -56,17 +56,17 @@ void Pilot::Listen() {
 
                 // if (serRead == SERHEAD) {   // Dropped byte?
                 //     // i = -1;   // Discard and start over.
-                //     // serPrint("Pilot detected packet drop.\n");
+                //     // spln("Pilot detected packet drop.");
                 //     Serial.flush();
                 //     okayToFly = false;
                 // }
                 // else if (serRead == -1) {   // This happens when serial is empty.
-                //     // serPrint("Pilot detected malformed packet.\n");
+                //     // spln("Pilot detected malformed packet.");
                 //     okayToFly = false;
                 // }
                 if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
                     serInput[i] = serRead;
-                    // serPrint("Pilot determined motor value.\n");
+                    // spln("Pilot determined motor value.");
                     okayToFly = true;
                     numGoodComm++;
                 }
@@ -74,7 +74,7 @@ void Pilot::Listen() {
                     i = 10;
                     okayToFly = false;
                     numBadComm++;
-                    serPrint("Bad!");
+                    sp("Bad!");
                     // Flush remaining buffer to avoid taking in the wrong values.
                     Serial.flush();
                 }
@@ -82,7 +82,8 @@ void Pilot::Listen() {
         }
         else {
             // #ifdef DEBUG
-            // serPrint("Weird header! %d\n", (int) serRead);   // Warn if something weird happens.
+            // sp("Weird header! ");
+            // sp((int) serRead);   // Warn if something weird happens.
             // #endif
             okayToFly = false;
         }
@@ -96,7 +97,11 @@ void Pilot::Talk() {
 }
 
 void Pilot::Fly() {
-    //serPrint("(%d/%d) ", numGoodComm, numBadComm);
+    //sp("(");
+    //sp(numGoodComm);
+    //sp("/");
+    //sp(numBadComm);
+    //sp(") ");
     if (okayToFly) {   // Update axisVal only if okayToFly is true.
         // mySystem.UpdateHoverPos(axisVal); TODO: Implement this later.
 
@@ -107,11 +112,12 @@ void Pilot::Fly() {
         axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
         axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
 
-        //serPrint("(");
+        //sp("(");
         //for (int i=0; i<4; i++) {
-        //    serPrint("%d ", serInput[i]);
+        //    sp(serInput[i]);
+        //    sp(" ");
         //}
-        //serPrint(")");
+        //sp(") ");
 
         for (int i=0; i<2; i++) {   // First two rows of targetDCM and currentDCM should be identical until I figure out how to use all of currentDCM.
             for (int j=0; j<3; j++) {
@@ -124,7 +130,13 @@ void Pilot::Fly() {
         //targetDCM[2][2] = sqrt(1 - pow(targetDCM[2][0],2) - pow(targetDCM[2][1],2));
         targetAngle[PITCH] = axisVal[SY]/125*PI/6;
         targetAngle[ROLL] = axisVal[SX]/125*PI/6;
-        //serPrint("(%f, %f, %f) ", targetDCM[2][0], targetDCM[2][1], targetDCM[2][2]);
+        //sp("(");
+        //sp(targetDCM[2][0]);
+        //sp(" ");
+        //sp(targetDCM[2][1]);
+        //sp(" ");
+        //sp(targetDCM[2][2]);
+        //sp(") ");
 
         // Intermediate calculations TODO: Move this to system code.
         //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] - DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]));   // Watch out for floats vs. ints
@@ -138,7 +150,13 @@ void Pilot::Fly() {
         motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
         motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
 
-        //serPrint("(%d %d %d) ", motorVal[MT], motorVal[MR], motorVal[ML]);
+        //sp("(");
+        //sp(motorVal[MT]);
+        //sp(" ");
+        //sp(motorVal[MR]);
+        //sp(" ");
+        //sp(motorVal[ML]);
+        //sp(") ");
 
         // Find max/min motor values
         mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
@@ -157,18 +175,22 @@ void Pilot::Fly() {
         tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
         tailServoVal = map(tailServoVal, TAIL_SERVO_DEFAULT_POSITION-125*0.5, TAIL_SERVO_DEFAULT_POSITION+125*0.5, 0, TAIL_SERVO_DEFAULT_POSITION+125*0.5);
 
-        //serPrint("(%d %d %d) ", motorVal[MT], motorVal[MR], motorVal[ML]);
-
-        // serPrint("%d: ", millis());
+        //sp("(");
+        //sp(motorVal[MT]);
+        //sp(" ");
+        //sp(motorVal[MR]);
+        //sp(" ");
+        //sp(motorVal[ML]);
+        //sp(") ");
 
         okayToFly = false;
     }
     else {
-        // serPrint("Pilot not okay to fly.\n");
+        // spln("Pilot not okay to fly.");
     }
 
     #ifdef DEBUG
-    serPrint("Pilot is flying.\n");
+    spln("Pilot is flying.");
     #endif
 }
 
@@ -183,7 +205,7 @@ void Pilot::Abort() {
     tailServoVal = 90;
     
     #ifdef DEBUG
-    serPrint("Pilot ejected!\n");
+    spln("Pilot ejected!");
     #endif
 }
 

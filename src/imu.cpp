@@ -20,7 +20,7 @@ void IMU::Init() {
     //           {0, 0, 0}};
     IMU::Reset();
     #ifdef DEBUG
-    serPrint("IMU here!\n");
+    spln("IMU here!");
     #endif
 
 /* Calibrate sensors if needed and find initial tricopter orientation. */
@@ -45,10 +45,14 @@ void IMU::Update() {
     // XXX: just while I test...
     currentAngle[PITCH] = atan2(aVec[1], -aVec[2]);   // Pitch
     currentAngle[ROLL]  = atan2(aVec[0], -aVec[2]);   // Roll
-    serPrint("[%f, %f] ", currentAngle[PITCH], currentAngle[ROLL]);
+    sp("[");
+    sp(currentAngle[PITCH]);
+    sp(" ");
+    sp(currentAngle[ROLL]);
+    sp("] ");
     
     #ifdef DEBUG
-    serPrint("IMU updated.\n");
+    spln("IMU updated.");
     #endif
 
 
@@ -98,12 +102,24 @@ void IMU::Update() {
         //compute weighted average with the accelerometer correction vector
         w[i] = (w[i] + ACC_WEIGHT*wA[i] + MAG_WEIGHT*wM[i])/(1.0+ACC_WEIGHT+MAG_WEIGHT);
     }
-    //serPrint("(%f, %f, %f) ", w[0]*1000, w[1]*1000, w[2]*1000);
+    //sp("(");
+    //sp(w[0]*1000);
+    //sp(" ");
+    //sp(w[1]*1000);
+    //sp(" ");
+    //sp(w[2]*1000);
+    //sp(") ");
     
     imu_dcm_rotate(currentDCM, w);
 
     //for (int i=2; i<3; i++) {
-    //    serPrint("(%f, %f, %f) ", currentDCM[i][0]*1000, currentDCM[i][1]*1000, currentDCM[i][2]*1000);
+    //    sp("(");
+    //    sp(currentDCM[i][0]*1000);
+    //    sp(" ");
+    //    sp(currentDCM[i][1]*1000);
+    //    sp(" ");
+    //    sp(currentDCM[i][2]*1000);
+    //    sp(") ");
     //}
 }
 

@@ -6,20 +6,20 @@ Watchdog::Watchdog(int timeout) {
     time = millis();
     isAlive = false;
     #ifdef DEBUG
-    serPrint("Watchdog here!\n");
+    spln("Watchdog here!");
     #endif
 }
 
 void Watchdog::Watch(bool &seeFood) {   // If this runs too late, dogLife may already have ended.
     if (isAlive && !seeFood && millis() - time > dogLife) {
         isAlive = false;
-        serPrint("Watchdog died!\n");
+        spln("Watchdog died!");
     }
 //  else if (!isAlive && !seeFood) {   // This way, serial line is not spammed with long message.
-//      serPrint(".");
+//      sp(".");
 //      deadCycle++;
 //      if (deadCycle > 80) {
-//          serPrint("\n");
+//          spln("");
 //          deadCycle = 0;
 //      }
 //  }
@@ -29,7 +29,7 @@ void Watchdog::Watch(bool &seeFood) {   // If this runs too late, dogLife may al
         isAlive = true;
         
         #ifdef DEBUG
-        serPrint("Watchdog received dogbone!\n");
+        spln("Watchdog received dogbone!");
         #endif
         }
 }

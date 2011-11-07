@@ -57,3 +57,15 @@ Some todos:
 * Looks like I'm going to use pidquadcontroller code for IMU (http://code.google.com/p/picquadcontroller/source/browse/trunk/imu.h?r=7) and AeroQuad code for PID. Make these work.
 
 
+
+Robot Operating System (ROS)
+
+ROS is a meta-operating system developed by Willow Garage that facilitates the integration of various software systems developed by different teams. 
+
+
+
+
+
+
+
+

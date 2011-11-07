@@ -3,7 +3,8 @@
 ITG3200::ITG3200(uint8_t range) {
     readI2C(GYRADDR, 0x00, 1, gBuffer);   // Who am I?
     
-    serPrint("ITG-3200 ID = %d\n", (int) gBuffer[0]);
+    sp("ITG-3200 ID = ");
+    spln((int) gBuffer[0]);
 
     // Configure ITG-3200
     // Refer to DS Section 8: Register Description.
@@ -16,7 +17,7 @@ ITG3200::ITG3200(uint8_t range) {
     gBuffer[0] |= gBuffer[1];
     sendI2C(GYRADDR, 0x16, gBuffer[0]);
 
-    serPrint("ITG-3200 configured!\n");
+    spln("ITG-3200 configured!");
 
     // Zero buffer.
     for (int i=0; i<READ_SIZE; i++) {
@@ -49,7 +50,7 @@ void ITG3200::Calibrate(int sampleNum) {
     gZero[1] = tempData[1]/sampleNum;
     gZero[2] = tempData[2]/sampleNum;
 
-    serPrint("Gyro calibration complete!\n");
+    spln("Gyro calibration complete!");
     calibrated = true;
 }
 
@@ -64,7 +65,9 @@ void ITG3200::Poll() {
     // Read gyro temperature.
     readI2C(GYRADDR, TEMP_OUT, 2, gBuffer);
     temp = 35 + (((gBuffer[0] << 8) | gBuffer[1]) + 13200)/280.0;
-    //serPrint("GT: %f ", temp);
+    //sp("GT: ");
+    //sp(temp);
+    //sp(" ");
 
     // Convert raw values to a nice -1 to 1 range.
     for (int i=0; i<3; i++) {
@@ -82,7 +85,8 @@ void ITG3200::Poll() {
         }
         gVal[i] = gVal[i]*2000 * SYSINTRV/1000 * 8/7 - gZero[i];   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
         if (abs(gVal[i]*1000) < 10) gVal[i] = 0;
-        //serPrint("%f, ", gVal[i]*1000);
+        //sp(gVal[i]*1000);
+        //sp(" ");
     }
 
     // Runge-Kutta smoothing and integration.

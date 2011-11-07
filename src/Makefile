@@ -34,7 +34,8 @@
 #
 # $Id$
 
-TARGET = $(notdir $(CURDIR))
+#TARGET = $(notdir $(CURDIR))
+TARGET = flightcode
 INSTALL_DIR = $(HOME)/apps/arduino-0022
 PORT = /dev/ttyUSB*
 UPLOAD_RATE = 57600

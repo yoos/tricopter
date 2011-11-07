@@ -5,7 +5,7 @@
 #include "watchdog.cpp"
 #include "imu.cpp"
 
-// #define REPORT_MOTORVAL
+#define REPORT_MOTORVAL
 
 int main(void) {
     init();   // For Arduino.
@@ -45,13 +45,18 @@ int main(void) {
             if (teleCount == TELEMETRY_REST_INTERVAL) teleCount = 0;
             else teleCount++;
 
-            serPrint("%d ", armed);
-            //serPrint("(%d) ", nextRuntime);
+            sp(armed);
+            sp(" ");
+            //sp(nextRuntime);
             nextRuntime += SYSINTRV;   // Increment by DT.
             myIMU.Update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
 
-            //serPrint("(%f, %f, %f) ", targetDCM[2][0], targetDCM[2][1], targetDCM[2][2]);
-            //serPrint("(%f, %f, %f) ", currentDCM[2][0], currentDCM[2][1], currentDCM[2][2]);
+            //sp(targetDCM[2][0]);
+            //sp(targetDCM[2][1]);
+            //sp(targetDCM[2][2]);
+            //sp(currentDCM[2][0]);
+            //sp(currentDCM[2][1]);
+            //sp(currentDCM[2][2]);
 
             triPilot.Listen();
             /* The pilot communicates with base and updates motorVal and 
@@ -67,18 +72,20 @@ int main(void) {
              * sending proper motor values.
              */
             if (armed < 1) {   // First check that system is armed.
-                // serPrint("System: Motors not armed.\n");
-                serPrint("_ ");
+                // sp("System: Motors not armed.\n");
+                sp("_ ");
                 for (int i=0; i<3; i++) {
                     motor[i].write(TMIN);   // Disregard what Pilot says and write TMIN.
                     #ifdef REPORT_MOTORVAL
-                    serPrint("%d ", motorVal[i]);   // ..and hopefully Pilot has sense and won't be trying to do anything dangerous.
+                    sp(motorVal[i]);   // ..and hopefully Pilot has sense and won't be trying to do anything dangerous.
+                    sp(" ");
                     #endif
                 }
                 tailServo.write(90);
 
                 #ifdef REPORT_MOTORVAL
-                serPrint("%d ", tailServoVal);
+                sp(tailServoVal);
+                sp(" ");
                 #endif
 
                 // Check that motor values set by Pilot are within the arming threshold.
@@ -86,22 +93,23 @@ int main(void) {
                     abs(motorVal[MR] - TMIN) < MOTOR_ARM_THRESHOLD && 
                     abs(motorVal[ML] - TMIN) < MOTOR_ARM_THRESHOLD) {
                     armed++;   // Once Pilot shows some sense, arm.
-                    serPrint("A ");
+                    sp("A ");
                 }
             }
             else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
                 // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs .ints
 
-                serPrint("! ");
+                sp("! ");
                 for (int i=0; i<3; i++) {
                     motor[i].write(motorVal[i]);   // Write motor values to motors.
                     #ifdef REPORT_MOTORVAL
-                    serPrint("%d ", motorVal[i]);
+                    sp(motorVal[i]);
+                    sp(" ");
                     #endif
                 }
                 tailServo.write(tailServoVal);
                 #ifdef REPORT_MOTORVAL
-                serPrint(tailServoVal);
+                sp(tailServoVal);
                 #endif
             }
             else {   // ..otherwise, die.
@@ -117,11 +125,19 @@ int main(void) {
                 tailServo.write(tailServoVal);
             }
 
-            serPrint(" (%d, %d, %f)  ", commandPitch, commandRoll, gVal[0]);
+            sp(" (");
+            sp(commandPitch);
+            sp(" ");
+            sp(commandRoll);
+            sp(" ");
+            sp(gVal[0]);
+            sp(") ");
 
-            //serPrint("(%f, %f) ", targetAngle[0], targetAngle[1]);
-            //serPrint("(%f, %f) ", currentAngle[0], currentAngle[1]);
-            serPrint("\n");   // Send newline after every system iteration. TODO: Eventually implement a Telemetry class.
+            //sp(targetAngle[0]);
+            //sp(targetAngle[1]);
+            //sp(currentAngle[0]);
+            //sp(currentAngle[1]);
+            spln("");   // Send newline after every system iteration. TODO: Eventually implement a Telemetry class.
         }
     }
 

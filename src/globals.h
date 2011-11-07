@@ -45,7 +45,7 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 
 #define SYSINTRV 10   // System loop interval in milliseconds.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
-#define TELEMETRY_REST_INTERVAL 10   // Send telemetry every so often instead of at every system loop.
+#define TELEMETRY_REST_INTERVAL 4   // Send telemetry every so often instead of at every system loop.
 
 #define DCM_COEFF 90   // Scale current-to-target DCM difference.
 #define GYRO_COEFF 15   // Try to stabilize craft.
@@ -117,25 +117,30 @@ void zeroStr(char *sStr) {
 }
 
 // From http://www.utopiamechanicus.com/399/low-memory-serial-print/
-void StreamPrint_progmem(Print &out, PGM_P format, ...) {
-    // program memory version of printf - copy of format string and result share a buffer
-    // so as to avoid too much memory use
-    char formatString[128], *ptr;
-    strncpy_P(formatString, format, sizeof(formatString));   // copy in from program mem
-    // null terminate - leave last char since we might need it in worst case for result's \0
-    formatString[sizeof(formatString)-2] = '\0';
-    ptr=&formatString[strlen(formatString)+1]; // our result buffer...
-    va_list args;
-    va_start(args, format);
-    vsnprintf(ptr, sizeof(formatString)-1-strlen(formatString), formatString, args);
-    va_end(args);
-    formatString[sizeof(formatString)-1] = '\0';
-    out.print(ptr);
-}
+//void StreamPrint_progmem(Print &out, PGM_P format, ...) {
+//    // program memory version of printf - copy of format string and result share a buffer
+//    // so as to avoid too much memory use
+//    char formatString[256], *ptr;
+//    strncpy_P(formatString, format, sizeof(formatString));   // copy in from program mem
+//    // null terminate - leave last char since we might need it in worst case for result's \0
+//    formatString[sizeof(formatString)-2] = '\0';
+//    ptr=&formatString[strlen(formatString)+1]; // our result buffer...
+//    va_list args;
+//    va_start(args, format);
+//    vsnprintf(ptr, sizeof(formatString)-1-strlen(formatString), formatString, args);
+//    va_end(args);
+//    formatString[sizeof(formatString)-1] = '\0';
+//    out.print(ptr);
+//}
+//
+//#define serPrint(format, ...) StreamPrint_progmem(Serial,PSTR(format),##__VA_ARGS__)
+//#define serPrint(format, ...) if (teleCount == TELEMETRY_REST_INTERVAL) StreamPrint_progmem(Serial, PSTR(format), ##__VA_ARGS__)
+//#define Streamprint(stream,format, ...) StreamPrint_progmem(stream,PSTR(format),##__VA_ARGS__)
 
-#define serPrint(format, ...) StreamPrint_progmem(Serial,PSTR(format),##__VA_ARGS__)
-#define Streamprint(stream,format, ...) StreamPrint_progmem(stream,PSTR(format),##__VA_ARGS__)
-                          
+#define sp Serial.print
+#define spln Serial.println
+
+//#define serPrint Serial.print
 
 #endif // GLOBALS_H
 

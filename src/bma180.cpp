@@ -3,7 +3,8 @@
 BMA180::BMA180(byte range, byte bw) {
     readI2C(ACCADDR, 0x00, 1, aBuffer);
     
-    serPrint("BMA180 ID = %d\n", (int) aBuffer[0]);
+    sp("BMA180 ID = ");
+    spln((int) aBuffer[0]);
     
     // Set ee_w bit
     readI2C(ACCADDR, CTRLREG0, 1, aBuffer);
@@ -26,7 +27,7 @@ BMA180::BMA180(byte range, byte bw) {
     aBuffer[0] |= aBuffer[1];
     sendI2C(ACCADDR, OLSB1, aBuffer[0]);   // Write new range data, keep other bits the same.
 
-    serPrint("BMA180 configured!\n");
+    spln("BMA180 configured!");
 
     for (int i=0; i<3; i++) {
         aRaw[i] = 0;

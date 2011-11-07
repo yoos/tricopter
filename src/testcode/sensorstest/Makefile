@@ -1,1 +1,1 @@
-../flightcode/Makefile
+../../Makefile
