@@ -73,7 +73,7 @@ void IMU::Update() {
     //Acc can estimate global K vector(zenith) measured in body's coordinate systems (the reverse of gravitation vector)
     Kacc[0] = aVec[0];
     Kacc[1] = aVec[1];
-    Kacc[2] = -aVec[2];
+    Kacc[2] = aVec[2];
     vNorm(Kacc);
     //calculate correction vector to bring currentDCM's K vector closer to Acc vector (K vector according to accelerometer)
     vCrossP(currentDCM[2], Kacc, wA);    // wA = Kgyro x     Kacc , rotation needed to bring Kacc to Kgyro

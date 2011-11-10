@@ -14,7 +14,7 @@
 #define GY 1
 #define GZ 2
 
-#define ACC_WEIGHT 0.000   // Accelerometer data weight relative to gyro's weight of 1
+#define ACC_WEIGHT 0.020   // Accelerometer data weight relative to gyro's weight of 1
 //#define ACC_WEIGHT_MAX 0.05   // Maximum accelerometer weight in accelerometer-gyro fusion formula. This value is tuned-up experimentally: if you get too much noise - decrease it. If you get a delayed response of the filtered values - increase it. Starting with a value of  0.01 .. 0.05 will work for most sensors.
 //#define ACC_ERR_MAX 0.1   // Maximum allowable error (external acceleration) where accWeight becomes 0.
 #define MAG_WEIGHT 0.0   // Magnetometer data weight relative to gyro's weight of 1
