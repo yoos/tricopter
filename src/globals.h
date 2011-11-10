@@ -1,7 +1,7 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#include <avr/pgmspace.h>
+//#include <avr/pgmspace.h>
 
 // #define DEBUG
 
@@ -10,7 +10,7 @@
  *****************************************************************************/
 
 int armed;
-int teleCount;   // Used to send telemetry every TELEMETRY_REST_INTERVAL.
+int loopCount;   // Count system loops.
 float motorVal[3], tailServoVal;
 char commStr[250];   // String to be sent out to base.
 float commandPitch;   // Pitch command to be processed through PID.
@@ -43,7 +43,7 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  * relatively frequently changed.
  *****************************************************************************/
 
-#define SYSINTRV 10   // System loop interval in milliseconds.
+#define SYSINTRV 12   // System loop interval in milliseconds.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
 #define TELEMETRY_REST_INTERVAL 4   // Send telemetry every so often instead of at every system loop.
 

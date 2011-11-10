@@ -19,12 +19,10 @@ void IMU::Init() {
     //           {0, 0, 0},
     //           {0, 0, 0}};
     IMU::Reset();
-    #ifdef DEBUG
     spln("IMU here!");
-    #endif
 
 /* Calibrate sensors if needed and find initial tricopter orientation. */
-    myGyr.Calibrate(100);
+    myGyr.Calibrate(500);
 
     for (int i=0; i<3; i++)
         for (int j=0; j<3; j++)
@@ -43,13 +41,13 @@ void IMU::Update() {
     }
 
     // XXX: just while I test...
-    currentAngle[PITCH] = atan2(aVec[1], -aVec[2]);   // Pitch
-    currentAngle[ROLL]  = atan2(aVec[0], -aVec[2]);   // Roll
-    sp("[");
-    sp(currentAngle[PITCH]);
-    sp(" ");
-    sp(currentAngle[ROLL]);
-    sp("] ");
+    //currentAngle[PITCH] = atan2(aVec[1], -aVec[2]);   // Pitch
+    //currentAngle[ROLL]  = atan2(aVec[0], -aVec[2]);   // Roll
+    //sp("cA[");
+    //sp(currentAngle[PITCH]);
+    //sp(" ");
+    //sp(currentAngle[ROLL]);
+    //sp("] ");
     
     #ifdef DEBUG
     spln("IMU updated.");
@@ -73,8 +71,8 @@ void IMU::Update() {
     //Gravity vector is the reverse of K unity vector of global system expressed in local coordinates
     //K vector coincides with the z coordinate of body's i,j,k vectors expressed in global coordinates (K.i , K.j, K.k)
     //Acc can estimate global K vector(zenith) measured in body's coordinate systems (the reverse of gravitation vector)
-    Kacc[0] = -aVec[0];
-    Kacc[1] = -aVec[1];
+    Kacc[0] = aVec[0];
+    Kacc[1] = aVec[1];
     Kacc[2] = -aVec[2];
     vNorm(Kacc);
     //calculate correction vector to bring currentDCM's K vector closer to Acc vector (K vector according to accelerometer)
@@ -85,42 +83,46 @@ void IMU::Update() {
     //---------------
     //calculate correction vector to bring currentDCM's I vector closer to Mag vector (I vector according to magnetometer)
     //in the absense of magnetometer let's assume North vector (I) is always in XZ plane of the device (y coordinate is 0)
-    Imag[0] = sqrt(1-currentDCM[0][2]*currentDCM[0][2]);
-    Imag[1] = 0;
-    Imag[2] = currentDCM[0][2];
-    
-    vCrossP(currentDCM[0], Imag, wM);    // wM = Igyro x Imag, roation needed to bring Imag to Igyro
+    //Imag[0] = sqrt(1-currentDCM[0][2]*currentDCM[0][2]);
+    //Imag[1] = 0;
+    //Imag[2] = currentDCM[0][2];
+    //
+    //vCrossP(currentDCM[0], Imag, wM);    // wM = Igyro x Imag, roation needed to bring Imag to Igyro
 
     //---------------
     //currentDCM
     //---------------
-    w[0] = gVec[0];   //rotation rate about accelerometer's X axis (GY output) in rad/ms
-    w[1] = gVec[1];   //rotation rate about accelerometer's Y axis (GX output) in rad/ms
-    w[2] = gVec[2];   //rotation rate about accelerometer's Z axis (GZ output) in rad/ms
+    w[0] = gVec[0];   //rotation rate about body X axis in rad/s
+    w[1] = gVec[1];   //rotation rate about body Y axis in rad/s
+    w[2] = gVec[2];   //rotation rate about body Z axis in rad/s
     for (int i=0; i<3; i++) {
-        w[i] *= SYSINTRV/1000;   //scale by elapsed time (in s) to get angle in radians
-        //compute weighted average with the accelerometer correction vector
+        w[i] = w[i] * SYSINTRV/1000;   // Scale by elapsed time (in s) to get angle in radians. NOTE: w is no longer omega; it is an actual angle (omega * dt).
+        // Compute weighted average with the accelerometer correction vector
         w[i] = (w[i] + ACC_WEIGHT*wA[i] + MAG_WEIGHT*wM[i])/(1.0+ACC_WEIGHT+MAG_WEIGHT);
     }
-    //sp("(");
-    //sp(w[0]*1000);
-    //sp(" ");
-    //sp(w[1]*1000);
-    //sp(" ");
-    //sp(w[2]*1000);
-    //sp(") ");
+    //if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
+    //    sp("w(");
+    //    sp(w[0]*100);
+    //    sp(" ");
+    //    sp(w[1]*100);
+    //    sp(" ");
+    //    sp(w[2]*100);
+    //    sp(") ");
+    //}
     
     imu_dcm_rotate(currentDCM, w);
 
-    //for (int i=2; i<3; i++) {
-    //    sp("(");
-    //    sp(currentDCM[i][0]*1000);
-    //    sp(" ");
-    //    sp(currentDCM[i][1]*1000);
-    //    sp(" ");
-    //    sp(currentDCM[i][2]*1000);
-    //    sp(") ");
-    //}
+    if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
+        for (int i=0; i<3; i++) {
+            sp("(");
+            sp(currentDCM[i][0]);
+            sp(" ");
+            sp(currentDCM[i][1]);
+            sp(" ");
+            sp(currentDCM[i][2]);
+            sp(") ");
+        }
+    }
 }
 
 //void IMU::deadReckoning() {
@@ -137,7 +139,7 @@ void IMU::Update() {
 //}
 
 void IMU::Reset() {
-    for (int i; i<3; i++) {
+    for (int i=0; i<3; i++) {
         curRot[i] = 0;
         curPos[i] = 0;
     }
@@ -166,22 +168,24 @@ void imu_dcm_orthonormalize(float dcm[3][3]) {
 
 // XXX From PICQ: rotate DCM matrix by a small rotation given by angular rotation vector w
 // See http://gentlenav.googlecode.com/files/DCMDraft2.pdf
-void imu_dcm_rotate(float dcm[3][3], float w[3]) {
-    //float W[3][3];    
-    //creates equivalent skew symetric matrix plus identity matrix
-    //vector3d_skew_plus_identity((float*)w,(float*)W);
-    //float dcmTmp[3][3];
-    //matrix_multiply(3,3,3,(float*)W,(float*)dcm,(float*)dcmTmp);
-    
-    int i;
+void imu_dcm_rotate(float dcm[3][3], float dr[3]) {
     float dR[3];
-    //update matrix using formula R(t+1)= R(t) + dR(t) = R(t) + w x R(t)
-    for(i=0;i<3;i++){
-        vCrossP(w, dcm[i], dR);
-        vAdd(dcm[i], dR, dcm[i]);
-    }        
+    float dcmT[3][3];   // DCM transpose.
+    
+    // Update matrix using formula R(t+1)= R(t) + dR(t) = R(t) + w x R(t)
+    for (int i=0; i<3; i++) {
+        // dr is in local coordinates. By crossing this with dcm, we get dR, which is dr expressed in global coordinates.
+        // Maybe I need the transpose of dcm?
+        vCrossP(dr, dcm[i], dR);
 
-    //make matrix orthonormal again
+        // YES dR MUST BE SUBTRACTED FROM DCM (this version, anyway). I SPENT EIGHT HOURS FIGURING THIS OUT. RAGING. VERY MUCH.
+        for (int j=0; j<3; j++) {
+            dR[j] = -dR[j];
+        }
+        // Add dR (global description of change in orientation) to DCM.
+        vAdd(dcm[i], dR, dcm[i]);
+    }
+
     imu_dcm_orthonormalize(dcm);
 }
 

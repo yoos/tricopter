@@ -46,11 +46,13 @@ void ITG3200::Calibrate(int sampleNum) {
             tempData[j] = tempData[j] + gVal[j];
         }
     }
+
     gZero[0] = tempData[0]/sampleNum;
     gZero[1] = tempData[1]/sampleNum;
     gZero[2] = tempData[2]/sampleNum;
 
     spln("Gyro calibration complete!");
+    sp(tempData[0]/sampleNum);
     calibrated = true;
 }
 
@@ -69,23 +71,28 @@ void ITG3200::Poll() {
     //sp(temp);
     //sp(" ");
 
-    // Convert raw values to a nice -1 to 1 range.
+    // Convert raw gyro output values to rad/s.
+    //
+    // The constructor to this class should configure the gyro to a range of +/- 2000 deg/s over its 16-bit range:
+    //     0 to 2000 deg/s: 0x0000 to 0x7fff
+    //     -2000 deg/s to 0: 0x8000 to 0xffff (then wrap to 0x0000)
+    // We need this to be in rad/s for the DCM.
     for (int i=0; i<3; i++) {
         float tmp;
         if (gRaw[i] >= 0x8000)   // If zero to negative rot. vel.: 2^16-1 to 2^15...
             tmp = -((signed) (0xFFFF - gRaw[i]));   // ...subtract from 2^16-1.
         else
-            tmp = gRaw[i];
+            tmp = gRaw[i];   // Otherwise, leave it alone.
         switch (i) {
-            // Divide by maximum magnitude.
-            case 0: gVal[0] = -(tmp - GXOFFSET)/0x8000; break;   // Negated.
-            case 1: gVal[1] =  (tmp - GYOFFSET)/0x8000; break;
-            case 2: gVal[2] =  (tmp - GZOFFSET)/0x8000; break;
+            case 0: gVal[0] = -tmp * 2000/0x8000 * PI/180; break;
+            case 1: gVal[1] =  tmp * 2000/0x8000 * PI/180; break;
+            case 2: gVal[2] =  tmp * 2000/0x8000 * PI/180; break;
             default: break;
         }
-        gVal[i] = gVal[i]*2000 * SYSINTRV/1000 * 8/7 - gZero[i];   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
-        if (abs(gVal[i]*1000) < 10) gVal[i] = 0;
-        //sp(gVal[i]*1000);
+        //gVal[i] = gVal[i]*2000 * SYSINTRV/1000 * 8/7 - gZero[i];   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
+        gVal[i] = (gVal[i] - gZero[i]);
+        //if (abs(gVal[i]*1000) < 7) gVal[i] = 0;
+        //sp(gVal[i]);
         //sp(" ");
     }
 
@@ -97,7 +104,7 @@ void ITG3200::Poll() {
                        2*rkVal[i][(rkIndex+1)%4] +
                        2*rkVal[i][(rkIndex+2)%4] +
                        1*rkVal[i][(rkIndex+3)%4])/6;
-            angle[i] = angle[i] + gVal[i];   // Integration.
+            //angle[i] = angle[i] + gVal[i];   // Integration.
         }
         rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
     }
