@@ -113,14 +113,14 @@ void IMU::Update() {
     imu_dcm_rotate(currentDCM, w);
 
     if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
+        sp("iD ");
         for (int i=0; i<3; i++) {
-            sp("(");
             sp(currentDCM[i][0]);
             sp(" ");
             sp(currentDCM[i][1]);
             sp(" ");
             sp(currentDCM[i][2]);
-            sp(") ");
+            sp(" ");
         }
     }
 }
@@ -146,7 +146,7 @@ void IMU::Reset() {
 }
 
 
-// XXX From PICQ: Bring DCM matrix in order - adjust values to make orthonormal (or at least closer to orthonormal)
+// Adjust values to make orthonormal (or at least closer to orthonormal)
 // Note: dcm and dcmResult can be the same.
 void imu_dcm_orthonormalize(float dcm[3][3]) {
     //err = X . Y ,  X = X - err/2 * Y , Y = Y - err/2 * X  (DCMDraft2 Eqn.19)
@@ -155,33 +155,28 @@ void imu_dcm_orthonormalize(float dcm[3][3]) {
     float delta[2][3];
     vScale((float*)(dcm[1]), -err/2, (float*)(delta[0]));
     vScale((float*)(dcm[0]), -err/2, (float*)(delta[1]));
-    vAdd((float*)(dcm[0]), (float*)(delta[0]), (float*)(dcm[0]));
+    vAdd((float*)(dcm[0]), (float*)(delta[1]), (float*)(dcm[0]));
     vAdd((float*)(dcm[1]), (float*)(delta[0]), (float*)(dcm[1]));
 
     //Z = X x Y  (DCMDraft2 Eqn. 20) , 
-    vCrossP((float*)(dcm[0]), (float*)(dcm[1]), (float*)(dcm[2]));
+    //vCrossP((float*)(dcm[0]), (float*)(dcm[1]), (float*)(dcm[2]));
     //re-nomralization
     vNorm((float*)(dcm[0]));
     vNorm((float*)(dcm[1]));
     vNorm((float*)(dcm[2]));
 }
 
-// XXX From PICQ: rotate DCM matrix by a small rotation given by angular rotation vector w
+// Rotate DCM matrix by a small rotation given by angular rotation vector dr.
 // See http://gentlenav.googlecode.com/files/DCMDraft2.pdf
 void imu_dcm_rotate(float dcm[3][3], float dr[3]) {
     float dR[3];
-    float dcmT[3][3];   // DCM transpose.
     
     // Update matrix using formula R(t+1)= R(t) + dR(t) = R(t) + w x R(t)
     for (int i=0; i<3; i++) {
         // dr is in local coordinates. By crossing this with dcm, we get dR, which is dr expressed in global coordinates.
         // Maybe I need the transpose of dcm?
-        vCrossP(dr, dcm[i], dR);
+        vCrossP(dcm[i], dr, dR);
 
-        // YES dR MUST BE SUBTRACTED FROM DCM (this version, anyway). I SPENT EIGHT HOURS FIGURING THIS OUT. RAGING. VERY MUCH.
-        for (int j=0; j<3; j++) {
-            dR[j] = -dR[j];
-        }
         // Add dR (global description of change in orientation) to DCM.
         vAdd(dcm[i], dR, dcm[i]);
     }
