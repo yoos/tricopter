@@ -47,23 +47,6 @@ void vNorm (float v[3]) {
     v[2] /= tmp;
 }
 
-// Create equivalent skew symmetric matrix plus identity.
-//     for v = {x,y,z} returns
-//     m = {{1,z,-y}
-//          {-z,1,x}
-//          {y,-x,1}}
-void vSkewPlusIdentity(float v[3], float mOut[3][3]) {
-    mOut[0][0] = 1;
-    mOut[0][1] = v[2];
-    mOut[0][2] = -v[1];
-    mOut[1][0] = -v[2];
-    mOut[1][1] = 1;
-    mOut[1][2] = v[0];
-    mOut[2][0] = v[1];
-    mOut[2][1] = -v[0];
-    mOut[2][2] = 1;
-}
-
 // 3x3 matrix transpose -- receive matrix mIn as input and output its transpose mOut.
 void mTranspose (float mIn[3][3], float mOut[3][3]) {
     int i, j;

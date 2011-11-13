@@ -10,9 +10,13 @@
 //     j - forward
 //     k - up
 // ============================================================================
-//       [I.i , I.j, I.k]
-// DCM = [J.i , J.j, J.k]
-//       [K.i , K.j, K.k]
+// We keep track of the body frame in relation to the global coordinate frame.
+// That is, orientation is described in the global coordinate system.
+//
+//           [i.I i.J i.K]
+//     DCM = [j.I j.J j.K]
+//           [k.I k.J k.K]
+//
 // ============================================================================
 
 #include "imu.h"
@@ -60,8 +64,8 @@ void IMU::Update() {
     // Gyroscope
     //     Frame of reference: BODY
     //     Units: rad/s
-    //     Purpose: Measure the rotation rate of the body about the body's X,
-    //              Y, and Z axes (i.e., i, j, k).
+    //     Purpose: Measure the rotation rate of the body about the body's i,
+    //              j, and k axes.
     // ========================================================================
     myGyr.Poll();
     gVec[0] = myGyr.GetRate(0);
@@ -82,10 +86,52 @@ void IMU::Update() {
     //     Purpose: Calculate the components of the body's i, j, and k unity
     //              vectors in the global frame of reference.
     // ========================================================================
-
-    // Skew the rotation vector and add to appropriate axis by combining the
-    // skew symmetric matrix with the identity matrix.
-    vSkewPlusIdentity(wdt, dDCM);
+    // Skew the rotation vector and sum appropriate components by combining the
+    // skew symmetric matrix with the identity matrix. The math can be
+    // summarized as follows:
+    //
+    // All of this is calculated in the BODY frame. If w is the angular
+    // velocity vector, let wdt (w*dt) be the angular rotation vector of the
+    // DCM over a time interval dt. Let wdt_i, wdt_j, and wdt_k be the
+    // components of wdt codirectional with the i, j, and k unity vectors,
+    // respectively. Also, let dr be the linear displacement vector of the DCM
+    // and dr_i, dr_j, and dr_k once again be the i, j, and k components,
+    // respectively.
+    //
+    // In very small dt, certain vectors approach orthogonality, so we can
+    // assume that (draw this out for yourself!):
+    //
+    //     dr_x = <    0,  dw_k, -dw_j>,
+    //     dr_y = <-dw_k,     0,  dw_i>, and
+    //     dr_z = < dw_j, -dw_i,     0>,
+    //
+    // which can be expressed as the rotation matrix:
+    //
+    //          [     0  dw_k -dw_j ]
+    //     dr = [ -dw_k     0  dw_i ]
+    //          [  dw_j -dw_i     0 ].
+    //
+    // This can then be multiplied by the current DCM and added to the current
+    // DCM to update the DCM. To minimize the number of calculations performed
+    // by the processor, however, we can combine the last two steps by
+    // combining dr with the identity matrix to produce:
+    //
+    //              [     1  dw_k -dw_j ]
+    //     dr + I = [ -dw_k     1  dw_i ]
+    //              [  dw_j -dw_i     1 ],
+    //
+    // which we multiply with the current DCM to produce the updated DCM
+    // directly.
+    // ========================================================================
+    dDCM[0][0] =       1;
+    dDCM[0][1] =  wdt[2];
+    dDCM[0][2] = -wdt[1];
+    dDCM[1][0] = -wdt[2];
+    dDCM[1][1] =       1;
+    dDCM[1][2] =  wdt[0];
+    dDCM[2][0] =  wdt[1];
+    dDCM[2][1] = -wdt[0];
+    dDCM[2][2] =       1;
 
     // Multiply the current DCM with the change in DCM and update.
     mProduct(dDCM, currentDCM, currentDCM);
@@ -101,15 +147,17 @@ void IMU::Update() {
         }
     }
 
-    // Orthonormalize the DCM (DCMDraft2 Eqn. 19).
+    // Orthogonalize the i and j unity vectors (DCMDraft2 Eqn. 19).
     vDotP(currentDCM[0], currentDCM[1], errDCM);
     vScale(currentDCM[1], -errDCM/2, dDCM[0]);   // i vector correction
     vScale(currentDCM[0], -errDCM/2, dDCM[1]);   // j vector correction
     vAdd(currentDCM[0], dDCM[0], currentDCM[0]);
     vAdd(currentDCM[1], dDCM[1], currentDCM[1]);
 
-    // Z = X x Y
+    // k = i x j
     vCrossP(currentDCM[0], currentDCM[1], currentDCM[2]);
+
+    // Normalize all three vectors.
     vNorm(currentDCM[0]);
     vNorm(currentDCM[1]);
     vNorm(currentDCM[2]);
