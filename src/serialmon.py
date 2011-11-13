@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+###############################################################################
+# serialmon.py
+###############################################################################
+
 import sys
 import serial
 import array
@@ -29,38 +33,30 @@ rospy.init_node("tric_vis", anonymous=True)
 # Number of the glut window.
 window = 0
 
-# Initial DCM values.
-dcm = dcmT = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+# Initial DCM values. Initialize these separately (i.e., don't do dcm = dcmT = [...]), otherwise the DCM values will be read in an incorrect order!
+dcm = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+dcmT = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
 
 # Initial vertex values for a box drawn around the DCM.
 vx = [[-1,-1,1], [-1,1,1], [1,1,1], [1,-1,1], [-1,-1,-1], [-1,1,-1], [1,1,-1], [1,-1,-1]]
 
 
-#def vCross (v1[3], v2[3], vOut[3]):
-#    vOut[0] = (v1[1]*v2[2]) - (v1[2]*v2[1]);
-#    vOut[1] = (v1[2]*v2[0]) - (v1[0]*v2[2]);
-#    vOut[2] = (v1[0]*v2[1]) - (v1[1]*v2[0]);
-
-# Multiply two 3x3 matrices.
-#def mProduct (m1, m2, mOut):
-#    tmp = range(3)
-#    for i in range(3):
-#        for j in range(3):
-#            for k in range(3):
-#                tmp[k] = m1[i][k] * m2[k][j];
-#            mOut[i][j] = sum(tmp)
-
-
 def drawScene():
     # Define axes to draw.
-    axes = dcmT
+    axes = dcm
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)   # Clear screen and depth buffer.
-    glLoadIdentity()      # Reset view
-    #glLoadMatrix(glDCM)   # Replace current matrix with glDCM, a 4x4 matrix.
+    # Clear screen and depth buffer.
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    # Reset view
+    glLoadIdentity()
 
     # Move object into screen so it's not in my face (i.e,. invisible).
     glTranslatef(0.0, 0.0, -3.0)
+
+    # Syntax: glRotatef(angle, x, y, z)
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    #glRotatef(-20.0, 0.0, 1.0, 0.0)
 
     # Calculate vertex locations for a box. Refer to the declaration of vx to
     # see the order of the vertices.
@@ -113,13 +109,14 @@ def drawScene():
     glEnd()
 
     # Draw a static box.
-    glutWireCube(1.2)
+    #glutWireCube(1.2)
 
     # Since this is double buffered, swap the buffers to display what just got drawn.
     glutSwapBuffers()
 
 
 def resizeScene(width, height):
+    # Protect against divide by zero when window size is small.
     if height == 0:
         height = 1
 
@@ -147,11 +144,11 @@ def initGL(width, height):
 
 
 class visualizationThread(threading.Thread):
-    global window
     def __init__(self):
         threading.Thread.__init__(self)
         self.running = True
     def run(self):
+        global window
         while self.running and not rospy.is_shutdown():
             glutInit(sys.argv)
 
@@ -162,7 +159,7 @@ class visualizationThread(threading.Thread):
             # Initialize window so we can close it later.
             window = glutCreateWindow("IMU visualization")
 
-            # Register the drawing function with glut
+            # Register the drawing function with glut.
             glutDisplayFunc(drawScene)
 
             # When doing nothing, redraw scene.
@@ -187,16 +184,17 @@ class telemetryThread(threading.Thread):
         self.running = True
     def run(self):
         global dcm, dcmT
-        serialIsClean = False
-        imuDataIndex = -1   # Do I see IMU data in datafeed?
-        line = ''
+        serialIsClean = False   # Is the serial line clean?
+        imuDataIndex = -1       # Do I see IMU data?
+        gyroDataIndex = -1      # Do I see gyro data?
+        serLine = ''
         try:
             ser = serial.Serial("/dev/ttyUSB0", 57600)
         except:
             print "Serial unavailable!"
 
         while self.running and not rospy.is_shutdown():
-            # TODO: get serial input as raw bits.
+            # TODO: Serial comm should be in raw bits, not strings.
             try:
                 # Clean up beginning of serial so we can read a full line.
                 while not serialIsClean:
@@ -206,27 +204,34 @@ class telemetryThread(threading.Thread):
                 # Read from serial.
                 if ser.inWaiting() > 0:
                     # Read one line ending with \n.
-                    line = ser.readline()
+                    serLine = ser.readline()
 
                     # Parse fields separated by spaces.
-                    fields = line[:-1].split(' ')
+                    fields = serLine[:-1].split(' ')
 
-                    if imuDataIndex == -1:
+                    # Check if we've captured a data index.
+                    # TODO: Eventually, we should be able to read multiple
+                    # fields and display multiple data visualizations.
+                    if imuDataIndex == gyroDataIndex == -1:
                         for i in range(len(fields)):
-                            if fields[i] == 'iD':
+                            if fields[i] == 'DCM':
                                 print fields[i]
-                                imuDataIndex = i
+                                imuDataIndex = i+1
+                            if fields[i] == 'W':
+                                print fields[i]
+                                gyroDataIndex = i+1
 
+                    # If we have imuDataIndex, populate DCM.
                     if imuDataIndex != -1:
                         for i in range(3):
                             for j in range(3):
-                                dcm[i][j] = float(fields[imuDataIndex+i*3+j+1])
-                        for i in range(3):
-                            for j in range(3):
-                                dcmT[i][j] = dcm[j][i]
+                                dcm[i][j] = float(fields[imuDataIndex+i*3+j])
+                                dcmT[j][i] = dcm[i][j]
                         print dcm
+                    elif gyroDataIndex != -1:
+                            print [float(fields[gyroDataIndex+i]) for i in range(3)]
                     else:
-                        print "No IMU"
+                        print "No data found."
 
             except:
                 pass
