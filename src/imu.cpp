@@ -1,11 +1,11 @@
 // ============================================================================
 // imu.cpp
 // ============================================================================
-// I, J, K unity vectors of global coordinate system
+// I, J, K unit vectors of global coordinate system
 //     I - east
 //     J - north
 //     K - zenith
-// i, j, k unity vectors of body coordinate system
+// i, j, k unit vectors of body coordinate system
 //     i - right
 //     j - forward
 //     k - up
@@ -37,8 +37,6 @@ void IMU::Init() {
     for (int i=0; i<3; i++)
         for (int j=0; j<3; j++)
             currentDCM[i][j] = (i==j) ? 1.0 : 0.0;
-    currentAngle[PITCH] = 0;
-    currentAngle[ROLL] = 0;
 }
 
 void IMU::Update() {
@@ -83,7 +81,7 @@ void IMU::Update() {
     // Direction Cosine Matrix
     //     Frame of reference: GLOBAL
     //     Units: None (unit vectors)
-    //     Purpose: Calculate the components of the body's i, j, and k unity
+    //     Purpose: Calculate the components of the body's i, j, and k unit
     //              vectors in the global frame of reference.
     // ========================================================================
     // Skew the rotation vector and sum appropriate components by combining the
@@ -93,7 +91,7 @@ void IMU::Update() {
     // All of this is calculated in the BODY frame. If w is the angular
     // velocity vector, let wdt (w*dt) be the angular rotation vector of the
     // DCM over a time interval dt. Let wdt_i, wdt_j, and wdt_k be the
-    // components of wdt codirectional with the i, j, and k unity vectors,
+    // components of wdt codirectional with the i, j, and k unit vectors,
     // respectively. Also, let dr be the linear displacement vector of the DCM
     // and dr_i, dr_j, and dr_k once again be the i, j, and k components,
     // respectively.
@@ -147,12 +145,12 @@ void IMU::Update() {
         }
     }
 
-    // Orthogonalize the i and j unity vectors (DCMDraft2 Eqn. 19).
+    // Orthogonalize the i and j unit vectors (DCMDraft2 Eqn. 19).
     vDotP(currentDCM[0], currentDCM[1], errDCM);
     vScale(currentDCM[1], -errDCM/2, dDCM[0]);   // i vector correction
     vScale(currentDCM[0], -errDCM/2, dDCM[1]);   // j vector correction
-    vAdd(currentDCM[0], dDCM[0], currentDCM[0]);
-    vAdd(currentDCM[1], dDCM[1], currentDCM[1]);
+    vAdd(currentDCM[0], dDCM[1], currentDCM[0]);
+    vAdd(currentDCM[1], dDCM[0], currentDCM[1]);
 
     // k = i x j
     vCrossP(currentDCM[0], currentDCM[1], currentDCM[2]);
