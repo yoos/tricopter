@@ -36,7 +36,7 @@ void IMU::Init() {
     // Set initial DCM as the identity matrix.
     for (int i=0; i<3; i++)
         for (int j=0; j<3; j++)
-            currentDCM[i][j] = (i==j) ? 1.0 : 0.0;
+            gyroDCM[i][j] = (i==j) ? 1.0 : 0.0;
 }
 
 void IMU::Update() {
@@ -49,14 +49,37 @@ void IMU::Update() {
     //              gravitational vector is the negative of the K vector.
     // ========================================================================
     myAcc.Poll();
-    aVec[0] = -myAcc.Get(0);
-    aVec[1] = -myAcc.Get(1);
+    aVec[0] = myAcc.Get(0);
+    aVec[1] = myAcc.Get(1);
     aVec[2] = myAcc.Get(2);
     vNorm(aVec);
 
-    // TODO: FIX THIS: Calculate correction vector to bring currentDCM's K
-    // vector closer to aVec vector (K vector according to accelerometer)
-    vCrossP(aVec, currentDCM[2], wA);
+    // Express K unity vector in BODY frame as KB for use in drift correction
+    // (we need K to be described in the BODY frame because gravity is measured
+    // by the accelerometer in the BODY frame). Technically we could just
+    // create a transpose of gyroDCM, but since we don't (yet) have a
+    // magnetometer, we don't need the first two rows of the transpose. This
+    // saves a few clock cycles.
+    KB[0] = gyroDCM[0][2];
+    KB[1] = gyroDCM[1][2];
+    KB[2] = gyroDCM[2][2];
+
+    // Calculate gyro drift correction rotation vector wA, which will be used
+    // later to bring KB closer to the gravity vector (i.e., the negative of
+    // the K vector). Although we do not explicitly negate the gravity vector,
+    // the cross product below produces a rotation vector that we can later add
+    // to the angular displacement vector to correct for gyro drift in the X
+    // and Y axes.
+    vCrossP(KB, aVec, wA);
+
+    // Uncomment to debug K and gravity vectors.
+    //if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
+    //    sp("(");
+    //    sp(KB[0]); sp(" "); sp(aVec[0]); sp(" | ");
+    //    sp(KB[1]); sp(" "); sp(aVec[1]); sp(" | ");
+    //    sp(KB[2]); sp(" "); sp(aVec[2]);
+    //    sp(") ");
+    //}
 
     // ========================================================================
     // Gyroscope
@@ -135,33 +158,33 @@ void IMU::Update() {
     dDCM[2][2] =       1;
 
     // Multiply the current DCM with the change in DCM and update.
-    mProduct(dDCM, currentDCM, currentDCM);
+    mProduct(dDCM, gyroDCM, gyroDCM);
 
     // Datafeed to serialmon.py for visualization.
     if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
         sp("DCM ");   // Index tag 'DCM'.
         for (int i=0; i<3; i++) {
             for (int j=0; j<3; j++) {
-                sp(currentDCM[i][j]);
+                sp(gyroDCM[i][j]);
                 sp(" ");
             }
         }
     }
 
     // Orthogonalize the i and j unit vectors (DCMDraft2 Eqn. 19).
-    errDCM = vDotP(currentDCM[0], currentDCM[1]);
-    vScale(currentDCM[1], -errDCM/2, dDCM[0]);   // i vector correction
-    vScale(currentDCM[0], -errDCM/2, dDCM[1]);   // j vector correction
-    vAdd(currentDCM[0], dDCM[0], currentDCM[0]);
-    vAdd(currentDCM[1], dDCM[1], currentDCM[1]);
+    errDCM = vDotP(gyroDCM[0], gyroDCM[1]);
+    vScale(gyroDCM[1], -errDCM/2, dDCM[0]);   // i vector correction
+    vScale(gyroDCM[0], -errDCM/2, dDCM[1]);   // j vector correction
+    vAdd(gyroDCM[0], dDCM[0], gyroDCM[0]);
+    vAdd(gyroDCM[1], dDCM[1], gyroDCM[1]);
 
     // k = i x j
-    vCrossP(currentDCM[0], currentDCM[1], currentDCM[2]);
+    vCrossP(gyroDCM[0], gyroDCM[1], gyroDCM[2]);
 
     // Normalize all three vectors.
-    vNorm(currentDCM[0]);
-    vNorm(currentDCM[1]);
-    vNorm(currentDCM[2]);
+    vNorm(gyroDCM[0]);
+    vNorm(gyroDCM[1]);
+    vNorm(gyroDCM[2]);
 }
 
 void IMU::Reset() {

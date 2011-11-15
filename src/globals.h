@@ -15,10 +15,10 @@ float motorVal[3], tailServoVal;
 char commStr[250];   // String to be sent out to base.
 float commandPitch;   // Pitch command to be processed through PID.
 float commandRoll;   // Roll command to be processed through PID.
-float currentDCM[3][3];   // Current position DCM calculated by IMU.
+float gyroDCM[3][3];   // Current position DCM calculated by IMU.
 float targetDCM[3][3];   // Target position DCM calculated by Pilot.
-float currentAngle[2];   // TEST: Current angle.
-float targetAngle[2];   // TEST: Target angle.
+//float currentAngle[2];   // TEST: Current angle.
+//float targetAngle[2];   // TEST: Target angle.
 float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 
 
@@ -43,9 +43,9 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  * relatively frequently changed.
  *****************************************************************************/
 
-#define SYSINTRV 12   // System loop interval in milliseconds.
+#define SYSINTRV 30   // System loop interval in milliseconds.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
-#define TELEMETRY_REST_INTERVAL 4   // Send telemetry every so often instead of at every system loop.
+#define TELEMETRY_REST_INTERVAL 2   // Send telemetry every so often instead of at every system loop.
 
 #define DCM_COEFF 90   // Scale current-to-target DCM difference.
 #define GYRO_COEFF 15   // Try to stabilize craft.
