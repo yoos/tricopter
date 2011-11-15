@@ -1,11 +1,17 @@
+// ============================================================================
+// triMath.h
+// ============================================================================
+// TODO: Most (if not all) of these functions should return instead of changing
+// values internally.
+
 #ifndef TRIMATH_H
 #define TRIMATH_H
 
-// Some non-general vector math.
-
 // Dot product
-void vDotP (float v1[3], float v2[3], float dotOut) {
-    dotOut += v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+float vDotP (float v1[3], float v2[3]) {
+    float output = 0;
+    output += v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+    return output;
 }
 
 // Cross product
@@ -30,18 +36,19 @@ void vAdd (float v1[3], float v2[3], float vOut[3]) {
 }
 
 // Calculate modulus of vector = sqrt(x^2 + y^2 + z^2)
-void vMod (float v[3], float &modOut) {
-    float tmp;
-    tmp = v[0] * v[0];
-    tmp += v[1] * v[1];
-    tmp += v[2] * v[2];
-    modOut = sqrt(tmp);
+float vMod (float v[3]) {
+    float output;
+    output = v[0] * v[0];
+    output += v[1] * v[1];
+    output += v[2] * v[2];
+    output = sqrt(output);
+    return output;
 }
 
 // Normalize vector to a vector with same direction, mod 1
 void vNorm (float v[3]) {
     float tmp;
-    vMod(v, tmp);
+    tmp = vMod(v);
     v[0] /= tmp;
     v[1] /= tmp;
     v[2] /= tmp;

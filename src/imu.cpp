@@ -49,8 +49,8 @@ void IMU::Update() {
     //              gravitational vector is the negative of the K vector.
     // ========================================================================
     myAcc.Poll();
-    aVec[0] = myAcc.Get(0);
-    aVec[1] = myAcc.Get(1);
+    aVec[0] = -myAcc.Get(0);
+    aVec[1] = -myAcc.Get(1);
     aVec[2] = myAcc.Get(2);
     vNorm(aVec);
 
@@ -89,8 +89,8 @@ void IMU::Update() {
     // summarized as follows:
     //
     // All of this is calculated in the BODY frame. If w is the angular
-    // velocity vector, let wdt (w*dt) be the angular rotation vector of the
-    // DCM over a time interval dt. Let wdt_i, wdt_j, and wdt_k be the
+    // velocity vector, let wdt (w*dt) be the angular displacement vector of
+    // the DCM over a time interval dt. Let wdt_i, wdt_j, and wdt_k be the
     // components of wdt codirectional with the i, j, and k unit vectors,
     // respectively. Also, let dr be the linear displacement vector of the DCM
     // and dr_i, dr_j, and dr_k once again be the i, j, and k components,
@@ -120,6 +120,9 @@ void IMU::Update() {
     //
     // which we multiply with the current DCM to produce the updated DCM
     // directly.
+    //
+    // It may be helpful to read the Wikipedia pages on cross products and
+    // rotation representation.
     // ========================================================================
     dDCM[0][0] =       1;
     dDCM[0][1] =  wdt[2];
@@ -146,11 +149,11 @@ void IMU::Update() {
     }
 
     // Orthogonalize the i and j unit vectors (DCMDraft2 Eqn. 19).
-    vDotP(currentDCM[0], currentDCM[1], errDCM);
+    errDCM = vDotP(currentDCM[0], currentDCM[1]);
     vScale(currentDCM[1], -errDCM/2, dDCM[0]);   // i vector correction
     vScale(currentDCM[0], -errDCM/2, dDCM[1]);   // j vector correction
-    vAdd(currentDCM[0], dDCM[1], currentDCM[0]);
-    vAdd(currentDCM[1], dDCM[0], currentDCM[1]);
+    vAdd(currentDCM[0], dDCM[0], currentDCM[0]);
+    vAdd(currentDCM[1], dDCM[1], currentDCM[1]);
 
     // k = i x j
     vCrossP(currentDCM[0], currentDCM[1], currentDCM[2]);
