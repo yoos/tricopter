@@ -227,11 +227,12 @@ class telemetryThread(threading.Thread):
                             for j in range(3):
                                 dcm[i][j] = float(fields[imuDataIndex+i*3+j])
                                 dcmT[j][i] = dcm[i][j]
-                        print dcm
                     elif gyroDataIndex != -1:
                             print [float(fields[gyroDataIndex+i]) for i in range(3)]
                     else:
                         print "No data found."
+
+                    print serLine
 
             except:
                 pass

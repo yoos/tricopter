@@ -1,3 +1,7 @@
+// ============================================================================
+// pilot.cpp
+// ============================================================================
+
 #include "pilot.h"
 
 Pilot::Pilot() {
@@ -27,14 +31,12 @@ Pilot::Pilot() {
 
     for (int i=0; i<3; i++) {
         for (int j=0; j<3; j++) {
-            targetDCM[i][j] = currentDCM[i][j];
+            targetDCM[i][j] = gyroDCM[i][j];
         }
     }
 
     numGoodComm = 0;   // Number of good communication packets.
     numBadComm = 0;   // Number of bad communication packets.
-    targetAngle[0] = 0;
-    targetAngle[1] = 0;
 }
 
 void Pilot::Listen() {
@@ -92,8 +94,6 @@ void Pilot::Listen() {
 }
 
 void Pilot::Talk() {
-    
-
 }
 
 void Pilot::Fly() {
@@ -112,51 +112,24 @@ void Pilot::Fly() {
         axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
         axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
 
-        //sp("(");
-        //for (int i=0; i<4; i++) {
-        //    sp(serInput[i]);
-        //    sp(" ");
-        //}
-        //sp(") ");
-
-        for (int i=0; i<2; i++) {   // First two rows of targetDCM and currentDCM should be identical until I figure out how to use all of currentDCM.
-            for (int j=0; j<3; j++) {
-                targetDCM[i][j] = currentDCM[i][j];
-            }
-        }
-
         //targetDCM[2][0] = -axisVal[SX]*cos(PI/4)/125; //map(axisVal[SX], -125, 125, -cos(PI/4), cos(PI/4));
         //targetDCM[2][1] = -axisVal[SY]*cos(PI/4)/125; //map(axisVal[SY], -125, 125, -cos(PI/4), cos(PI/4));
         //targetDCM[2][2] = sqrt(1 - pow(targetDCM[2][0],2) - pow(targetDCM[2][1],2));
-        targetAngle[PITCH] = axisVal[SY]/125*PI/6;
-        targetAngle[ROLL] = axisVal[SX]/125*PI/6;
-        //sp("(");
-        //sp(targetDCM[2][0]);
-        //sp(" ");
-        //sp(targetDCM[2][1]);
-        //sp(" ");
-        //sp(targetDCM[2][2]);
-        //sp(") ");
+
+        //targetAngle[PITCH] = axisVal[SY]/125*PI/6;
+        //targetAngle[ROLL] = axisVal[SX]/125*PI/6;
 
         // Intermediate calculations TODO: Move this to system code.
-        //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] - DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1]));   // Watch out for floats vs. ints
-        //motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1])) + (GYRO_COEFF*gVal[1] + DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0]))/sqrt(3);
-        //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-currentDCM[2][1])) + (GYRO_COEFF*gVal[1] - DCM_COEFF*(targetDCM[2][0]-currentDCM[2][0]))/sqrt(3);
+        //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] - DCM_COEFF*(targetDCM[2][1]-gyroDCM[2][1]));   // Watch out for floats vs. ints
+        //motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-gyroDCM[2][1])) + (GYRO_COEFF*gVal[1] + DCM_COEFF*(targetDCM[2][0]-gyroDCM[2][0]))/sqrt(3);
+        //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-gyroDCM[2][1])) + (GYRO_COEFF*gVal[1] - DCM_COEFF*(targetDCM[2][0]-gyroDCM[2][0]))/sqrt(3);
 
-        commandPitch = updatePID(targetAngle[PITCH], currentAngle[PITCH], PID[PITCH]);
-        commandRoll  = updatePID(targetAngle[ROLL], currentAngle[ROLL], PID[ROLL]);
+        //commandPitch = updatePID(targetAngle[PITCH], currentAngle[PITCH], PID[PITCH]);
+        //commandRoll  = updatePID(targetAngle[ROLL], currentAngle[ROLL], PID[ROLL]);
 
         motorVal[MT] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
         motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
         motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
-
-        //sp("(");
-        //sp(motorVal[MT]);
-        //sp(" ");
-        //sp(motorVal[MR]);
-        //sp(" ");
-        //sp(motorVal[ML]);
-        //sp(") ");
 
         // Find max/min motor values
         mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
