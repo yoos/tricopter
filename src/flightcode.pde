@@ -130,13 +130,16 @@ int main(void) {
                 tailServo.write(tailServoVal);
             }
 
-            //sp(" (");
-            //sp(commandPitch);
-            //sp(" ");
-            //sp(commandRoll);
-            //sp(" ");
-            //sp(gVal[0]);
-            //sp(") ");
+            // Datafeed to serialmon.py for visualization.
+            if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
+                sp("DCM ");   // Index tag 'DCM'.
+                for (int i=0; i<3; i++) {
+                    for (int j=0; j<3; j++) {
+                        sp(gyroDCM[i][j]);
+                        sp(" ");
+                    }
+                }
+            }
 
             if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
                 sp("   ");

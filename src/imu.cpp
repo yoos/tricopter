@@ -160,17 +160,6 @@ void IMU::Update() {
     // Multiply the current DCM with the change in DCM and update.
     mProduct(dDCM, gyroDCM, gyroDCM);
 
-    // Datafeed to serialmon.py for visualization.
-    if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-        sp("DCM ");   // Index tag 'DCM'.
-        for (int i=0; i<3; i++) {
-            for (int j=0; j<3; j++) {
-                sp(gyroDCM[i][j]);
-                sp(" ");
-            }
-        }
-    }
-
     // Orthogonalize the i and j unit vectors (DCMDraft2 Eqn. 19).
     errDCM = vDotP(gyroDCM[0], gyroDCM[1]);
     vScale(gyroDCM[1], -errDCM/2, dDCM[0]);   // i vector correction
