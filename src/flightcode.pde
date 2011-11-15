@@ -42,12 +42,14 @@ int main(void) {
 
     for (;;) {
         if (millis() >= nextRuntime) {
-            if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-                sp(armed);
-                sp(" ");
-            }
-            nextRuntime += SYSINTRV;   // Increment by DT.
             myIMU.Update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
+            nextRuntime += SYSINTRV;   // Update next loop start time.
+
+            // Telemetry loop.
+            if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
+                sw(armed);
+                sw(0xf0); sw(0xf0);
+            }
 
             triPilot.Listen();
             /* The pilot communicates with base and updates motorVal and 
@@ -65,14 +67,14 @@ int main(void) {
             if (armed < 1) {   // First check that system is armed.
                 // sp("System: Motors not armed.\n");
                 if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-                    sp("_ ");
+                    sw("_");
+                    sw(0xf0); sw(0xf0);
                 }
                 for (int i=0; i<3; i++) {
                     motor[i].write(TMIN);   // Disregard what Pilot says and write TMIN.
                     #ifdef REPORT_MOTORVAL
                     if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-                        sp(motorVal[i]);   // ..and hopefully Pilot has sense and won't be trying to do anything dangerous.
-                        sp(" ");
+                        sw(motorVal[i]);   // ..and hopefully Pilot has sense and won't be trying to do anything dangerous.
                     }
                     #endif
                 }
@@ -80,18 +82,19 @@ int main(void) {
 
                 #ifdef REPORT_MOTORVAL
                 if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-                    sp(tailServoVal);
-                    sp(" ");
+                    sw(tailServoVal);
+                    sw(0xf0); sw(0xf0);
                 }
                 #endif
 
                 // Check that motor values set by Pilot are within the arming threshold.
-                if (abs(motorVal[MT] - TMIN) < MOTOR_ARM_THRESHOLD && 
-                    abs(motorVal[MR] - TMIN) < MOTOR_ARM_THRESHOLD && 
+                if (abs(motorVal[MT] - TMIN) < MOTOR_ARM_THRESHOLD &&
+                    abs(motorVal[MR] - TMIN) < MOTOR_ARM_THRESHOLD &&
                     abs(motorVal[ML] - TMIN) < MOTOR_ARM_THRESHOLD) {
                     armed++;   // Once Pilot shows some sense, arm.
                     if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-                        sp("A ");
+                        sw("A");
+                        sw(0xf0); sw(0xf0);
                     }
                 }
             }
@@ -99,21 +102,22 @@ int main(void) {
                 // motorVal[MT] = axisVal[SZ] + 0.6667*axisVal[SY];   // Watch out for floats vs .ints
 
                 if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-                    sp("! ");
+                    sw("!");
+                    sw(0xf0); sw(0xf0);
                 }
                 for (int i=0; i<3; i++) {
                     motor[i].write(motorVal[i]);   // Write motor values to motors.
                     #ifdef REPORT_MOTORVAL
                     if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-                        sp(motorVal[i]);
-                        sp(" ");
+                        sw(motorVal[i]);
                     }
                     #endif
                 }
                 tailServo.write(tailServoVal);
                 #ifdef REPORT_MOTORVAL
                 if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-                    sp(tailServoVal);
+                    sw(tailServoVal);
+                    sw(0xf0); sw(0xf0);
                 }
                 #endif
             }
@@ -132,23 +136,24 @@ int main(void) {
 
             // Datafeed to serialmon.py for visualization.
             if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-                sp("DCM ");   // Index tag 'DCM'.
+                sp("DCM");   // Index tag 'DCM'.
                 for (int i=0; i<3; i++) {
                     for (int j=0; j<3; j++) {
-                        sp(gyroDCM[i][j]);
-                        sp(" ");
+                        //sp(gyroDCM[i][j]);
+                        //sp(" ");
+                        sw((byte*) &gyroDCM[i][j], 4);
                     }
                 }
+                sw(0xf0); sw(0xf0);
             }
 
             if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
-                sp("   ");
                 sp(nextRuntime);
-                sp(" ");
+                sw(0xf0); sw(0xf0);
                 sp(millis());
-                sp(" lt: ");
+                sw(0xf0); sw(0xf0);
                 sp((int) (millis() - (nextRuntime - SYSINTRV)));
-                spln("");   // Send newline after every system iteration. TODO: Eventually implement a Telemetry class.
+                sw(0xde); sw(0xad); sw(0xbe); sw(0xef);
             }
 
             loopCount++;
@@ -158,7 +163,4 @@ int main(void) {
 
     return 0;
 }
-
-
-
 

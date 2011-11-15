@@ -139,6 +139,7 @@ void zeroStr(char *sStr) {
 
 #define sp Serial.print
 #define spln Serial.println
+#define sw Serial.write
 
 //#define serPrint Serial.print
 

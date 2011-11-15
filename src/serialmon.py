@@ -8,6 +8,7 @@ import sys
 import serial
 import array
 import string
+import struct
 from time import sleep
 import threading
 from threading import Timer, Thread
@@ -184,55 +185,54 @@ class telemetryThread(threading.Thread):
         self.running = True
     def run(self):
         global dcm, dcmT
-        serialIsClean = False   # Is the serial line clean?
         imuDataIndex = -1       # Do I see IMU data?
         gyroDataIndex = -1      # Do I see gyro data?
-        serLine = ''
+        serBuffer = ''
+        serLines = ''
+
         try:
             ser = serial.Serial("/dev/ttyUSB0", 57600)
         except:
             print "Serial unavailable!"
 
         while self.running and not rospy.is_shutdown():
-            # TODO: Serial comm should be in raw bits, not strings.
             try:
-                # Clean up beginning of serial so we can read a full line.
-                while not serialIsClean:
-                    if ser.read(1) == '\n':
-                        serialIsClean = True
-
-                # Read from serial.
                 if ser.inWaiting() > 0:
-                    # Read one line ending with \n.
-                    serLine = ser.readline()
+                    # Update buffer, adding onto incomplete line if necessary.
+                    serBuffer = serBuffer + ser.read(ser.inWaiting())
 
-                    # Parse fields separated by spaces.
-                    fields = serLine[:-1].split(' ')
+                    # Check for separator tag 0xdeadbeef and split one entry off buffer.
+                    if '\xde\xad\xbe\xef' in serBuffer:
+                        serLines = serBuffer.split('\xde\xad\xbe\xef')
+
+                        # Parse fields separated by 0xf0f0.
+                        fields = serLines[-2].split('\xf0\xf0')
+
+                        # Save second to last line and discard rest.
+                        serBuffer = serLines[-1]
 
                     # Check if we've captured a data index.
                     # TODO: Eventually, we should be able to read multiple
                     # fields and display multiple data visualizations.
-                    if imuDataIndex == gyroDataIndex == -1:
+                    if imuDataIndex == -1:
                         for i in range(len(fields)):
-                            if fields[i] == 'DCM':
-                                print fields[i]
-                                imuDataIndex = i+1
-                            if fields[i] == 'W':
-                                print fields[i]
-                                gyroDataIndex = i+1
-
-                    # If we have imuDataIndex, populate DCM.
-                    if imuDataIndex != -1:
+                            if 'DCM' in fields[i]:
+                                imuDataIndex = i
+                    else:
+                        # If we have imuDataIndex, populate DCM.
                         for i in range(3):
                             for j in range(3):
-                                dcm[i][j] = float(fields[imuDataIndex+i*3+j])
+                                dcm[i][j] = struct.unpack('f', fields[imuDataIndex][3+(i*3+j)*4:3+(i*3+j)*4+4])[0]
                                 dcmT[j][i] = dcm[i][j]
-                    elif gyroDataIndex != -1:
-                            print [float(fields[gyroDataIndex+i]) for i in range(3)]
-                    else:
-                        print "No data found."
 
-                    print serLine
+                    if gyroDataIndex == -1:
+                        for i in range(len(fields)):
+                            if 'GYR' in fields[i]:
+                                gyroDataIndex = i
+                    else:
+                        print [float(fields[gyroDataIndex+i]) for i in range(3)]
+
+                    print fields[-1]
 
             except:
                 pass
