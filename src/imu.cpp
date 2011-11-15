@@ -73,7 +73,7 @@ void IMU::Update() {
     vCrossP(KB, aVec, wA);
 
     // Uncomment to debug K and gravity vectors.
-    //if (loopCount % TELEMETRY_REST_INTERVAL == 0) {
+    //if (loopCount % TELEMETRY_LOOP_INTERVAL == 0) {
     //    sp("(");
     //    sp(KB[0]); sp(" "); sp(aVec[0]); sp(" | ");
     //    sp(KB[1]); sp(" "); sp(aVec[1]); sp(" | ");
@@ -96,7 +96,7 @@ void IMU::Update() {
     // Scale gVec by elapsed time (in seconds) to get angle w*dt in radians,
     // then compute weighted average with the accelerometer correction vector.
     for (int i=0; i<3; i++) {
-        wdt[i] = gVec[i] * SYSINTRV/1000;
+        wdt[i] = gVec[i] * MASTER_DT/1000;
         wdt[i] = (wdt[i] + ACC_WEIGHT*wA[i]) / (1.0 + ACC_WEIGHT);
     }
 

@@ -13,7 +13,7 @@ struct PIDdata {
 float updatePID(float targetPosition, float currentPosition, struct PIDdata &PIDparameters) {
   float error;
   float dTerm;
-  float deltaPIDTime = SYSINTRV;
+  float deltaPIDTime = MASTER_DT;
 
   error = targetPosition - currentPosition;
 

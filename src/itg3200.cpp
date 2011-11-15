@@ -84,12 +84,12 @@ void ITG3200::Poll() {
         else
             tmp = gRaw[i];   // Otherwise, leave it alone.
         switch (i) {
+            // TODO: Arbitrary scale factor of 116/100 needs to be properly figured out.
             case 0: gVal[0] = -tmp * 2000/0x8000 * PI/180 * 116/100; break;
             case 1: gVal[1] =  tmp * 2000/0x8000 * PI/180 * 116/100; break;
             case 2: gVal[2] =  tmp * 2000/0x8000 * PI/180 * 116/100; break;
             default: break;
         }
-        //gVal[i] = gVal[i]*2000 * SYSINTRV/1000 * 8/7 - gZero[i];   // [-1,1] mapped to [-2000,2000] and system run interval accounted for. 8/7 gain, but don't know why.
         gVal[i] = (gVal[i] - gZero[i]);
         //if (abs(gVal[i]*1000) < 7) gVal[i] = 0;
         //sp(gVal[i]);

@@ -232,7 +232,7 @@ class telemetryThread(threading.Thread):
                     else:
                         print [float(fields[gyroDataIndex+i]) for i in range(3)]
 
-                    print fields[-1]
+                    print fields
 
             except:
                 pass

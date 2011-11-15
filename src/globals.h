@@ -27,7 +27,6 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  *****************************************************************************/
 
 #define BAUDRATE 57600   // Fiddle with this. The XBee sometimes seems to have trouble with high baudrates like 57600.
-
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
 #define PACKETSIZE 4     // Each packet contains header plus X, Y, Twist, and Z.
 #define INPUT_MIN  1     // Minimum integer input value from joystick.
@@ -43,16 +42,17 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  * relatively frequently changed.
  *****************************************************************************/
 
-#define SYSINTRV 30   // System loop interval in milliseconds.
+#define MASTER_DT               8   // 8 ms interval = 125 Hz master loop.
+#define CONTROL_LOOP_INTERVAL   5   // 1/5 master = 25 Hz.
+#define TELEMETRY_LOOP_INTERVAL 5   // 1/5 master = 25 Hz.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
-#define TELEMETRY_REST_INTERVAL 2   // Send telemetry every so often instead of at every system loop.
 
 #define DCM_COEFF 90   // Scale current-to-target DCM difference.
 #define GYRO_COEFF 15   // Try to stabilize craft.
 //#define ACCEL_COEFF 90   // TEST: Try to stabilize craft.
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
 #define TMAX 90   // Servo signal that registers as maximum throttle to ESC.
-#define TIME_TO_ARM 2000   // This divided by SYSINTRV determines how long it takes to arm the system.
+#define TIME_TO_ARM 2000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 3   // This is added to TMIN to determine whether or not to arm the system.
 
 #define MT 0   // Tail motor array index.
@@ -134,7 +134,7 @@ void zeroStr(char *sStr) {
 //}
 //
 //#define serPrint(format, ...) StreamPrint_progmem(Serial,PSTR(format),##__VA_ARGS__)
-//#define serPrint(format, ...) if (teleCount == TELEMETRY_REST_INTERVAL) StreamPrint_progmem(Serial, PSTR(format), ##__VA_ARGS__)
+//#define serPrint(format, ...) if (teleCount == TELEMETRY_LOOP_INTERVAL) StreamPrint_progmem(Serial, PSTR(format), ##__VA_ARGS__)
 //#define Streamprint(stream,format, ...) StreamPrint_progmem(stream,PSTR(format),##__VA_ARGS__)
 
 #define sp Serial.print
