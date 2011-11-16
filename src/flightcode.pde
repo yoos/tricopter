@@ -5,8 +5,6 @@
 #include "watchdog.cpp"
 #include "imu.cpp"
 
-//#define REPORT_MOTORVAL
-
 int main(void) {
     init();   // For Arduino.
  
@@ -111,38 +109,55 @@ int main(void) {
 
             if (loopCount % TELEMETRY_LOOP_INTERVAL == 0) {
                 sw(armed);   // Display arm status number.
-                sw(0xf0); sw(0xf0);
                 if (armed < 1) {   // First check that system is armed.
                     sw("_");
-                    sw(0xf0); sw(0xf0);
                 }
                 else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
                     sw("!");
-                    sw(0xf0); sw(0xf0);
                 }
-
-                #ifdef REPORT_MOTORVAL
-                sw("M");
-                sw(motorVal[i]);
-                sw(tailServoVal);
                 sw(0xf0); sw(0xf0);
-                #endif
 
-                // Datafeed to serialmon.py for visualization.
-                sp("DCM");   // Index tag 'DCM'.
+                // ============================================================
+                // Report target rotation vector (in BODY frame). TODO:
+                // targetRot is a misleading name because this is dwB (delta
+                // omega BODY), so to speak (i.e., an update to the DCM). There
+                // is a target DCM we could calculate but is unneeded at this
+                // moment.
+                // ============================================================
+                sw("TR");
                 for (int i=0; i<3; i++) {
-                    for (int j=0; j<3; j++) {
-                        //sp(gyroDCM[i][j]);
-                        //sp(" ");
-                        sw((byte*) &gyroDCM[i][j], 4);
-                    }
+                    sw((byte*) &targetRot[i], 4);
                 }
                 sw(0xf0); sw(0xf0);
 
-                sp(nextRuntime);
+                // ============================================================
+                // Report motor values.
+                // ============================================================
+                sw("M");
+                for (int i=0; i<3; i++) {
+                    sw((byte*) &motorVal[i], 4);
+                }
+                sw((byte*) &tailServoVal, 4);
                 sw(0xf0); sw(0xf0);
-                sp(millis());
-                sw(0xf0); sw(0xf0);
+
+                // ============================================================
+                // Datafeed to serialmon.py for visualization.
+                // ============================================================
+                //sp("DCM");   // Index tag 'DCM'.
+                //for (int i=0; i<3; i++) {
+                //    for (int j=0; j<3; j++) {
+                //        sw((byte*) &gyroDCM[i][j], 4);
+                //    }
+                //}
+                //sw(0xf0); sw(0xf0);
+
+                // ============================================================
+                // Report loop time.
+                // ============================================================
+                //sp(nextRuntime);
+                //sw(0xf0); sw(0xf0);
+                //sp(millis());
+                //sw(0xf0); sw(0xf0);
                 sp((int) (millis() - (nextRuntime - MASTER_DT)));
                 sw(0xde); sw(0xad); sw(0xbe); sw(0xef);
             }
