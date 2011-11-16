@@ -7,7 +7,7 @@
     <param name="deadzone" value="0" />
   </node>
 
-  <node pkg="tricopter" type="comm.py" name="triComm"/>
+  <node pkg="tricopter" type="comm.py" name="triComm" output="screen" />
 
 </launch>
 <!-- %EndTag(FULL)%-->
