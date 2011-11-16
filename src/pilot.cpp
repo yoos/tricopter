@@ -29,11 +29,11 @@ Pilot::Pilot() {
     spln("Pilot here!");
     #endif
 
-    for (int i=0; i<3; i++) {
-        for (int j=0; j<3; j++) {
-            targetDCM[i][j] = gyroDCM[i][j];
-        }
-    }
+    //for (int i=0; i<3; i++) {
+    //    for (int j=0; j<3; j++) {
+    //        targetDCM[i][j] = gyroDCM[i][j];
+    //    }
+    //}
 
     numGoodComm = 0;   // Number of good communication packets.
     numBadComm = 0;   // Number of bad communication packets.
@@ -102,16 +102,23 @@ void Pilot::Fly() {
     //sp("/");
     //sp(numBadComm);
     //sp(") ");
-    if (okayToFly) {   // Update axisVal only if okayToFly is true.
+    //if (okayToFly) {   // Update axisVal only if okayToFly is true.
+    if (true) {
         // mySystem.UpdateHoverPos(axisVal); TODO: Implement this later.
 
         /* Shift serial input values [1, 251] to correct range for each axis. Z 
          * stays positive for ease of calculation. */
-        axisVal[SX] = serInput[SX] - 126;   // [-125, 125]
-        axisVal[SY] = serInput[SY] - 126;   // [-125, 125]
-        axisVal[ST] = serInput[ST] - 126;   // [-125, 125]
-        axisVal[SZ] = serInput[SZ] - 1;     // [0, 250]
+        axisVal[SX] = (float) serInput[SX] - 126;   // [-125, 125]
+        axisVal[SY] = (float) serInput[SY] - 126;   // [-125, 125]
+        axisVal[ST] = (float) serInput[ST] - 126;   // [-125, 125]
+        axisVal[SZ] = (float) serInput[SZ] - 1;     // [0, 250]
 
+        // Calculate target rotation vector based on joystick input scaled to a maximum rotation of PI/6.
+        targetRot[0] = -(axisVal[SY]/125 * PI/6 - atan2(gyroDCM[2][1], gyroDCM[2][2]));
+        targetRot[1] =  (axisVal[SX]/125 * PI/6 - atan2(gyroDCM[2][0], gyroDCM[2][2]));
+        targetRot[2] = -(axisVal[ST]/125 * PI/6);
+
+        // Uncomment to debug.
         //targetDCM[2][0] = -axisVal[SX]*cos(PI/4)/125; //map(axisVal[SX], -125, 125, -cos(PI/4), cos(PI/4));
         //targetDCM[2][1] = -axisVal[SY]*cos(PI/4)/125; //map(axisVal[SY], -125, 125, -cos(PI/4), cos(PI/4));
         //targetDCM[2][2] = sqrt(1 - pow(targetDCM[2][0],2) - pow(targetDCM[2][1],2));
@@ -127,26 +134,26 @@ void Pilot::Fly() {
         //commandPitch = updatePID(targetAngle[PITCH], currentAngle[PITCH], PID[PITCH]);
         //commandRoll  = updatePID(targetAngle[ROLL], currentAngle[ROLL], PID[ROLL]);
 
-        motorVal[MT] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
-        motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
-        motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
-
-        // Find max/min motor values
-        mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
-        mapUpper = mapUpper > motorVal[ML] ? mapUpper : motorVal[ML];
-        mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
-        mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
-
-        // Find map boundaries (need to limit, but NOT fit, to [0, 250])
-        mapUpper = mapUpper > 250 ? mapUpper : 250;
-        mapLower = mapLower < 0 ? mapLower : 0;
-
-        // Final calculations
-        for (int i=0; i<3; i++) {
-            motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
-        }
-        tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
-        tailServoVal = map(tailServoVal, TAIL_SERVO_DEFAULT_POSITION-125*0.5, TAIL_SERVO_DEFAULT_POSITION+125*0.5, 0, TAIL_SERVO_DEFAULT_POSITION+125*0.5);
+//        motorVal[MT] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
+//        motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
+//        motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
+//
+//        // Find max/min motor values
+//        mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
+//        mapUpper = mapUpper > motorVal[ML] ? mapUpper : motorVal[ML];
+//        mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
+//        mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
+//
+//        // Find map boundaries (need to limit, but NOT fit, to [0, 250])
+//        mapUpper = mapUpper > 250 ? mapUpper : 250;
+//        mapLower = mapLower < 0 ? mapLower : 0;
+//
+//        // Final calculations
+//        for (int i=0; i<3; i++) {
+//            motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
+//        }
+//        tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
+//        tailServoVal = map(tailServoVal, TAIL_SERVO_DEFAULT_POSITION-125*0.5, TAIL_SERVO_DEFAULT_POSITION+125*0.5, 0, TAIL_SERVO_DEFAULT_POSITION+125*0.5);
 
         //sp("(");
         //sp(motorVal[MT]);

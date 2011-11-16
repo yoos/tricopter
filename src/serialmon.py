@@ -38,6 +38,12 @@ window = 0
 dcm = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
 dcmT = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
 
+# Target rotation values
+targetRot = [0.0, 0.0, 0.0]
+
+# Motor/servo values (MT, MR, ML, ST)
+motorVal = [0.0, 0.0, 0.0, 0.0]
+
 # Initial vertex values for a box drawn around the DCM.
 vx = [[-1,-1,1], [-1,1,1], [1,1,1], [1,-1,1], [-1,-1,-1], [-1,1,-1], [1,1,-1], [1,-1,-1]]
 
@@ -184,14 +190,15 @@ class telemetryThread(threading.Thread):
         threading.Thread.__init__(self)
         self.running = True
     def run(self):
-        global dcm, dcmT
+        global dcm, dcmT, targetRot, motorVal
         imuDataIndex = -1       # Do I see IMU data?
-        gyroDataIndex = -1      # Do I see gyro data?
+        rotDataIndex = -1       # Do I see rotation data?
+        motorDataIndex = -1     # Do I see motor data?
         serBuffer = ''
         serLines = ''
 
         try:
-            ser = serial.Serial("/dev/ttyUSB0", 57600)
+            ser = serial.Serial("/dev/ttyUSB1", 57600)
         except:
             print "Serial unavailable!"
 
@@ -211,9 +218,7 @@ class telemetryThread(threading.Thread):
                         # Save second to last line and discard rest.
                         serBuffer = serLines[-1]
 
-                    # Check if we've captured a data index.
-                    # TODO: Eventually, we should be able to read multiple
-                    # fields and display multiple data visualizations.
+                    # Check if we're receiving DCM data.
                     if imuDataIndex == -1:
                         for i in range(len(fields)):
                             if 'DCM' in fields[i]:
@@ -225,14 +230,26 @@ class telemetryThread(threading.Thread):
                                 dcm[i][j] = struct.unpack('f', fields[imuDataIndex][3+(i*3+j)*4:3+(i*3+j)*4+4])[0]
                                 dcmT[j][i] = dcm[i][j]
 
-                    if gyroDataIndex == -1:
+                    # Check if we're receiving target rotation data.
+                    if rotDataIndex == -1:
                         for i in range(len(fields)):
-                            if 'GYR' in fields[i]:
-                                gyroDataIndex = i
+                            if 'TR' in fields[i]:
+                                rotDataIndex = i
                     else:
-                        print [float(fields[gyroDataIndex+i]) for i in range(3)]
+                        for i in range(3):
+                            targetRot[i] = struct.unpack('f', fields[rotDataIndex][2+i*4:2+i*4+4])[0]
 
-                    print fields
+                    # Check if we're receiving motor/servo output data.
+                    if motorDataIndex == -1:
+                        for i in range(len(fields)):
+                            if 'M' in fields[i]:
+                                motorDataIndex = i
+                    else:
+                        motorVal[0] = fields[motorDataIndex]
+
+                    #print fields
+                    #print dcm
+                    print [targetRot, fields[-1]]
 
             except:
                 pass
