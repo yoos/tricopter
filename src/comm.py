@@ -14,9 +14,9 @@ import rospy
 from sensor_msgs.msg import Joy
 
 # Comm values
-serialPort = "/dev/ttyUSB0"
+serialPort = "/dev/ttyUSB1"
 baudRate = 57600
-dataSendInterval = 0.025   # Interval between data sends in seconds
+dataSendInterval = 0.030   # 30 ms interval = 33.3 Hz. NOTE: This frequency should be LOWER than the microcontroller's control loop frequency!
 dogFeedInterval = 0.1
 serHeader = chr(255)
 dogBone = chr(254)
@@ -26,6 +26,7 @@ armed = False
 printString = ''
 
 axisSigns = [-1, 1, -1, 1, -1, 1]   # Axis sign flips
+
 axisValues = [126, 126, 126, 3]   # Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 buttonValues = []
 
@@ -49,11 +50,15 @@ def callback(myJoy):
         then mapped to [0, 250], which is finally shifted to [1, 251] to be
         sent as bytes.
     """
-    axisValues[0] = int(250*((axisSigns[0] * myJoy.axes[0] + 1) / 2) + 1)  # X
-    axisValues[1] = int(250*((axisSigns[1] * myJoy.axes[1] + 1) / 2) + 1)  # Y
-    axisValues[2] = int(250*((axisSigns[2] * myJoy.axes[2] + 1) / 2) + 1)  # T
-    axisValues[3] = int(250*((axisSigns[3] * myJoy.axes[3] + 1) / 2) + 1)  # Z
-    rospy.loginfo("Joystick moved!")
+    axisValues[0] = int(250*((axisSigns[0] * myJoy.axes[0] + 1) / 2) + 1)   # X
+    axisValues[1] = int(250*((axisSigns[1] * myJoy.axes[1] + 1) / 2) + 1)   # Y
+    axisValues[2] = int(250*((axisSigns[2] * myJoy.axes[2] + 1) / 2) + 1)   # T
+    axisValues[3] = int(250*((axisSigns[3] * myJoy.axes[3] + 1) / 2) + 1)   # Z
+
+    # Joystick at OSURC
+    #axisValues[3] = int(250*((axisSigns[3] * myJoy.axes[2] + 1) / 2) + 1)   # Z
+    #axisValues[2] = int(250*((axisSigns[2] * myJoy.axes[3] + 1) / 2) + 1)   # T
+    #rospy.loginfo("Joystick moved!")
 
 def communicate():
     global armed
@@ -61,9 +66,9 @@ def communicate():
     if armed:
         sendData(serHeader + chr(axisValues[0]) + chr(axisValues[1]) + chr(axisValues[2]) + chr(axisValues[3]))
         # sendData(serHeader + chr(126) + chr(126) + chr(126) + chr(74))
-        # if verboseOn: printString += ["A0: %s   A1: %s   A2: %s   A3: %s" % (axisValues[0], axisValues[1], axisValues[2], axisValues[3])]
+        rospy.loginfo(str(axisValues[0]) + " " + str(axisValues[1]) + " " + str(axisValues[2]) + " " + str(axisValues[3]))
     elif not armed:
-        rospy.loginfo("Move joystick throttle to minimum position in order to send motor arming signal.")
+        rospy.loginfo("Current throttle value: " + str(axisValues[3]))
         if axisValues[3] == 1:   # If throttle is at minimum position
             armed = True
             rospy.loginfo("Joystick throttle at minimum! Motors armed!")
@@ -108,8 +113,8 @@ class TricCommunicator(threading.Thread):
             printString = ''
             self.times += 1
             communicate()
-            rospy.loginfo(self.times)
-            rospy.loginfo(printString)
+            #rospy.loginfo(self.times)
+            #rospy.loginfo(printString)
             rospy.sleep(dataSendInterval)
 
 class TricWatchdog(threading.Thread):
