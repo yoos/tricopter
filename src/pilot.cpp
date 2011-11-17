@@ -114,8 +114,8 @@ void Pilot::Fly() {
         axisVal[SZ] = (float) serInput[SZ] - 1;     // [0, 250]
 
         // Calculate target rotation vector based on joystick input scaled to a maximum rotation of PI/6.
-        targetRot[0] = -(axisVal[SY]/125 * PI/6 - atan2(gyroDCM[2][1], gyroDCM[2][2]));
-        targetRot[1] =  (axisVal[SX]/125 * PI/6 - atan2(gyroDCM[2][0], gyroDCM[2][2]));
+        targetRot[0] = -(axisVal[SY]/125 * PI/6 + gyroDCM[1][2]);
+        targetRot[1] =  (axisVal[SX]/125 * PI/6 + gyroDCM[0][2]);
         targetRot[2] = -(axisVal[ST]/125 * PI/6);
 
         // ====================================================================
@@ -128,9 +128,22 @@ void Pilot::Fly() {
         // it's incorrect to scale in the negative direction if the
         // corresponding arm is heavier.
         // ====================================================================
-        motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]/2);
-        motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]/sqrt(3));
-        motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]/sqrt(3));
+
+        // MOTORVAL SCHEME 1
+        //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]/2);
+        //motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]/sqrt(3));
+        //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]/sqrt(3));
+
+        // MOTORVAL SCHEME 2
+        motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]);
+        motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]);
+        motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]);
+
+        // MOTORVAL SCHEME 3
+        //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]*2);
+        //motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]*sqrt(3));
+        //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]*sqrt(3));
+
         tailServoVal = TAIL_SERVO_DEFAULT_POSITION + TAIL_SERVO_SCALE * targetRot[2];   // TODO: Which direction is positive?
 
 //        motorVal[MT] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
@@ -138,23 +151,20 @@ void Pilot::Fly() {
 //        motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
 
         // Find min/max of the three motor values.
-        mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
-        mapUpper = mapUpper > motorVal[ML] ? mapUpper : motorVal[ML];
-        mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
-        mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
+        maxMotorVal = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
+        maxMotorVal = maxMotorVal  > motorVal[ML] ? maxMotorVal  : motorVal[ML];
+        minMotorVal = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
+        minMotorVal = minMotorVal  < motorVal[ML] ? minMotorVal  : motorVal[ML];
 
         // Find map boundaries (need to limit, but NOT fit, to minimum and
-        // maximum throttle [0, 250])
-        if (mapUpper > 250) {
-            mapUpper = 250;
-        }
-        if (mapLower < 0) {
-            mapLower = 0;
-        }
+        // maximum throttle [TMIN, TMAX]). Doing this incorrectly will result
+        // in motor values stuck mostly at either extremes.
+        mapUpper = maxMotorVal < TMAX ? maxMotorVal : TMAX;
+        mapLower = minMotorVal > TMIN ? minMotorVal : TMIN;
 
-        // Remap range [mapLower, mapUpper] to [TMIN, TMAX].
+        // Remap range [minMotorVal, maxMotorVal] to [mapLower, mapUpper].
         for (int i=0; i<3; i++) {
-            motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
+            motorVal[i] = map(motorVal[i], minMotorVal, maxMotorVal, mapLower, mapUpper);
         }
 //        tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
 //        tailServoVal = map(tailServoVal, TAIL_SERVO_DEFAULT_POSITION-125*0.5, TAIL_SERVO_DEFAULT_POSITION+125*0.5, 0, TAIL_SERVO_DEFAULT_POSITION+125*0.5);
