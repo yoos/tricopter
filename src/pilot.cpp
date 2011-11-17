@@ -102,18 +102,25 @@ void Pilot::Fly() {
     //sp("/");
     //sp(numBadComm);
     //sp(") ");
-    //if (okayToFly) {   // Update axisVal only if okayToFly is true.
-    if (true) {
-        // mySystem.UpdateHoverPos(axisVal); TODO: Implement this later.
 
-        /* Shift serial input values [1, 251] to correct range for each axis. Z 
-         * stays positive for ease of calculation. */
+    // Update axisVal only if okayToFly is true.
+    if (okayToFly) {
+        // ====================================================================
+        // Shift serial input values [1, 251] to correct range for each axis. Z
+        // stays positive for ease of calculation.
+        // ====================================================================
         axisVal[SX] = (float) serInput[SX] - 126;   // [-125, 125]
         axisVal[SY] = (float) serInput[SY] - 126;   // [-125, 125]
         axisVal[ST] = (float) serInput[ST] - 126;   // [-125, 125]
         axisVal[SZ] = (float) serInput[SZ] - 1;     // [0, 250]
 
-        // Calculate target rotation vector based on joystick input scaled to a maximum rotation of PI/6.
+        // ====================================================================
+        // Calculate target rotation vector based on joystick input scaled to a
+        // maximum rotation of PI/6.
+        //
+        // TODO: The first two are approximations! Need to figure out how to
+        // properly use the DCM.
+        // ====================================================================
         targetRot[0] = -(axisVal[SY]/125 * PI/6 + gyroDCM[1][2]);
         targetRot[1] =  (axisVal[SX]/125 * PI/6 + gyroDCM[0][2]);
         targetRot[2] = -(axisVal[ST]/125 * PI/6);
@@ -124,9 +131,11 @@ void Pilot::Fly() {
         //                     chassis imbalance.
         //     MOTOR_X_SCALE: Scale targetRot.
         //     axisVal[SZ]: Throttle.
+        //
         // TODO: MOTOR_X_SCALE should be replaced by actual PID gains. Besides,
         // it's incorrect to scale in the negative direction if the
         // corresponding arm is heavier.
+        // TODO: The last term for each motorVal is INACCURATE. Fix this.
         // ====================================================================
 
         // MOTORVAL SCHEME 1
@@ -135,9 +144,9 @@ void Pilot::Fly() {
         //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]/sqrt(3));
 
         // MOTORVAL SCHEME 2
-        motorVal[MT] = MOTOR_T_OFFSET + (axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_T_SCALE * (-targetRot[0]);
-        motorVal[MR] = MOTOR_R_OFFSET + (axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]);
-        motorVal[ML] = MOTOR_L_OFFSET + (axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]);
+        motorVal[MT] = MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_T_SCALE * (-targetRot[0]);
+        motorVal[MR] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]);
+        motorVal[ML] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]);
 
         // MOTORVAL SCHEME 3
         //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]*2);
@@ -151,6 +160,7 @@ void Pilot::Fly() {
         //motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
         //motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
 
+
         // ====================================================================
         // After finding the maximum and minimum motor values, limit, but NOT
         // fit, motor values to minimum and maximum throttle [TMIN, TMAX]).
@@ -159,19 +169,26 @@ void Pilot::Fly() {
         // ====================================================================
         mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
         mapUpper = mapUpper     > motorVal[ML] ? mapUpper     : motorVal[ML];
-        mapUpper = mapUpper > TMAX ? mapUpper : TMAX;
+        mapUpper = mapUpper     > TMAX         ? mapUpper     : TMAX;
 
         mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
         mapLower = mapLower     < motorVal[ML] ? mapLower     : motorVal[ML];
-        mapLower = mapLower < TMIN ? mapLower : TMIN;
+        mapLower = mapLower     < TMIN         ? mapLower     : TMIN;
 
-        // You shouldn't have to use these, but uncomment the following two
+        // We shouldn't have to use these, but uncomment the following two
         // lines if motorVal goes crazy and makes mapUpper lower than mapLower:
         //mapUpper = mapUpper > TMIN ? mapUpper : TMIN+1;
         //mapLower = mapLower < TMAX ? mapLower : TMAX-1;
 
+        // ====================================================================
         // If map bounds are reasonable, remap range to [mapLower, mapUpper].
-        // Otherwise, kill motors.
+        // Otherwise, kill motors. Note that map(), an Arduino function, does
+        // integer math and truncates fractions.
+        //
+        // TODO: motorVal (and other quantities the Pilot calculates) should be
+        // an integer representing the number of milliseconds of PWM duty
+        // cycle.
+        // ====================================================================
         for (int i=0; i<3; i++) {
             if (mapUpper > mapLower) {
                 motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
@@ -180,8 +197,6 @@ void Pilot::Fly() {
                 motorVal[i] = TMIN;
             }
         }
-//        tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
-//        tailServoVal = map(tailServoVal, TAIL_SERVO_DEFAULT_POSITION-125*0.5, TAIL_SERVO_DEFAULT_POSITION+125*0.5, 0, TAIL_SERVO_DEFAULT_POSITION+125*0.5);
 
         okayToFly = false;
     }
@@ -195,8 +210,10 @@ void Pilot::Fly() {
 }
 
 void Pilot::Abort() {
-    /* When communication is lost, pilot should set a bunch of stuff to safe
-     * values. */
+    // ========================================================================
+    // When communication is lost, pilot should set a bunch of stuff to safe
+    // values.
+    // ========================================================================
     serInput[SX] = 126;
     serInput[SY] = 126;
     serInput[ST] = 126;
