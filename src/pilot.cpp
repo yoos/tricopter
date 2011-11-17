@@ -118,50 +118,46 @@ void Pilot::Fly() {
         targetRot[1] =  (axisVal[SX]/125 * PI/6 - atan2(gyroDCM[2][0], gyroDCM[2][2]));
         targetRot[2] = -(axisVal[ST]/125 * PI/6);
 
-        // Uncomment to debug.
-        //targetDCM[2][0] = -axisVal[SX]*cos(PI/4)/125; //map(axisVal[SX], -125, 125, -cos(PI/4), cos(PI/4));
-        //targetDCM[2][1] = -axisVal[SY]*cos(PI/4)/125; //map(axisVal[SY], -125, 125, -cos(PI/4), cos(PI/4));
-        //targetDCM[2][2] = sqrt(1 - pow(targetDCM[2][0],2) - pow(targetDCM[2][1],2));
-
-        //targetAngle[PITCH] = axisVal[SY]/125*PI/6;
-        //targetAngle[ROLL] = axisVal[SX]/125*PI/6;
-
-        // Intermediate calculations TODO: Move this to system code.
-        //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] - DCM_COEFF*(targetDCM[2][1]-gyroDCM[2][1]));   // Watch out for floats vs. ints
-        //motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-gyroDCM[2][1])) + (GYRO_COEFF*gVal[1] + DCM_COEFF*(targetDCM[2][0]-gyroDCM[2][0]))/sqrt(3);
-        //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(GYRO_COEFF*gVal[0] + DCM_COEFF*(targetDCM[2][1]-gyroDCM[2][1])) + (GYRO_COEFF*gVal[1] - DCM_COEFF*(targetDCM[2][0]-gyroDCM[2][0]))/sqrt(3);
-
-        //commandPitch = updatePID(targetAngle[PITCH], currentAngle[PITCH], PID[PITCH]);
-        //commandRoll  = updatePID(targetAngle[ROLL], currentAngle[ROLL], PID[ROLL]);
+        // ====================================================================
+        // Calculate motor/servo values.
+        //     MOTOR_X_OFFSET: Offset starting motor values to account for
+        //                     chassis imbalance.
+        //     MOTOR_X_SCALE: Scale targetRot.
+        //     axisVal[SZ]: Throttle.
+        // TODO: MOTOR_X_SCALE should be replaced by actual PID gains. Besides,
+        // it's incorrect to scale in the negative direction if the
+        // corresponding arm is heavier.
+        // ====================================================================
+        motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]/2);
+        motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]/sqrt(3));
+        motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]/sqrt(3));
+        tailServoVal = TAIL_SERVO_DEFAULT_POSITION + TAIL_SERVO_SCALE * targetRot[2];   // TODO: Which direction is positive?
 
 //        motorVal[MT] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
 //        motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
 //        motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
-//
-//        // Find max/min motor values
-//        mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
-//        mapUpper = mapUpper > motorVal[ML] ? mapUpper : motorVal[ML];
-//        mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
-//        mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
-//
-//        // Find map boundaries (need to limit, but NOT fit, to [0, 250])
-//        mapUpper = mapUpper > 250 ? mapUpper : 250;
-//        mapLower = mapLower < 0 ? mapLower : 0;
-//
-//        // Final calculations
-//        for (int i=0; i<3; i++) {
-//            motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
-//        }
+
+        // Find min/max of the three motor values.
+        mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
+        mapUpper = mapUpper > motorVal[ML] ? mapUpper : motorVal[ML];
+        mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
+        mapLower = mapLower < motorVal[ML] ? mapLower : motorVal[ML];
+
+        // Find map boundaries (need to limit, but NOT fit, to minimum and
+        // maximum throttle [0, 250])
+        if (mapUpper > 250) {
+            mapUpper = 250;
+        }
+        if (mapLower < 0) {
+            mapLower = 0;
+        }
+
+        // Remap range [mapLower, mapUpper] to [TMIN, TMAX].
+        for (int i=0; i<3; i++) {
+            motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
+        }
 //        tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
 //        tailServoVal = map(tailServoVal, TAIL_SERVO_DEFAULT_POSITION-125*0.5, TAIL_SERVO_DEFAULT_POSITION+125*0.5, 0, TAIL_SERVO_DEFAULT_POSITION+125*0.5);
-
-        //sp("(");
-        //sp(motorVal[MT]);
-        //sp(" ");
-        //sp(motorVal[MR]);
-        //sp(" ");
-        //sp(motorVal[ML]);
-        //sp(") ");
 
         okayToFly = false;
     }
