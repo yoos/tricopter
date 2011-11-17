@@ -16,10 +16,7 @@ char commStr[250];   // String to be sent out to base.
 float commandPitch;   // Pitch command to be processed through PID.
 float commandRoll;   // Roll command to be processed through PID.
 float gyroDCM[3][3];   // Current position DCM calculated by IMU.
-//float targetDCM[3][3];   // Target position DCM calculated by Pilot.
 float targetRot[3];
-//float currentAngle[2];   // TEST: Current angle.
-//float targetAngle[2];   // TEST: Target angle.
 float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 
 
@@ -43,9 +40,9 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  * relatively frequently changed.
  *****************************************************************************/
 
-#define MASTER_DT              16   // 16 ms interval = 62.5 Hz master loop.
-#define CONTROL_LOOP_INTERVAL   2   // 1/2 master = 31.25 Hz.
-#define TELEMETRY_LOOP_INTERVAL 5   // 1/5 master = 12.5 Hz.
+#define MASTER_DT              12   // 12 ms interval = 83 Hz master loop.
+#define CONTROL_LOOP_INTERVAL   2   // 1/2 master = 42 Hz. NOTE: This frequency should be HIGHER than comm.py's dataSend frequency!
+#define TELEMETRY_LOOP_INTERVAL 5   // 1/5 master = 21 Hz.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
 
 #define DCM_COEFF 90   // Scale current-to-target DCM difference.
@@ -66,13 +63,14 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  * it may as well be hard-coded.
  *****************************************************************************/
 
-#define MOTOR_T_OFFSET 3   // Speed offset for tail motor.
+#define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define MOTOR_T_SCALE  1.03   // Scale speed of tail motor.
-#define MOTOR_R_SCALE  1   // Scale speed of right motor.
-#define MOTOR_L_SCALE  1   // Scale speed of left motor.
+#define MOTOR_T_SCALE  50   // Scale speed of tail motor.
+#define MOTOR_R_SCALE  50   // Scale speed of right motor.
+#define MOTOR_L_SCALE  50   // Scale speed of left motor.
 #define TAIL_SERVO_DEFAULT_POSITION 50
+#define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
 
 #define PMT 4   // Tail motor pin.
 #define PMR 2   // Right motor pin.
