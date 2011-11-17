@@ -124,11 +124,11 @@ int main(void) {
                 // is a target DCM we could calculate but is unneeded at this
                 // moment.
                 // ============================================================
-                sw("TR");
-                for (int i=0; i<3; i++) {
-                    sw((byte*) &targetRot[i], 4);
-                }
-                sw(0xf0); sw(0xf0);
+                //sw("TR");
+                //for (int i=0; i<3; i++) {
+                //    sw((byte*) &targetRot[i], 4);
+                //}
+                //sw(0xf0); sw(0xf0);
 
                 // ============================================================
                 // Report motor values.
