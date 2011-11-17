@@ -8,7 +8,6 @@ class Pilot {
     int serRead;
     int serInput[PACKETSIZE];
     float axisVal[PACKETSIZE];
-    float minMotorVal, maxMotorVal;
     float mapLower, mapUpper;
 //  double dir;   // Direction in radians
     bool okayToFly;

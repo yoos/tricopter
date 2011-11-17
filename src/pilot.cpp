@@ -135,9 +135,9 @@ void Pilot::Fly() {
         //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]/sqrt(3));
 
         // MOTORVAL SCHEME 2
-        motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]);
-        motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]);
-        motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]);
+        motorVal[MT] = MOTOR_T_OFFSET + (axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_T_SCALE * (-targetRot[0]);
+        motorVal[MR] = MOTOR_R_OFFSET + (axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]);
+        motorVal[ML] = MOTOR_L_OFFSET + (axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]);
 
         // MOTORVAL SCHEME 3
         //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]*2);
@@ -146,25 +146,39 @@ void Pilot::Fly() {
 
         tailServoVal = TAIL_SERVO_DEFAULT_POSITION + TAIL_SERVO_SCALE * targetRot[2];   // TODO: Which direction is positive?
 
-//        motorVal[MT] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
-//        motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
-//        motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
+        // DEPRECATED.
+        //motorVal[MT] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
+        //motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
+        //motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
 
-        // Find min/max of the three motor values.
-        maxMotorVal = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
-        maxMotorVal = maxMotorVal  > motorVal[ML] ? maxMotorVal  : motorVal[ML];
-        minMotorVal = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
-        minMotorVal = minMotorVal  < motorVal[ML] ? minMotorVal  : motorVal[ML];
+        // ====================================================================
+        // After finding the maximum and minimum motor values, limit, but NOT
+        // fit, motor values to minimum and maximum throttle [TMIN, TMAX]).
+        // Doing this incorrectly will result in motor values seemingly stuck
+        // mostly at either extremes.
+        // ====================================================================
+        mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
+        mapUpper = mapUpper     > motorVal[ML] ? mapUpper     : motorVal[ML];
+        mapUpper = mapUpper > TMAX ? mapUpper : TMAX;
 
-        // Find map boundaries (need to limit, but NOT fit, to minimum and
-        // maximum throttle [TMIN, TMAX]). Doing this incorrectly will result
-        // in motor values stuck mostly at either extremes.
-        mapUpper = maxMotorVal < TMAX ? maxMotorVal : TMAX;
-        mapLower = minMotorVal > TMIN ? minMotorVal : TMIN;
+        mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
+        mapLower = mapLower     < motorVal[ML] ? mapLower     : motorVal[ML];
+        mapLower = mapLower < TMIN ? mapLower : TMIN;
 
-        // Remap range [minMotorVal, maxMotorVal] to [mapLower, mapUpper].
+        // You shouldn't have to use these, but uncomment the following two
+        // lines if motorVal goes crazy and makes mapUpper lower than mapLower:
+        //mapUpper = mapUpper > TMIN ? mapUpper : TMIN+1;
+        //mapLower = mapLower < TMAX ? mapLower : TMAX-1;
+
+        // If map bounds are reasonable, remap range to [mapLower, mapUpper].
+        // Otherwise, kill motors.
         for (int i=0; i<3; i++) {
-            motorVal[i] = map(motorVal[i], minMotorVal, maxMotorVal, mapLower, mapUpper);
+            if (mapUpper > mapLower) {
+                motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
+            }
+            else {
+                motorVal[i] = TMIN;
+            }
         }
 //        tailServoVal = TAIL_SERVO_DEFAULT_POSITION - 0.5*axisVal[ST];
 //        tailServoVal = map(tailServoVal, TAIL_SERVO_DEFAULT_POSITION-125*0.5, TAIL_SERVO_DEFAULT_POSITION+125*0.5, 0, TAIL_SERVO_DEFAULT_POSITION+125*0.5);
