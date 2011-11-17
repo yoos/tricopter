@@ -27,7 +27,7 @@ int main(void) {
     
     // Variables
 
-    armed = (int) -(TIME_TO_ARM/MASTER_DT-1);   // Pilot will add 1 to the armed value every time it receives the arming numbers from comm. Arming numbers will have to be sent for a total of 2000 ms before this variable is positive (and therefore true).
+    armCount = (int) TIME_TO_ARM/(MASTER_DT*CONTROL_LOOP_INTERVAL);   // We will subtract 1 from the armed value every time we receive the arming numbers from comm. Arming numbers will have to be sent for a total of TIME_TO_ARM (in ms) before this variable reaches 0.
     unsigned long nextRuntime = millis();
     loopCount = 0;
 
@@ -66,7 +66,7 @@ int main(void) {
                  * will then consider itself armed and start sending proper
                  * motor values.
                  */
-                if (armed < 1) {   // First check that system is armed.
+                if (armCount > 0) {   // First check that system is armed.
                     // sp("System: Motors not armed.\n");
                     pwmDevice[MOTOR_T].write(TMIN);   // Disregard what Pilot says and write TMIN.
                     pwmDevice[MOTOR_R].write(TMIN);   // Disregard what Pilot says and write TMIN.
@@ -78,7 +78,7 @@ int main(void) {
                     if (abs(pwmOut[MOTOR_T] - TMIN) < MOTOR_ARM_THRESHOLD &&
                         abs(pwmOut[MOTOR_R] - TMIN) < MOTOR_ARM_THRESHOLD &&
                         abs(pwmOut[MOTOR_L] - TMIN) < MOTOR_ARM_THRESHOLD) {
-                        armed++;   // Once Pilot shows some sense, arm.
+                        armCount--;   // Once Pilot shows some sense, arm.
                     }
                 }
                 else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
@@ -88,8 +88,8 @@ int main(void) {
                 }
                 else {   // ..otherwise, die.
                     // triPilot.Abort();   // TODO: Do I even need this anymore?
-                    if (armed >= 1)
-                        armed = (int) -(TIME_TO_ARM/MASTER_DT-1);   // Set armed status back off.
+                    if (armCount <= 0)
+                        armCount = (int) TIME_TO_ARM/(MASTER_DT*CONTROL_LOOP_INTERVAL);   // Set armed status back off.
                     for (int i=0; i<3; i++) {
                         pwmOut[i] -= 3;   // Slowly turn off.
                         if (pwmOut[i] < 0) pwmOut[i] = 0;
@@ -109,7 +109,7 @@ int main(void) {
                 // ============================================================
                 // Report arm status.
                 // ============================================================
-                sw(armed);
+                sw(armCount);
                 //if (armed < 1) {   // First check that system is armed.
                 //    sw("_");
                 //}

@@ -9,7 +9,7 @@
  * Variables
  *****************************************************************************/
 
-int armed;
+int armCount;   // Arm status counter.
 int loopCount;   // Count system loops.
 float pwmOut[4];
 char commStr[250];   // String to be sent out to base.

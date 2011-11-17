@@ -264,7 +264,7 @@ class telemetryThread(threading.Thread):
                     #print fields
                     #print [dcm, fields[-1]]
                     #print [targetRot, fields[-1]]
-                    print [motorVal, fields[-1]]
+                    print [int(fields[0].encode('hex'), 16), motorVal, fields[-1]]
 
             except:
                 pass
