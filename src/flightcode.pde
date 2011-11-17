@@ -127,32 +127,35 @@ int main(void) {
                 // is a target DCM we could calculate but is unneeded at this
                 // moment.
                 // ============================================================
-                sw("ROT");
-                for (int i=0; i<3; i++) {
-                    sw((byte*) &targetRot[i], 4);
-                }
-                sw(0xf0); sw(0xf0);
+                //sw("ROT");
+                //for (int i=0; i<3; i++) {
+                //    sw((byte*) &targetRot[i], 4);
+                //}
+                //sw(0xf0); sw(0xf0);
 
                 // ============================================================
                 // Report motor values.
                 // ============================================================
                 sw("MTR");
                 for (int i=0; i<3; i++) {
-                    sw((int) motorVal[i]);
+                    sw((byte) motorVal[i]);
+                    //sw((byte*) &motorVal[i], 4);
                 }
-                sw((int) tailServoVal);
+                sw((byte) tailServoVal);
+                //sw((byte*) &tailServoVal, 4);
                 sw(0xf0); sw(0xf0);
 
                 // ============================================================
                 // Datafeed to serialmon.py for visualization.
                 // ============================================================
-                //sw("DCM");   // Index tag 'DCM'.
-                //for (int i=0; i<3; i++) {
-                //    for (int j=0; j<3; j++) {
-                //        sw((byte*) &gyroDCM[i][j], 4);
-                //    }
-                //}
-                //sw(0xf0); sw(0xf0);
+                sw("DCM");   // Index tag 'DCM'.
+                for (int i=0; i<3; i++) {
+                    for (int j=0; j<3; j++) {
+                        //sw((byte*) &gyroDCM[i][j], 4);
+                        sw((byte) (250*(gyroDCM[i][j]+1)/2+1));
+                    }
+                }
+                sw(0xf0); sw(0xf0);
 
                 // ============================================================
                 // Report loop time.

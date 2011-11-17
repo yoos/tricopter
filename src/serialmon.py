@@ -191,7 +191,7 @@ class telemetryThread(threading.Thread):
         self.running = True
     def run(self):
         global dcm, dcmT, targetRot, motorVal
-        imuDataIndex = -1       # Do I see IMU data?
+        dcmDataIndex = -1       # Do I see IMU data?
         rotDataIndex = -1       # Do I see rotation data?
         motorDataIndex = -1     # Do I see motor data?
         serBuffer = ''
@@ -219,19 +219,23 @@ class telemetryThread(threading.Thread):
                         serBuffer = serLines[-1]
 
                     # Check if we're receiving DCM data.
-                    if imuDataIndex == -1:
+                    if dcmDataIndex == -1:
                         for i in range(len(fields)):
                             if 'DCM' in fields[i]:
-                                imuDataIndex = i
+                                dcmDataIndex = i
                     else:
                         # Structure of DCM block:
                         #     'DCMxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', where
                         #     x represents a single byte. There are 4*9 = 36
                         #     x's, representing the 9 floats of the DCM.
-                        for i in range(3):
-                            for j in range(3):
-                                dcm[i][j] = struct.unpack('f', fields[imuDataIndex][3+(i*3+j)*4:3+(i*3+j)*4+4])[0]
-                                dcmT[j][i] = dcm[i][j]
+                        try:
+                            for i in range(3):
+                                for j in range(3):
+                                    dcm[i][j] = float(int(fields[dcmDataIndex][i*3+j+3:i*3+j+4].encode('hex'), 16)-1)/250*2-1
+                                    #dcm[i][j] = struct.unpack('f', fields[dcmDataIndex][3+(i*3+j)*4:3+(i*3+j)*4+4])[0]
+                                    dcmT[j][i] = dcm[i][j]
+                        except Exception, e:
+                            print "DCM: " + str(e)
 
                     # Check if we're receiving target rotation data.
                     if rotDataIndex == -1:
@@ -248,15 +252,15 @@ class telemetryThread(threading.Thread):
                             if 'MTR' in fields[i]:
                                 motorDataIndex = i
                     else:
-                        for i in range(4):
-                            try:
-                                motorVal[i] = int(fields[motorDataIndex][3+i:3+(i+1)].encode('hex'), 16)
+                        try:
+                            for i in range(4):
+                                motorVal[i] = int(fields[motorDataIndex][i+3:i+4].encode('hex'), 16)
                                 #motorVal[i] = struct.unpack('f', fields[motorDataIndex][3+i*4:3+(i+1)*4])[0]
-                            except Exception, e:
-                                print str(e)
+                        except Exception, e:
+                            print "MTR: " + str(e)
 
-                    #print fields
-                    #print dcm
+                    print fields
+                    #print [dcm, fields[-1]]
                     #print [targetRot, fields[-1]]
                     print [motorVal, fields[-1]]
 
