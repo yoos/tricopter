@@ -213,7 +213,7 @@ class telemetryThread(threading.Thread):
                         serLines = serBuffer.split('\xde\xad\xbe\xef')
 
                         # Parse fields separated by 0xf0f0.
-                        fields = serLines[-2].split('\xf0\xf0')
+                        fields = serLines[-2].split('\xff\xff')
 
                         # Save second to last line and discard rest.
                         serBuffer = serLines[-1]
@@ -259,7 +259,7 @@ class telemetryThread(threading.Thread):
                         except Exception, e:
                             print "MTR: " + str(e)
 
-                    print fields
+                    #print fields
                     #print [dcm, fields[-1]]
                     #print [targetRot, fields[-1]]
                     print [motorVal, fields[-1]]

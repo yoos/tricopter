@@ -118,7 +118,7 @@ int main(void) {
                 //else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
                 //    sw("!");
                 //}
-                sw(0xf0); sw(0xf0);
+                sw(0xff); sw(0xff);
 
                 // ============================================================
                 // Report target rotation vector (in BODY frame). TODO:
@@ -131,7 +131,7 @@ int main(void) {
                 //for (int i=0; i<3; i++) {
                 //    sw((byte*) &targetRot[i], 4);
                 //}
-                //sw(0xf0); sw(0xf0);
+                //sw(0xff); sw(0xff);
 
                 // ============================================================
                 // Report motor values.
@@ -143,7 +143,7 @@ int main(void) {
                 }
                 sw((byte) tailServoVal);
                 //sw((byte*) &tailServoVal, 4);
-                sw(0xf0); sw(0xf0);
+                sw(0xff); sw(0xff);
 
                 // ============================================================
                 // Datafeed to serialmon.py for visualization.
@@ -155,15 +155,15 @@ int main(void) {
                         sw((byte) (250*(gyroDCM[i][j]+1)/2+1));
                     }
                 }
-                sw(0xf0); sw(0xf0);
+                sw(0xff); sw(0xff);
 
                 // ============================================================
                 // Report loop time.
                 // ============================================================
                 //sp(nextRuntime);
-                //sw(0xf0); sw(0xf0);
+                //sw(0xff); sw(0xff);
                 //sp(millis());
-                //sw(0xf0); sw(0xf0);
+                //sw(0xff); sw(0xff);
                 sp((int) (millis() - (nextRuntime - MASTER_DT)));
                 sw(0xde); sw(0xad); sw(0xbe); sw(0xef);
             }
