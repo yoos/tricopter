@@ -19,11 +19,11 @@ int main(void) {
     IMU myIMU;
     myIMU.Init();
 
-    Servo motor[3], tailServo;
-    motor[MT].attach(PMT);
-    motor[MR].attach(PMR);
-    motor[ML].attach(PML);
-    tailServo.attach(PST);
+    Servo pwmDevice[4];
+    pwmDevice[MOTOR_T].attach(PMT);
+    pwmDevice[MOTOR_R].attach(PMR);
+    pwmDevice[MOTOR_L].attach(PML);
+    pwmDevice[SERVO_T].attach(PST);
     
     // Variables
 
@@ -33,8 +33,8 @@ int main(void) {
 
     // Write 0 to motors to prevent them from spinning up upon Seeeduino reset!
     for (int i=0; i<3; i++) {
-        motor[i].write(0);
-        motorVal[i] = 0;
+        pwmDevice[i].write(0);
+        pwmOut[i] = 0;
     }
 
 
@@ -54,51 +54,49 @@ int main(void) {
 
             if (loopCount % CONTROL_LOOP_INTERVAL == 0) {
                 triPilot.Listen();
-                /* The pilot communicates with base and updates motorVal and 
-                 * tailServoVal according to the joystick axis values it 
-                 * receives. */
+                /* The pilot communicates with base and updates pwmOut
+                 * according to the joystick axis values it receives. */
                 triPilot.Fly();
                 triWatchdog.Watch(triPilot.hasFood);
 
                 /* Don't run system unless armed!
                  * Pilot will monitor serial inputs and update
-                 * System::motorVal[]. System will send ESCs a "nonsense" value
+                 * System::pwmOut[]. System will send ESCs a "nonsense" value
                  * of 0 until it sees that all three motor values are zerod. It
                  * will then consider itself armed and start sending proper
                  * motor values.
                  */
                 if (armed < 1) {   // First check that system is armed.
                     // sp("System: Motors not armed.\n");
-                    for (int i=0; i<3; i++) {
-                        motor[i].write(TMIN);   // Disregard what Pilot says and write TMIN.
-                    }
-                    tailServo.write(90);
+                    pwmDevice[MOTOR_T].write(TMIN);   // Disregard what Pilot says and write TMIN.
+                    pwmDevice[MOTOR_R].write(TMIN);   // Disregard what Pilot says and write TMIN.
+                    pwmDevice[MOTOR_L].write(TMIN);   // Disregard what Pilot says and write TMIN.
+                    pwmDevice[SERVO_T].write(90);
 
                     // Check that motor values set by Pilot are within the
                     // arming threshold.
-                    if (abs(motorVal[MT] - TMIN) < MOTOR_ARM_THRESHOLD &&
-                        abs(motorVal[MR] - TMIN) < MOTOR_ARM_THRESHOLD &&
-                        abs(motorVal[ML] - TMIN) < MOTOR_ARM_THRESHOLD) {
+                    if (abs(pwmOut[MOTOR_T] - TMIN) < MOTOR_ARM_THRESHOLD &&
+                        abs(pwmOut[MOTOR_R] - TMIN) < MOTOR_ARM_THRESHOLD &&
+                        abs(pwmOut[MOTOR_L] - TMIN) < MOTOR_ARM_THRESHOLD) {
                         armed++;   // Once Pilot shows some sense, arm.
                     }
                 }
                 else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
-                    for (int i=0; i<3; i++) {
-                        motor[i].write(motorVal[i]);   // Write motor values to motors.
+                    for (int i=0; i<4; i++) {
+                        pwmDevice[i].write(pwmOut[i]);   // Write motor values to motors.
                     }
-                    tailServo.write(tailServoVal);
                 }
                 else {   // ..otherwise, die.
                     // triPilot.Abort();   // TODO: Do I even need this anymore?
                     if (armed >= 1)
                         armed = (int) -(TIME_TO_ARM/MASTER_DT-1);   // Set armed status back off.
                     for (int i=0; i<3; i++) {
-                        motorVal[i] -= 5;   // Slowly turn off.
-                        if (motorVal[i] < 0) motorVal[i] = 0;
-                        motor[i].write(motorVal[i]);
+                        pwmOut[i] -= 3;   // Slowly turn off.
+                        if (pwmOut[i] < 0) pwmOut[i] = 0;
+                        pwmDevice[i].write(pwmOut[i]);
                     }
-                    tailServoVal = 90;
-                    tailServo.write(tailServoVal);
+                    pwmOut[SERVO_T] = 90;
+                    pwmDevice[SERVO_T].write(pwmOut[SERVO_T]);
                 }
             }
 
@@ -137,12 +135,10 @@ int main(void) {
                 // Report motor values.
                 // ============================================================
                 sw("MTR");
-                for (int i=0; i<3; i++) {
-                    sw((byte) motorVal[i]);
-                    //sw((byte*) &motorVal[i], 4);
+                for (int i=0; i<4; i++) {
+                    sw((byte) pwmOut[i]);
+                    //sw((byte*) &pwmOut[i], 4);
                 }
-                sw((byte) tailServoVal);
-                //sw((byte*) &tailServoVal, 4);
                 sw(0xff); sw(0xff);
 
                 // ============================================================

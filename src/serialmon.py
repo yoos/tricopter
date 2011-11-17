@@ -225,9 +225,11 @@ class telemetryThread(threading.Thread):
                                 dcmDataIndex = i
                     else:
                         # Structure of DCM block:
-                        #     'DCMxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', where
-                        #     x represents a single byte. There are 4*9 = 36
-                        #     x's, representing the 9 floats of the DCM.
+                        #     'DCMxxxxxxxxx', where x represents a single byte.
+                        #     The 9 floats of the DCM are mapped to one-byte
+                        #     integers before being pushed to serial in the
+                        #     same scheme in which we encode joystick values in
+                        #     comm.py.
                         try:
                             for i in range(3):
                                 for j in range(3):

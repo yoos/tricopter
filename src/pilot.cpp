@@ -135,30 +135,30 @@ void Pilot::Fly() {
         // TODO: MOTOR_X_SCALE should be replaced by actual PID gains. Besides,
         // it's incorrect to scale in the negative direction if the
         // corresponding arm is heavier.
-        // TODO: The last term for each motorVal is INACCURATE. Fix this.
+        // TODO: The last term for each pwmOut is INACCURATE. Fix this.
         // ====================================================================
 
         // MOTORVAL SCHEME 1
-        //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]/2);
-        //motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]/sqrt(3));
-        //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]/sqrt(3));
+        //pwmOut[MOTOR_T] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]/2);
+        //pwmOut[MOTOR_R] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]/sqrt(3));
+        //pwmOut[MOTOR_L] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]/sqrt(3));
 
         // MOTORVAL SCHEME 2
-        motorVal[MT] = MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_T_SCALE * (-targetRot[0]);
-        motorVal[MR] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]);
-        motorVal[ML] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]);
+        pwmOut[MOTOR_T] = MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_T_SCALE * (-targetRot[0]);
+        pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]);
+        pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]);
 
         // MOTORVAL SCHEME 3
-        //motorVal[MT] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]*2);
-        //motorVal[MR] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]*sqrt(3));
-        //motorVal[ML] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]*sqrt(3));
+        //pwmOut[MOTOR_T] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]*2);
+        //pwmOut[MOTOR_R] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]*sqrt(3));
+        //pwmOut[MOTOR_L] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]*sqrt(3));
 
-        tailServoVal = TAIL_SERVO_DEFAULT_POSITION + TAIL_SERVO_SCALE * targetRot[2];   // TODO: Which direction is positive?
+        pwmOut[ST] = TAIL_SERVO_DEFAULT_POSITION + TAIL_SERVO_SCALE * targetRot[2];   // TODO: Which direction is positive?
 
         // DEPRECATED.
-        //motorVal[MT] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
-        //motorVal[MR] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
-        //motorVal[ML] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
+        //pwmOut[MOTOR_T] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
+        //pwmOut[MOTOR_R] = MOTOR_R_SCALE * (MOTOR_R_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (GYRO_COEFF*gVal[1] - commandRoll)/sqrt(3));
+        //pwmOut[MOTOR_L] = MOTOR_L_SCALE * (MOTOR_L_OFFSET + axisVal[SZ] + 0.3333*(-GYRO_COEFF*gVal[0] - commandPitch) + (-GYRO_COEFF*gVal[1] + commandRoll)/sqrt(3));
 
 
         // ====================================================================
@@ -167,16 +167,16 @@ void Pilot::Fly() {
         // Doing this incorrectly will result in motor values seemingly stuck
         // mostly at either extremes.
         // ====================================================================
-        mapUpper = motorVal[MT] > motorVal[MR] ? motorVal[MT] : motorVal[MR];
-        mapUpper = mapUpper     > motorVal[ML] ? mapUpper     : motorVal[ML];
-        mapUpper = mapUpper     > TMAX         ? mapUpper     : TMAX;
+        mapUpper = pwmOut[MOTOR_T] > pwmOut[MOTOR_R] ? pwmOut[MOTOR_T] : pwmOut[MOTOR_R];
+        mapUpper = mapUpper > pwmOut[MOTOR_L] ? mapUpper : pwmOut[MOTOR_L];
+        mapUpper = mapUpper > TMAX ? mapUpper : TMAX;
 
-        mapLower = motorVal[MT] < motorVal[MR] ? motorVal[MT] : motorVal[MR];
-        mapLower = mapLower     < motorVal[ML] ? mapLower     : motorVal[ML];
-        mapLower = mapLower     < TMIN         ? mapLower     : TMIN;
+        mapLower = pwmOut[MOTOR_T] < pwmOut[MOTOR_R] ? pwmOut[MOTOR_T] : pwmOut[MOTOR_R];
+        mapLower = mapLower < pwmOut[MOTOR_L] ? mapLower : pwmOut[MOTOR_L];
+        mapLower = mapLower < TMIN ? mapLower : TMIN;
 
         // We shouldn't have to use these, but uncomment the following two
-        // lines if motorVal goes crazy and makes mapUpper lower than mapLower:
+        // lines if pwmOut goes crazy and makes mapUpper lower than mapLower:
         //mapUpper = mapUpper > TMIN ? mapUpper : TMIN+1;
         //mapLower = mapLower < TMAX ? mapLower : TMAX-1;
 
@@ -185,16 +185,16 @@ void Pilot::Fly() {
         // Otherwise, kill motors. Note that map(), an Arduino function, does
         // integer math and truncates fractions.
         //
-        // TODO: motorVal (and other quantities the Pilot calculates) should be
+        // TODO: pwmOut (and other quantities the Pilot calculates) should be
         // an integer representing the number of milliseconds of PWM duty
         // cycle.
         // ====================================================================
         for (int i=0; i<3; i++) {
             if (mapUpper > mapLower) {
-                motorVal[i] = map(motorVal[i], mapLower, mapUpper, TMIN, TMAX);
+                pwmOut[i] = map(pwmOut[i], mapLower, mapUpper, TMIN, TMAX);
             }
             else {
-                motorVal[i] = TMIN;
+                pwmOut[i] = TMIN;
             }
         }
 
@@ -219,7 +219,10 @@ void Pilot::Abort() {
     serInput[ST] = 126;
     serInput[SZ] = 3;
     okayToFly = false;
-    tailServoVal = 90;
+    pwmOut[MOTOR_T] = TMIN;
+    pwmOut[MOTOR_R] = TMIN;
+    pwmOut[MOTOR_L] = TMIN;
+    pwmOut[SERVO_T] = 90;
     
     #ifdef DEBUG
     spln("Pilot ejected!");

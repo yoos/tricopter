@@ -11,7 +11,7 @@
 
 int armed;
 int loopCount;   // Count system loops.
-float motorVal[3], tailServoVal;
+float pwmOut[4];
 char commStr[250];   // String to be sent out to base.
 float commandPitch;   // Pitch command to be processed through PID.
 float commandRoll;   // Roll command to be processed through PID.
@@ -53,9 +53,10 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 #define TIME_TO_ARM 2000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 3   // This is added to TMIN to determine whether or not to arm the system.
 
-#define MT 0   // Tail motor array index.
-#define MR 1   // Right motor array index.
-#define ML 2   // Left motor array index.
+#define MOTOR_T 0   // Tail motor array index.
+#define MOTOR_R 1   // Right motor array index.
+#define MOTOR_L 2   // Left motor array index.
+#define SERVO_T 3   // Tail servo array index.
 
 
 /*****************************************************************************
