@@ -45,8 +45,8 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 #define TELEMETRY_LOOP_INTERVAL 5   // 1/5 master = 21 Hz.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
 
-#define DCM_COEFF 90   // Scale current-to-target DCM difference.
-#define GYRO_COEFF 15   // Try to stabilize craft.
+//#define DCM_COEFF 90   // Scale current-to-target DCM difference.
+//#define GYRO_COEFF 15   // Try to stabilize craft.
 //#define ACCEL_COEFF 90   // TEST: Try to stabilize craft.
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
 #define TMAX 90   // Servo signal that registers as maximum throttle to ESC.
@@ -63,14 +63,14 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  * it may as well be hard-coded.
  *****************************************************************************/
 
-#define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
-#define MOTOR_R_OFFSET 0   // Speed offset for right motor.
-#define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define MOTOR_T_SCALE  50   // Scale speed of tail motor.
-#define MOTOR_R_SCALE  50   // Scale speed of right motor.
-#define MOTOR_L_SCALE  50   // Scale speed of left motor.
+#define MOTOR_T_OFFSET 0    // Speed offset for tail motor.
+#define MOTOR_R_OFFSET 0    // Speed offset for right motor.
+#define MOTOR_L_OFFSET 0    // Speed offset for left motor.
+#define MOTOR_T_SCALE  16   // Scale speed of tail motor.
+#define MOTOR_R_SCALE  16   // Scale speed of right motor.
+#define MOTOR_L_SCALE  16   // Scale speed of left motor.
 #define TAIL_SERVO_DEFAULT_POSITION 50
-#define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
+#define TAIL_SERVO_SCALE 40   // Scale tail servo rotation.
 
 #define PMT 4   // Tail motor pin.
 #define PMR 2   // Right motor pin.
