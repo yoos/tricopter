@@ -224,7 +224,10 @@ class telemetryThread(threading.Thread):
                             if 'DCM' in fields[i]:
                                 imuDataIndex = i
                     else:
-                        # If we have imuDataIndex, populate DCM.
+                        # Structure of DCM block:
+                        #     'DCMxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', where
+                        #     x represents a single byte. There are 4*9 = 36
+                        #     x's, representing the 9 floats of the DCM.
                         for i in range(3):
                             for j in range(3):
                                 dcm[i][j] = struct.unpack('f', fields[imuDataIndex][3+(i*3+j)*4:3+(i*3+j)*4+4])[0]
@@ -233,23 +236,29 @@ class telemetryThread(threading.Thread):
                     # Check if we're receiving target rotation data.
                     if rotDataIndex == -1:
                         for i in range(len(fields)):
-                            if 'TR' in fields[i]:
+                            if 'ROT' in fields[i]:
                                 rotDataIndex = i
                     else:
                         for i in range(3):
-                            targetRot[i] = struct.unpack('f', fields[rotDataIndex][2+i*4:2+i*4+4])[0]
+                            targetRot[i] = struct.unpack('f', fields[rotDataIndex][3+i*4:3+i*4+4])[0]
 
                     # Check if we're receiving motor/servo output data.
                     if motorDataIndex == -1:
                         for i in range(len(fields)):
-                            if 'M' in fields[i]:
+                            if 'MTR' in fields[i]:
                                 motorDataIndex = i
                     else:
-                        motorVal[0] = fields[motorDataIndex]
+                        for i in range(4):
+                            try:
+                                motorVal[i] = int(fields[motorDataIndex][3+i:3+(i+1)].encode('hex'), 16)
+                                #motorVal[i] = struct.unpack('f', fields[motorDataIndex][3+i*4:3+(i+1)*4])[0]
+                            except Exception, e:
+                                print str(e)
 
                     #print fields
                     #print dcm
-                    print [targetRot, fields[-1]]
+                    #print [targetRot, fields[-1]]
+                    print [motorVal, fields[-1]]
 
             except:
                 pass

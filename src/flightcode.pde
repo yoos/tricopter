@@ -108,13 +108,16 @@ int main(void) {
             // ================================================================
 
             if (loopCount % TELEMETRY_LOOP_INTERVAL == 0) {
-                sw(armed);   // Display arm status number.
-                if (armed < 1) {   // First check that system is armed.
-                    sw("_");
-                }
-                else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
-                    sw("!");
-                }
+                // ============================================================
+                // Report arm status.
+                // ============================================================
+                sw(armed);
+                //if (armed < 1) {   // First check that system is armed.
+                //    sw("_");
+                //}
+                //else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
+                //    sw("!");
+                //}
                 sw(0xf0); sw(0xf0);
 
                 // ============================================================
@@ -124,26 +127,26 @@ int main(void) {
                 // is a target DCM we could calculate but is unneeded at this
                 // moment.
                 // ============================================================
-                //sw("TR");
-                //for (int i=0; i<3; i++) {
-                //    sw((byte*) &targetRot[i], 4);
-                //}
-                //sw(0xf0); sw(0xf0);
+                sw("ROT");
+                for (int i=0; i<3; i++) {
+                    sw((byte*) &targetRot[i], 4);
+                }
+                sw(0xf0); sw(0xf0);
 
                 // ============================================================
                 // Report motor values.
                 // ============================================================
-                sw("M");
+                sw("MTR");
                 for (int i=0; i<3; i++) {
-                    sw((byte*) &motorVal[i], 4);
+                    sw((int) motorVal[i]);
                 }
-                sw((byte*) &tailServoVal, 4);
+                sw((int) tailServoVal);
                 sw(0xf0); sw(0xf0);
 
                 // ============================================================
                 // Datafeed to serialmon.py for visualization.
                 // ============================================================
-                //sp("DCM");   // Index tag 'DCM'.
+                //sw("DCM");   // Index tag 'DCM'.
                 //for (int i=0; i<3; i++) {
                 //    for (int j=0; j<3; j++) {
                 //        sw((byte*) &gyroDCM[i][j], 4);
