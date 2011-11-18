@@ -9,7 +9,7 @@ import serial
 import array
 import string
 import struct
-from math import sqrt
+from math import sqrt, pi, acos
 from time import sleep
 import threading
 from threading import Timer, Thread
@@ -64,7 +64,23 @@ motorVal = [0.0, 0.0, 0.0, 0.0]
 window = 0
 
 
+def vDot(a, b):
+    return sum([a[i]*b[i] for i in range(len(a))])
+
+def vCross(a, b):
+    c = [0,0,0]
+    try:
+        c = [a[1]*b[2] - a[2]*b[1], \
+             a[2]*b[0] - a[0]*b[2], \
+             a[0]*b[1] - a[1]*b[0]]
+    except:
+        pass
+    return c
+
+
 def drawScene():
+    global quadratic
+
     # Define axes to draw.
     axes = dcm
 
@@ -96,14 +112,14 @@ def drawScene():
     # Calculate vertex locations for a box. Refer to the declaration of dcmBox to
     # see the order of the vertices.
     for i in range(3):
-        dcmBox[0][i] = (-axes[0][i] -axes[1][i] +axes[2][i]) * 0.4
-        dcmBox[1][i] = (-axes[0][i] +axes[1][i] +axes[2][i]) * 0.4
-        dcmBox[2][i] = ( axes[0][i] +axes[1][i] +axes[2][i]) * 0.4
-        dcmBox[3][i] = ( axes[0][i] -axes[1][i] +axes[2][i]) * 0.4
-        dcmBox[4][i] = (-axes[0][i] -axes[1][i] -axes[2][i]) * 0.4
-        dcmBox[5][i] = (-axes[0][i] +axes[1][i] -axes[2][i]) * 0.4
-        dcmBox[6][i] = ( axes[0][i] +axes[1][i] -axes[2][i]) * 0.4
-        dcmBox[7][i] = ( axes[0][i] -axes[1][i] -axes[2][i]) * 0.4
+        dcmBox[0][i] = (-axes[0][i] -axes[1][i] +axes[2][i]/2) * 0.4
+        dcmBox[1][i] = (-axes[0][i] +axes[1][i] +axes[2][i]/2) * 0.4
+        dcmBox[2][i] = ( axes[0][i] +axes[1][i] +axes[2][i]/2) * 0.4
+        dcmBox[3][i] = ( axes[0][i] -axes[1][i] +axes[2][i]/2) * 0.4
+        dcmBox[4][i] = (-axes[0][i] -axes[1][i] -axes[2][i]/2) * 0.4
+        dcmBox[5][i] = (-axes[0][i] +axes[1][i] -axes[2][i]/2) * 0.4
+        dcmBox[6][i] = ( axes[0][i] +axes[1][i] -axes[2][i]/2) * 0.4
+        dcmBox[7][i] = ( axes[0][i] -axes[1][i] -axes[2][i]/2) * 0.4
 
     # Draw the axes of whichever DCM we're using.
     glBegin(GL_LINES)
@@ -146,12 +162,9 @@ def drawScene():
     # Draw a static box.
     #glutWireCube(1.2)
 
-
     # =========================================================================
-    # Motor output visualization
+    # Calculate the "base" and "top" locations of motors.
     # =========================================================================
-
-    # Motor base locations
     for i in range(3):
         motorBase[0][i] = -axes[1][i]                            # Tail (0, -1, 0)
         motorBase[1][i] = axes[0][i]*sqrt(3)/2 + axes[1][i]/2    # Right (sqrt(3)/2, 1/2, 0)
@@ -159,34 +172,76 @@ def drawScene():
 
     # Motor "height" to make them visible. TODO: these should eventually be cylinders.
     for i in range(3):
-        motorTop[0][i] = -axes[1][i] + axes[2][i]*motorVal[0]/125                           # Tail (0, -1, motorVal)
-        motorTop[1][i] = axes[0][i]*sqrt(3)/2 + axes[1][i]/2 + axes[2][i]*motorVal[1]/125   # Right (sqrt(3)/2, 1/2, motorVal)
-        motorTop[2][i] = -axes[0][i]*sqrt(3)/2 + axes[1][i]/2 + axes[2][i]*motorVal[2]/125  # Left (-sqrt(3)/2, 1/2, motorVal)
+        motorTop[0][i] = -axes[1][i] + axes[2][i]*(motorVal[0]+0.1)/125                           # Tail (0, -1, motorVal)
+        motorTop[1][i] = axes[0][i]*sqrt(3)/2 + axes[1][i]/2 + axes[2][i]*(motorVal[1]+0.1)/125   # Right (sqrt(3)/2, 1/2, motorVal)
+        motorTop[2][i] = -axes[0][i]*sqrt(3)/2 + axes[1][i]/2 + axes[2][i]*(motorVal[2]+0.1)/125  # Left (-sqrt(3)/2, 1/2, motorVal)
 
-    # Motor colors to indicate speed. TODO: this should replace changing the
-    # values of motorTop.
+    # =========================================================================
+    # Determine color ranging from blue to green to yellow to red depending on
+    # motor speed.
+    # =========================================================================
+    colorSteps = [10.0, 20.0, 30.0, 50.0, 70.0]
     for i in range(3):
-        if motorVal[i] < 10:
+        if motorVal[i] < colorSteps[0]:
             motorColor[i] = [0.0, 0.0, 1.0]
-        elif motorVal[i] >= 10 and motorVal[i] < 30:
-            motorColor[i] = [0.0, (motorVal[i]-10.0)/20.0, 1.0]
-        elif motorVal[i] >= 30 and motorVal[i] < 50:
-            motorColor[i] = [0.0, 1.0, 1.0-(motorVal[i]-30.0)/20.0]
-        elif motorVal[i] >= 50 and motorVal[i] < 70:
-            motorColor[i] = [(motorVal[i]-50.0)/20.0, 1.0, 0.0]
-        elif motorVal[i] >= 70 and motorVal[i] < 90:
-            motorColor[i] = [1.0, 1.0-(motorVal[i]-70.0)/20.0, 0]
+        elif motorVal[i] >= colorSteps[0] and motorVal[i] < colorSteps[1]:
+            motorColor[i] = [0.0, (motorVal[i]-colorSteps[0])/(colorSteps[1]-colorSteps[0]), 1.0]
+        elif motorVal[i] >= colorSteps[1] and motorVal[i] < colorSteps[2]:
+            motorColor[i] = [0.0, 1.0, 1.0-(motorVal[i]-colorSteps[1])/(colorSteps[2]-colorSteps[1])]
+        elif motorVal[i] >= colorSteps[2] and motorVal[i] < colorSteps[3]:
+            motorColor[i] = [(motorVal[i]-colorSteps[2])/(colorSteps[3]-colorSteps[2]), 1.0, 0.0]
+        elif motorVal[i] >= colorSteps[3] and motorVal[i] < colorSteps[4]:
+            motorColor[i] = [1.0, 1.0-(motorVal[i]-colorSteps[3])/(colorSteps[4]-colorSteps[3]), 0]
         else:
             motorColor[i] = [1.0, 0.0, 0.0]
 
-    glBegin(GL_LINES)
-    glColor3fv(motorColor[0])
-    glVertex3fv(motorBase[0]); glVertex3fv(motorTop[0])
-    glColor3fv(motorColor[1])
-    glVertex3fv(motorBase[1]); glVertex3fv(motorTop[1])
-    glColor3fv(motorColor[2])
-    glVertex3fv(motorBase[2]); glVertex3fv(motorTop[2])
-    glEnd()
+    #glBegin(GL_LINES)
+    #glColor3fv(motorColor[0])
+    #glVertex3fv(motorBase[0]); glVertex3fv(motorTop[0])
+    #glColor3fv(motorColor[1])
+    #glVertex3fv(motorBase[1]); glVertex3fv(motorTop[1])
+    #glColor3fv(motorColor[2])
+    #glVertex3fv(motorBase[2]); glVertex3fv(motorTop[2])
+    #glEnd()
+
+    # =========================================================================
+    # Calculate the cylindrical representation of the motors.
+    #
+    # TODO: cylAngle never seems to really reach zero when DCM is horizontal.
+    # There are math errors when the DCM flips completely over.
+    # =========================================================================
+    cylDef = [0.0, 0.0, 1.0]
+    cylVec = [[0.0, 0.0, 0.0]]*3
+    cylT   = [[0.0, 0.0, 0.0]]*3
+    cylAngle = [[0.0, 0.0, 0.0]]*3
+    for i in range(3):
+        for j in range(3):
+            cylVec[i][j] = motorTop[i][j] - motorBase[i][j]
+        cylT[i] = vCross(cylDef, cylVec[i])
+        # Calculate cylinder angle. Add 0.1 to motorVal to prevent division by
+        # zero.
+        cylAngle[i] = 180.0/pi * acos(vDot(cylDef, cylVec[i]) / ((motorVal[i]-0.001)/125))
+
+    # =========================================================================
+    # Draw the cylinders. For each cylinder, we:
+    #   1. Set our color,
+    #   2. Translate our POV to each motorBase,
+    #   3. Rotate our view by the cylAngle calculated above, then
+    #   4. Draw the cylinder.
+    # We then reset our view.
+    # =========================================================================
+    for i in range(3):
+        glColor3fv(motorColor[i])
+        glTranslatef(motorBase[i][0], motorBase[i][1], motorBase[i][2])
+        glRotatef(cylAngle[i], cylT[i][0], cylT[i][1], cylT[i][2]);
+        #gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+        gluCylinder(quadratic, 0.3, 0.3, (motorVal[i]-0.001)/400, 32, 32);
+
+        # Reset view.
+        glLoadIdentity()
+        glTranslatef(0.0, 0.0, -3.0)
+        glRotatef(-90.0, 1.0, 0.0, 0.0)
+
 
     # Since this is double buffered, swap the buffers to display what just got drawn.
     glutSwapBuffers()
@@ -206,6 +261,10 @@ def resizeScene(width, height):
 
 
 def initGL(width, height):
+    global quadratic
+
+    quadratic = quadratic = gluNewQuadric()
+
     glClearColor(0.0, 0.0, 0.0, 0.0)   # Clear background color to black.
     glClearDepth(1.0)                  # Enable clearing of the depth buffer.
     glDepthFunc(GL_LESS)               # Type of depth test.
