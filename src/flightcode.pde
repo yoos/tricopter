@@ -116,7 +116,7 @@ int main(void) {
                 //else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
                 //    sw("!");
                 //}
-                sw(0xff); sw(0xff);
+                sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
 
                 // ============================================================
                 // Report target rotation vector (in BODY frame). TODO:
@@ -125,41 +125,41 @@ int main(void) {
                 // is a target DCM we could calculate but is unneeded at this
                 // moment.
                 // ============================================================
-                //sw("ROT");
+                //sw(ROT_SER_TAG);
                 //for (int i=0; i<3; i++) {
-                //    sw((byte*) &targetRot[i], 4);
+                //    sw((byte) (250*(targetRot[i]+1)/);
                 //}
-                //sw(0xff); sw(0xff);
+                //sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
 
                 // ============================================================
                 // Report motor values.
                 // ============================================================
-                sw("MTR");
+                sw(MOT_SER_TAG);
                 for (int i=0; i<4; i++) {
                     sw((byte) pwmOut[i]);
                     //sw((byte*) &pwmOut[i], 4);
                 }
-                sw(0xff); sw(0xff);
+                sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
 
                 // ============================================================
                 // Datafeed to serialmon.py for visualization.
                 // ============================================================
-                sw("DCM");   // Index tag 'DCM'.
+                sw(DCM_SER_TAG);   // Index tag 'DCM'.
                 for (int i=0; i<3; i++) {
                     for (int j=0; j<3; j++) {
                         //sw((byte*) &gyroDCM[i][j], 4);
                         sw((byte) (250*(gyroDCM[i][j]+1)/2+1));
                     }
                 }
-                sw(0xff); sw(0xff);
+                sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
 
                 // ============================================================
                 // Report loop time.
                 // ============================================================
                 //sp(nextRuntime);
-                //sw(0xff); sw(0xff);
+                //sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
                 //sp(millis());
-                //sw(0xff); sw(0xff);
+                //sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
                 sp((int) (millis() - (nextRuntime - MASTER_DT)));
                 sw(0xde); sw(0xad); sw(0xbe); sw(0xef);
             }

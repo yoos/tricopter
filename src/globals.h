@@ -24,6 +24,9 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  * Serial: everything that has to do with TX/RX.
  *****************************************************************************/
 
+// ============================================================================
+// SERIAL IN
+// ============================================================================
 #define BAUDRATE 57600   // Fiddle with this. The XBee sometimes seems to have trouble with high baudrates like 57600.
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
 #define PACKETSIZE 4     // Each packet contains header plus X, Y, Twist, and Z.
@@ -34,6 +37,13 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 #define ST 2   // Serial byte location for joystick T (twist) axis.
 #define SZ 3   // Serial byte location for joystick Z axis.
 
+// ============================================================================
+// SERIAL OUT
+// ============================================================================
+#define DCM_SER_TAG 0xfb
+#define ROT_SER_TAG 0xfc
+#define MOT_SER_TAG 0xfd
+#define FIELD_SER_TAG 0xff
 
 /*****************************************************************************
  * Software configuration: any parameter that is purely code-related or is
@@ -64,12 +74,12 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
  * it may as well be hard-coded.
  *****************************************************************************/
 
-#define MOTOR_T_OFFSET 0    // Speed offset for tail motor.
-#define MOTOR_R_OFFSET 0    // Speed offset for right motor.
-#define MOTOR_L_OFFSET 0    // Speed offset for left motor.
-#define MOTOR_T_SCALE  16   // Scale speed of tail motor.
-#define MOTOR_R_SCALE  16   // Scale speed of right motor.
-#define MOTOR_L_SCALE  16   // Scale speed of left motor.
+#define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
+#define MOTOR_R_OFFSET 0   // Speed offset for right motor.
+#define MOTOR_L_OFFSET 0   // Speed offset for left motor.
+#define MOTOR_T_SCALE  8   // Scale speed of tail motor.
+#define MOTOR_R_SCALE  8   // Scale speed of right motor.
+#define MOTOR_L_SCALE  8   // Scale speed of left motor.
 #define TAIL_SERVO_DEFAULT_POSITION 50
 #define TAIL_SERVO_SCALE 40   // Scale tail servo rotation.
 

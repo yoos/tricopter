@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-###############################################################################
+# =============================================================================
 # serialmon.py
-###############################################################################
+# =============================================================================
 
 import sys
 import serial
@@ -31,9 +31,19 @@ except:
 # Initialize ROS node.
 rospy.init_node("tric_vis", anonymous=True)
 
+# =============================================================================
+# Serial configuration
+# =============================================================================
+newlineSerTag  = '\xde\xad\xbe\xef'
+fieldSerTag    = '\xff\xff'
+dcmSerTag      = '\xfb'
+rotationSerTag = '\xfc'
+motorSerTag    = '\xfd'
 
-# Number of the glut window.
-window = 0
+
+# =============================================================================
+# Telemetry data
+# =============================================================================
 
 # Initial DCM values. Initialize these separately (i.e., don't do dcm = dcmT = [...]), otherwise the DCM values will be read in an incorrect order!
 dcm = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
@@ -44,6 +54,14 @@ targetRot = [0.0, 0.0, 0.0]
 
 # Motor/servo values (MT, MR, ML, ST)
 motorVal = [0.0, 0.0, 0.0, 0.0]
+
+
+# =============================================================================
+# OpenGL elements
+# =============================================================================
+
+# Number of the glut window.
+window = 0
 
 
 def drawScene():
@@ -71,9 +89,9 @@ def drawScene():
     glRotatef(-90.0, 1.0, 0.0, 0.0)
     #glRotatef(-20.0, 0.0, 1.0, 0.0)
 
-    ###########################################################################
+    # =========================================================================
     # DCM visualization
-    ###########################################################################
+    # =========================================================================
 
     # Calculate vertex locations for a box. Refer to the declaration of dcmBox to
     # see the order of the vertices.
@@ -129,9 +147,9 @@ def drawScene():
     #glutWireCube(1.2)
 
 
-    ###########################################################################
+    # =========================================================================
     # Motor output visualization
-    ###########################################################################
+    # =========================================================================
 
     # Motor base locations
     for i in range(3):
@@ -242,10 +260,10 @@ class telemetryThread(threading.Thread):
         threading.Thread.__init__(self)
         self.running = True
     def run(self):
-        global dcm, dcmT, targetRot, motorVal
-        dcmDataIndex = -1       # Do I see IMU data?
-        rotDataIndex = -1       # Do I see rotation data?
-        motorDataIndex = -1     # Do I see motor data?
+        global dcm, dcmT, targetRot, motorVal, newlineSerTag, fieldSerTag, dcmSerTag, rotationSerTag, motorSerTag
+        dcmDataIndex = 0       # Do I see IMU data?
+        rotationDataIndex = 0       # Do I see rotation data?
+        motorDataIndex = 0     # Do I see motor data?
         serBuffer = ''
         serLines = ''
 
@@ -257,25 +275,39 @@ class telemetryThread(threading.Thread):
         while self.running and not rospy.is_shutdown():
             try:
                 if ser.inWaiting() > 0:
+                    # =========================================================
                     # Update buffer, adding onto incomplete line if necessary.
+                    # =========================================================
                     serBuffer = serBuffer + ser.read(ser.inWaiting())
 
-                    # Check for separator tag 0xdeadbeef and split one entry off buffer.
-                    if '\xde\xad\xbe\xef' in serBuffer:
-                        serLines = serBuffer.split('\xde\xad\xbe\xef')
+                    # =========================================================
+                    # Check for separator tag 0xdeadbeef and split one entry
+                    # off buffer.
+                    # =========================================================
+                    if newlineSerTag in serBuffer:
+                        serLines = serBuffer.split(newlineSerTag)
 
                         # Parse fields separated by 0xf0f0.
-                        fields = serLines[-2].split('\xff\xff')
+                        fields = serLines[-2].split(fieldSerTag)
 
                         # Save second to last line and discard rest.
                         serBuffer = serLines[-1]
 
+                    # =========================================================
+                    # Scan for data field headers.
+                    # =========================================================
+                    for i in range(1, len(fields)):
+                        if not dcmDataIndex and fields[i][0] == dcmSerTag:
+                            dcmDataIndex = i
+                        elif not rotationDataIndex and fields[i][0] == rotationSerTag:
+                            rotationDataIndex = i
+                        elif not motorDataIndex and fields[i][0] == motorSerTag:
+                            motorDataIndex = i
+
+                    # =========================================================
                     # Check if we're receiving DCM data.
-                    if dcmDataIndex == -1:
-                        for i in range(len(fields)):
-                            if 'DCM' in fields[i]:
-                                dcmDataIndex = i
-                    else:
+                    # =========================================================
+                    if dcmDataIndex:
                         # Structure of DCM block:
                         #     'DCMxxxxxxxxx', where x represents a single byte.
                         #     The 9 floats of the DCM are mapped to one-byte
@@ -285,35 +317,38 @@ class telemetryThread(threading.Thread):
                         try:
                             for i in range(3):
                                 for j in range(3):
-                                    dcm[i][j] = float(int(fields[dcmDataIndex][i*3+j+3:i*3+j+4].encode('hex'), 16)-1)/250*2-1
+                                    dcm[i][j] = float(int(fields[dcmDataIndex][i*3+j+1:i*3+j+2].encode('hex'), 16)-1)/250*2-1
                                     #dcm[i][j] = struct.unpack('f', fields[dcmDataIndex][3+(i*3+j)*4:3+(i*3+j)*4+4])[0]
                                     dcmT[j][i] = dcm[i][j]
                         except Exception, e:
-                            print "DCM: " + str(e)
+                            print "DCM:", str(e)
 
+                    # =========================================================
                     # Check if we're receiving target rotation data.
-                    if rotDataIndex == -1:
-                        for i in range(len(fields)):
-                            if 'ROT' in fields[i]:
-                                rotDataIndex = i
-                    else:
-                        for i in range(3):
-                            targetRot[i] = struct.unpack('f', fields[rotDataIndex][3+i*4:3+i*4+4])[0]
+                    # =========================================================
+                    if rotationDataIndex:
+                        try:
+                            for i in range(3):
+                                targetRot[i] = (int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16)-1)/250*2-1
+                                #targetRot[i] = struct.unpack('f', fields[rotationDataIndex][3+i*4:3+i*4+4])[0]
+                        except Exception, e:
+                            print "ROT:", str(e)
 
+                    # =========================================================
                     # Check if we're receiving motor/servo output data.
-                    if motorDataIndex == -1:
-                        for i in range(len(fields)):
-                            if 'MTR' in fields[i]:
-                                motorDataIndex = i
-                    else:
+                    # =========================================================
+                    if motorDataIndex:
                         try:
                             for i in range(4):
-                                motorVal[i] = int(fields[motorDataIndex][i+3:i+4].encode('hex'), 16)
+                                motorVal[i] = int(fields[motorDataIndex][i+1:i+2].encode('hex'), 16)
                                 #motorVal[i] = struct.unpack('f', fields[motorDataIndex][3+i*4:3+(i+1)*4])[0]
                         except Exception, e:
-                            print "MTR: " + str(e)
+                            print "MTR:", str(e)
 
-                    print fields
+                    # =========================================================
+                    # Printout
+                    # =========================================================
+                    #print fields
                     #print [dcm, fields[-1]]
                     #print [targetRot, fields[-1]]
                     print [int(fields[0].encode('hex'), 16), motorVal, fields[-1]]
