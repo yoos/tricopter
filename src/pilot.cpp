@@ -144,14 +144,14 @@ void Pilot::Fly() {
         //pwmOut[MOTOR_L] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]/sqrt(3));
 
         // MOTORVAL SCHEME 2
-        pwmOut[MOTOR_T] = MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_T_SCALE * (-targetRot[0]);
-        pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]);
-        pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]);
+        //pwmOut[MOTOR_T] = MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_T_SCALE * (-targetRot[0]);
+        //pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]);
+        //pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]);
 
         // MOTORVAL SCHEME 3
-        //pwmOut[MOTOR_T] = MOTOR_T_OFFSET + axisVal[SZ] + MOTOR_T_SCALE * (-targetRot[0]*2);
-        //pwmOut[MOTOR_R] = MOTOR_R_OFFSET + axisVal[SZ] + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]*sqrt(3));
-        //pwmOut[MOTOR_L] = MOTOR_L_OFFSET + axisVal[SZ] + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]*sqrt(3));
+        pwmOut[MOTOR_T] = MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_T_SCALE * (-targetRot[0]*2);
+        pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]*sqrt(3));
+        pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]*sqrt(3));
 
         pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + TAIL_SERVO_SCALE * targetRot[2];   // TODO: Which direction is positive?
 
