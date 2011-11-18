@@ -90,7 +90,7 @@ def drawScene():
     # Initial vertex values for the three motor positions (tail, right, left).
     motorBase = [[0, -1, 0], [sqrt(3)/2, 1/2, 0], [-sqrt(3)/2, 1/2, 0]]   # The "base" of the motors.
     motorTop = [[0, -1, 0.1], [sqrt(3)/2, 1/2, 0.1], [-sqrt(3)/2, 1/2, 0.1]]   # The "top" of the motors.
-    motorColor = [[1,1,1], [1,1,1], [1,1,1]]
+    motorColor = [[1,1,1,0.5], [1,1,1,0.5], [1,1,1,0.5]]
 
     # Clear screen and depth buffer.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -183,17 +183,17 @@ def drawScene():
     colorSteps = [10.0, 20.0, 30.0, 50.0, 70.0]
     for i in range(3):
         if motorVal[i] < colorSteps[0]:
-            motorColor[i] = [0.0, 0.0, 1.0]
+            motorColor[i] = [0.0, 0.0, 1.0, 0.5]
         elif motorVal[i] >= colorSteps[0] and motorVal[i] < colorSteps[1]:
-            motorColor[i] = [0.0, (motorVal[i]-colorSteps[0])/(colorSteps[1]-colorSteps[0]), 1.0]
+            motorColor[i] = [0.0, (motorVal[i]-colorSteps[0])/(colorSteps[1]-colorSteps[0]), 1.0, 0.5]
         elif motorVal[i] >= colorSteps[1] and motorVal[i] < colorSteps[2]:
-            motorColor[i] = [0.0, 1.0, 1.0-(motorVal[i]-colorSteps[1])/(colorSteps[2]-colorSteps[1])]
+            motorColor[i] = [0.0, 1.0, 1.0-(motorVal[i]-colorSteps[1])/(colorSteps[2]-colorSteps[1]), 0.5]
         elif motorVal[i] >= colorSteps[2] and motorVal[i] < colorSteps[3]:
-            motorColor[i] = [(motorVal[i]-colorSteps[2])/(colorSteps[3]-colorSteps[2]), 1.0, 0.0]
+            motorColor[i] = [(motorVal[i]-colorSteps[2])/(colorSteps[3]-colorSteps[2]), 1.0, 0.0, 0.5]
         elif motorVal[i] >= colorSteps[3] and motorVal[i] < colorSteps[4]:
-            motorColor[i] = [1.0, 1.0-(motorVal[i]-colorSteps[3])/(colorSteps[4]-colorSteps[3]), 0]
+            motorColor[i] = [1.0, 1.0-(motorVal[i]-colorSteps[3])/(colorSteps[4]-colorSteps[3]), 0.0, 0.5]
         else:
-            motorColor[i] = [1.0, 0.0, 0.0]
+            motorColor[i] = [1.0, 0.0, 0.0, 0.5]
 
     #glBegin(GL_LINES)
     #glColor3fv(motorColor[0])
@@ -231,7 +231,7 @@ def drawScene():
     # We then reset our view.
     # =========================================================================
     for i in range(3):
-        glColor3fv(motorColor[i])
+        glColor4fv(motorColor[i])
         glTranslatef(motorBase[i][0], motorBase[i][1], motorBase[i][2])
         glRotatef(cylAngle[i], cylT[i][0], cylT[i][1], cylT[i][2]);
         #gluQuadricOrientation(quadratic, GLU_OUTSIDE);
