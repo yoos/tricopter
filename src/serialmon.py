@@ -9,6 +9,7 @@ import serial
 import array
 import string
 import struct
+from math import sqrt
 from time import sleep
 import threading
 from threading import Timer, Thread
@@ -45,7 +46,11 @@ targetRot = [0.0, 0.0, 0.0]
 motorVal = [0.0, 0.0, 0.0, 0.0]
 
 # Initial vertex values for a box drawn around the DCM.
-vx = [[-1,-1,1], [-1,1,1], [1,1,1], [1,-1,1], [-1,-1,-1], [-1,1,-1], [1,1,-1], [1,-1,-1]]
+dcmBox = [[-1,-1,1], [-1,1,1], [1,1,1], [1,-1,1], [-1,-1,-1], [-1,1,-1], [1,1,-1], [1,-1,-1]]
+
+# Initial vertex values for the three motor positions (tail, right, left).
+motorBase = [[0, -1, 0], [sqrt(3)/2, 1/2, 0], [-sqrt(3)/2, 1/2, 0]]   # The "base" of the motors.
+motorTop = [[0, -1, 0.1], [sqrt(3)/2, 1/2, 0.1], [-sqrt(3)/2, 1/2, 0.1]]   # The "top" of the motors.
 
 
 def drawScene():
@@ -65,17 +70,21 @@ def drawScene():
     glRotatef(-90.0, 1.0, 0.0, 0.0)
     #glRotatef(-20.0, 0.0, 1.0, 0.0)
 
-    # Calculate vertex locations for a box. Refer to the declaration of vx to
+    ###########################################################################
+    # DCM visualization
+    ###########################################################################
+
+    # Calculate vertex locations for a box. Refer to the declaration of dcmBox to
     # see the order of the vertices.
     for i in range(3):
-        vx[0][i] = (-axes[0][i] -axes[1][i] +axes[2][i]) * 0.4
-        vx[1][i] = (-axes[0][i] +axes[1][i] +axes[2][i]) * 0.4
-        vx[2][i] = ( axes[0][i] +axes[1][i] +axes[2][i]) * 0.4
-        vx[3][i] = ( axes[0][i] -axes[1][i] +axes[2][i]) * 0.4
-        vx[4][i] = (-axes[0][i] -axes[1][i] -axes[2][i]) * 0.4
-        vx[5][i] = (-axes[0][i] +axes[1][i] -axes[2][i]) * 0.4
-        vx[6][i] = ( axes[0][i] +axes[1][i] -axes[2][i]) * 0.4
-        vx[7][i] = ( axes[0][i] -axes[1][i] -axes[2][i]) * 0.4
+        dcmBox[0][i] = (-axes[0][i] -axes[1][i] +axes[2][i]) * 0.4
+        dcmBox[1][i] = (-axes[0][i] +axes[1][i] +axes[2][i]) * 0.4
+        dcmBox[2][i] = ( axes[0][i] +axes[1][i] +axes[2][i]) * 0.4
+        dcmBox[3][i] = ( axes[0][i] -axes[1][i] +axes[2][i]) * 0.4
+        dcmBox[4][i] = (-axes[0][i] -axes[1][i] -axes[2][i]) * 0.4
+        dcmBox[5][i] = (-axes[0][i] +axes[1][i] -axes[2][i]) * 0.4
+        dcmBox[6][i] = ( axes[0][i] +axes[1][i] -axes[2][i]) * 0.4
+        dcmBox[7][i] = ( axes[0][i] -axes[1][i] -axes[2][i]) * 0.4
 
     # Draw the axes of whichever DCM we're using.
     glBegin(GL_LINES)
@@ -90,18 +99,18 @@ def drawScene():
     # Draw a box around the DCM to help visualize.
     glBegin(GL_LINES)
     glColor3f(1,1,1)
-    glVertex3fv(vx[0]); glVertex3fv(vx[1])
-    glVertex3fv(vx[0]); glVertex3fv(vx[3])
-    glVertex3fv(vx[0]); glVertex3fv(vx[4])
-    glVertex3fv(vx[2]); glVertex3fv(vx[1])
-    glVertex3fv(vx[2]); glVertex3fv(vx[3])
-    glVertex3fv(vx[2]); glVertex3fv(vx[6])
-    glVertex3fv(vx[5]); glVertex3fv(vx[1])
-    glVertex3fv(vx[5]); glVertex3fv(vx[4])
-    glVertex3fv(vx[5]); glVertex3fv(vx[6])
-    glVertex3fv(vx[7]); glVertex3fv(vx[3])
-    glVertex3fv(vx[7]); glVertex3fv(vx[4])
-    glVertex3fv(vx[7]); glVertex3fv(vx[6])
+    glVertex3fv(dcmBox[0]); glVertex3fv(dcmBox[1])
+    glVertex3fv(dcmBox[0]); glVertex3fv(dcmBox[3])
+    glVertex3fv(dcmBox[0]); glVertex3fv(dcmBox[4])
+    glVertex3fv(dcmBox[2]); glVertex3fv(dcmBox[1])
+    glVertex3fv(dcmBox[2]); glVertex3fv(dcmBox[3])
+    glVertex3fv(dcmBox[2]); glVertex3fv(dcmBox[6])
+    glVertex3fv(dcmBox[5]); glVertex3fv(dcmBox[1])
+    glVertex3fv(dcmBox[5]); glVertex3fv(dcmBox[4])
+    glVertex3fv(dcmBox[5]); glVertex3fv(dcmBox[6])
+    glVertex3fv(dcmBox[7]); glVertex3fv(dcmBox[3])
+    glVertex3fv(dcmBox[7]); glVertex3fv(dcmBox[4])
+    glVertex3fv(dcmBox[7]); glVertex3fv(dcmBox[6])
     glEnd()
 
     # Draw static axes.
@@ -117,6 +126,30 @@ def drawScene():
 
     # Draw a static box.
     #glutWireCube(1.2)
+
+
+    ###########################################################################
+    # Motor output visualization
+    ###########################################################################
+
+    # Motor base locations
+    for i in range(3):
+        motorBase[0][i] = -axes[1][i]                            # Tail (0, -1, 0)
+        motorBase[1][i] = axes[0][i]*sqrt(3)/2 + axes[1][i]/2    # Right (sqrt(3)/2, 1/2, 0)
+        motorBase[2][i] = -axes[0][i]*sqrt(3)/2 + axes[1][i]/2   # Left (-sqrt(3)/2, 1/2, 0)
+
+    # Motor "height" to make them visible. TODO: these should eventually be cylinders.
+    for i in range(3):
+        motorTop[0][i] = -axes[1][i] + axes[2][i]*motorVal[0]/125                           # Tail (0, -1, motorVal)
+        motorTop[1][i] = axes[0][i]*sqrt(3)/2 + axes[1][i]/2 + axes[2][i]*motorVal[1]/125   # Right (sqrt(3)/2, 1/2, motorVal)
+        motorTop[2][i] = -axes[0][i]*sqrt(3)/2 + axes[1][i]/2 + axes[2][i]*motorVal[2]/125  # Left (-sqrt(3)/2, 1/2, motorVal)
+
+    glBegin(GL_LINES)
+    glColor3f(1,0.7,1.0)
+    glVertex3fv(motorBase[0]); glVertex3fv(motorTop[0])
+    glVertex3fv(motorBase[1]); glVertex3fv(motorTop[1])
+    glVertex3fv(motorBase[2]); glVertex3fv(motorTop[2])
+    glEnd()
 
     # Since this is double buffered, swap the buffers to display what just got drawn.
     glutSwapBuffers()
