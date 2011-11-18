@@ -45,17 +45,18 @@ targetRot = [0.0, 0.0, 0.0]
 # Motor/servo values (MT, MR, ML, ST)
 motorVal = [0.0, 0.0, 0.0, 0.0]
 
-# Initial vertex values for a box drawn around the DCM.
-dcmBox = [[-1,-1,1], [-1,1,1], [1,1,1], [1,-1,1], [-1,-1,-1], [-1,1,-1], [1,1,-1], [1,-1,-1]]
-
-# Initial vertex values for the three motor positions (tail, right, left).
-motorBase = [[0, -1, 0], [sqrt(3)/2, 1/2, 0], [-sqrt(3)/2, 1/2, 0]]   # The "base" of the motors.
-motorTop = [[0, -1, 0.1], [sqrt(3)/2, 1/2, 0.1], [-sqrt(3)/2, 1/2, 0.1]]   # The "top" of the motors.
-
 
 def drawScene():
     # Define axes to draw.
     axes = dcm
+
+    # Initial vertex values for a box drawn around the DCM.
+    dcmBox = [[-1,-1,1], [-1,1,1], [1,1,1], [1,-1,1], [-1,-1,-1], [-1,1,-1], [1,1,-1], [1,-1,-1]]
+    
+    # Initial vertex values for the three motor positions (tail, right, left).
+    motorBase = [[0, -1, 0], [sqrt(3)/2, 1/2, 0], [-sqrt(3)/2, 1/2, 0]]   # The "base" of the motors.
+    motorTop = [[0, -1, 0.1], [sqrt(3)/2, 1/2, 0.1], [-sqrt(3)/2, 1/2, 0.1]]   # The "top" of the motors.
+    motorColor = [[1,1,1], [1,1,1], [1,1,1]]
 
     # Clear screen and depth buffer.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -144,10 +145,28 @@ def drawScene():
         motorTop[1][i] = axes[0][i]*sqrt(3)/2 + axes[1][i]/2 + axes[2][i]*motorVal[1]/125   # Right (sqrt(3)/2, 1/2, motorVal)
         motorTop[2][i] = -axes[0][i]*sqrt(3)/2 + axes[1][i]/2 + axes[2][i]*motorVal[2]/125  # Left (-sqrt(3)/2, 1/2, motorVal)
 
+    # Motor colors to indicate speed. TODO: this should replace changing the
+    # values of motorTop.
+    for i in range(3):
+        if motorVal[i] < 10:
+            motorColor[i] = [0.0, 0.0, 1.0]
+        elif motorVal[i] >= 10 and motorVal[i] < 30:
+            motorColor[i] = [0.0, (motorVal[i]-10.0)/20.0, 1.0]
+        elif motorVal[i] >= 30 and motorVal[i] < 50:
+            motorColor[i] = [0.0, 1.0, 1.0-(motorVal[i]-30.0)/20.0]
+        elif motorVal[i] >= 50 and motorVal[i] < 70:
+            motorColor[i] = [(motorVal[i]-50.0)/20.0, 1.0, 0.0]
+        elif motorVal[i] >= 70 and motorVal[i] < 90:
+            motorColor[i] = [1.0, 1.0-(motorVal[i]-70.0)/20.0, 0]
+        else:
+            motorColor[i] = [1.0, 0.0, 0.0]
+
     glBegin(GL_LINES)
-    glColor3f(1,0.7,1.0)
+    glColor3fv(motorColor[0])
     glVertex3fv(motorBase[0]); glVertex3fv(motorTop[0])
+    glColor3fv(motorColor[1])
     glVertex3fv(motorBase[1]); glVertex3fv(motorTop[1])
+    glColor3fv(motorColor[2])
     glVertex3fv(motorBase[2]); glVertex3fv(motorTop[2])
     glEnd()
 
@@ -294,7 +313,7 @@ class telemetryThread(threading.Thread):
                         except Exception, e:
                             print "MTR: " + str(e)
 
-                    #print fields
+                    print fields
                     #print [dcm, fields[-1]]
                     #print [targetRot, fields[-1]]
                     print [int(fields[0].encode('hex'), 16), motorVal, fields[-1]]
