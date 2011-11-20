@@ -220,7 +220,11 @@ def drawScene():
         cylT[i] = vCross(cylDef, cylVec[i])
         # Calculate cylinder angle. Add 0.1 to motorVal to prevent division by
         # zero.
-        cylAngle[i] = 180.0/pi * acos(vDot(cylDef, cylVec[i]) / ((motorVal[i]-0.001)/125))
+        try:
+            cylAngle[i] = 180.0/pi * acos(vDot(cylDef, cylVec[i]) / ((motorVal[i]+0.001)/125))
+        except ValueError:
+            # TODO: This is a hack!
+            cylAngle[i] = 180.0
 
     # =========================================================================
     # Draw the cylinders. For each cylinder, we:
@@ -234,6 +238,11 @@ def drawScene():
         glColor4fv(motorColor[i])
         glTranslatef(motorBase[i][0], motorBase[i][1], motorBase[i][2])
         glRotatef(cylAngle[i], cylT[i][0], cylT[i][1], cylT[i][2]);
+
+        # Rotate tail motor based on yaw motorVal[3]
+        if i == 0:
+            glRotatef(motorVal[3]-50, 0.0, 1.0, 0.0)
+
         #gluQuadricOrientation(quadratic, GLU_OUTSIDE);
         gluCylinder(quadratic, 0.3, 0.3, (motorVal[i]-0.001)/400, 32, 32);
 
@@ -409,7 +418,6 @@ class telemetryThread(threading.Thread):
                     # =========================================================
                     #print fields
                     #print [dcm, fields[-1]]
-                    #print [targetRot, fields[-1]]
                     print [int(fields[0].encode('hex'), 16), motorVal, fields[-1]]
 
             except:
