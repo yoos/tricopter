@@ -11,13 +11,33 @@
 
 int armCount;   // Arm status counter.
 int loopCount;   // Count system loops.
-float pwmOut[4];
+float pwmOut[4], pwmOutUpdate[4];
 char commStr[250];   // String to be sent out to base.
 float commandPitch;   // Pitch command to be processed through PID.
 float commandRoll;   // Roll command to be processed through PID.
 float gyroDCM[3][3];   // Current position DCM calculated by IMU.
-float targetRot[3];
+float targetRot[3], pidRot[3];
 float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
+
+
+// ============================================================================
+// PID
+//     Match the number of structs to the number of PID value defines.
+// ============================================================================
+struct PIDdata {
+    float P, I, D;
+    float lastValue;
+    float integratedError;
+} PID[4];
+
+//#define PID_MOTOR_T 0
+//#define PID_MOTOR_R 1
+//#define PID_MOTOR_L 2
+//#define PID_SERVO_T 3
+
+#define PID_ROT_X 0
+#define PID_ROT_Y 1
+#define PID_ROT_Z 2
 
 
 /*****************************************************************************
@@ -81,7 +101,7 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 #define MOTOR_R_SCALE  8   // Scale speed of right motor.
 #define MOTOR_L_SCALE  8   // Scale speed of left motor.
 #define TAIL_SERVO_DEFAULT_POSITION 50
-#define TAIL_SERVO_SCALE 40   // Scale tail servo rotation.
+#define TAIL_SERVO_SCALE 70   // Scale tail servo rotation.
 
 #define PMT 4   // Tail motor pin.
 #define PMR 2   // Right motor pin.
@@ -99,14 +119,6 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 //#define ACRO 3
 //#define AUTO 4
 //#define AUTO_HOVER 5
-
-
-/*****************************************************************************
- * Definitions
- *****************************************************************************/
-
-#define PITCH 0   // X axis index for PID struct.
-#define ROLL 1   // Y axis index for PID struct.
 
 
 /*****************************************************************************
