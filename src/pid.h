@@ -3,27 +3,22 @@
 
 #include "globals.h"
 
-// Modified from AeroQuad PID code.
-struct PIDdata {
-    float P, I, D;
-    float lastPosition;
-    float integratedError;
-} PID[2];
+float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparameters) {
+    float error;
+    float dTerm;
+    float deltaPIDTime = MASTER_DT;
 
-float updatePID(float targetPosition, float currentPosition, struct PIDdata &PIDparameters) {
-  float error;
-  float dTerm;
-  float deltaPIDTime = MASTER_DT;
+    error = targetValue - currentValue;
 
-  error = targetPosition - currentPosition;
+    PIDparameters.integratedError += error * deltaPIDTime;
 
-  PIDparameters.integratedError += error * deltaPIDTime;
-  
-  dTerm = PIDparameters.D * (currentPosition - PIDparameters.lastPosition) / (deltaPIDTime * 100); // dT fix from Honk
+    dTerm = -(currentValue - PIDparameters.lastValue) / deltaPIDTime * 1000;
 
-  PIDparameters.lastPosition = currentPosition;
-  
-  return (PIDparameters.P * error) + (PIDparameters.I * (PIDparameters.integratedError)) + dTerm;
+    PIDparameters.lastValue = currentValue;
+
+    return PIDparameters.P * error +
+           PIDparameters.I * PIDparameters.integratedError +
+           PIDparameters.D * dTerm;
 }
 
 // void zeroIntegralError() __attribute__ ((noinline));
