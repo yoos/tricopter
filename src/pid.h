@@ -6,13 +6,13 @@
 float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparameters) {
     float error;
     float dTerm;
-    float deltaPIDTime = MASTER_DT;
+    float deltaPIDTime = MASTER_DT * CONTROL_LOOP_INTERVAL;
 
     error = targetValue - currentValue;
 
     PIDparameters.integratedError += error * deltaPIDTime;
 
-    dTerm = -(currentValue - PIDparameters.lastValue) / deltaPIDTime * 1000;
+    dTerm = (currentValue - PIDparameters.lastValue) / deltaPIDTime * 1000;
 
     PIDparameters.lastValue = currentValue;
 
