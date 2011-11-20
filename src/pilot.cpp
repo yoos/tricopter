@@ -23,13 +23,13 @@ Pilot::Pilot() {
         pwmOutUpdate[i] = 0;
     }
 
-    PID[PID_ROT_X].P = 7.0;
+    PID[PID_ROT_X].P = 3.2;
     PID[PID_ROT_X].I = 0.0;
-    PID[PID_ROT_X].D = 0.400;
+    PID[PID_ROT_X].D = -0.060;
 
-    PID[PID_ROT_Y].P = 7.0;
+    PID[PID_ROT_Y].P = 3.2;
     PID[PID_ROT_Y].I = 0.0;
-    PID[PID_ROT_Y].D = 0.400;
+    PID[PID_ROT_Y].D = -0.060;
 
     PID[PID_ROT_Z].P = 50.0;
     PID[PID_ROT_Z].I = 0.0;
