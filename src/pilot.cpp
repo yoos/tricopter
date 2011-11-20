@@ -18,12 +18,38 @@ Pilot::Pilot() {
      * throttle before motors arm. */
     serInput[SZ] = 3;   
 
-    PID[PITCH].P = 60;
-    PID[PITCH].I = 0;
-    PID[PITCH].D = 0;
-    PID[ROLL].P  = 60;
-    PID[ROLL].I  = 0;
-    PID[ROLL].D  = 0;
+    // Zero all PWM update values.
+    for (int i=0; i<4; i++) {
+        pwmOutUpdate[i] = 0;
+    }
+
+    PID[PID_ROT_X].P = 7.0;
+    PID[PID_ROT_X].I = 0.0;
+    PID[PID_ROT_X].D = 0.400;
+
+    PID[PID_ROT_Y].P = 7.0;
+    PID[PID_ROT_Y].I = 0.0;
+    PID[PID_ROT_Y].D = 0.400;
+
+    PID[PID_ROT_Z].P = 50.0;
+    PID[PID_ROT_Z].I = 0.0;
+    PID[PID_ROT_Z].D = 1.0;
+
+    //PID[PID_MOTOR_T].P = 0.01;
+    //PID[PID_MOTOR_T].I = 0;
+    //PID[PID_MOTOR_T].D = 0;
+
+    //PID[PID_MOTOR_R].P = 0.01;
+    //PID[PID_MOTOR_R].I = 0;
+    //PID[PID_MOTOR_R].D = 0;
+
+    //PID[PID_MOTOR_L].P = 0.01;
+    //PID[PID_MOTOR_L].I = 0;
+    //PID[PID_MOTOR_L].D = 0;
+
+    //PID[PID_SERVO_T].P = 0.1;
+    //PID[PID_SERVO_T].I = 0;
+    //PID[PID_SERVO_T].D = 0;
 
     #ifdef DEBUG
     spln("Pilot here!");
@@ -121,9 +147,19 @@ void Pilot::Fly() {
         // TODO: The first two are approximations! Need to figure out how to
         // properly use the DCM.
         // ====================================================================
-        targetRot[0] = -(axisVal[SY]/125 * PI/6 + gyroDCM[1][2]);
-        targetRot[1] =  (axisVal[SX]/125 * PI/6 + gyroDCM[0][2]);
-        targetRot[2] = -(axisVal[ST]/125 * PI/6);
+        pidRot[0] = updatePID(-axisVal[SY]/125 * PI/6,
+                              gyroDCM[1][2],
+                              PID[PID_ROT_X]);
+        pidRot[1] = updatePID(axisVal[SX]/125 * PI/6,
+                              -gyroDCM[0][2],
+                              PID[PID_ROT_Y]);
+        pidRot[2] = updatePID(-axisVal[ST]/125 * PI/6,
+                              0,//atan2(gyroDCM[0][1], gyroDCM[0][0]),
+                              PID[PID_ROT_Z]);
+
+        //targetRot[0] = -(axisVal[SY]/125 * PI/6 + gyroDCM[1][2]);
+        //targetRot[1] =  (axisVal[SX]/125 * PI/6 + gyroDCM[0][2]);
+        //targetRot[2] = -(axisVal[ST]/125 * PI/6);
 
         // ====================================================================
         // Calculate motor/servo values.
@@ -148,12 +184,38 @@ void Pilot::Fly() {
         //pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]);
         //pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]);
 
-        // MOTORVAL SCHEME 3
-        pwmOut[MOTOR_T] = MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_T_SCALE * (-targetRot[0]*2);
-        pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]*sqrt(3));
-        pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]*sqrt(3));
+        // MOTORVAL SCHEME 3 (targetRot to motorVal conversion)
+        //pwmOut[MOTOR_T] = MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_T_SCALE * (-targetRot[0]*2);
+        //pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_R_SCALE * ( targetRot[0] - targetRot[1]*sqrt(3));
+        //pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + MOTOR_L_SCALE * ( targetRot[0] + targetRot[1]*sqrt(3));
+        //pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + TAIL_SERVO_SCALE * targetRot[2];
 
-        pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + TAIL_SERVO_SCALE * targetRot[2];   // TODO: Which direction is positive?
+        // MOTORVAL SCHEME 4 (WITH PID)
+        // Generate PID update values to output to PWM.
+        //pwmOutUpdate[MOTOR_T] = updatePID(-targetRot[0]*2, 0, PID[PID_MOTOR_T]);
+        //pwmOutUpdate[MOTOR_R] = updatePID(targetRot[0] - targetRot[1]*sqrt(3), 0, PID[PID_MOTOR_R]);
+        //pwmOutUpdate[MOTOR_L] = updatePID(targetRot[0] + targetRot[1]*sqrt(3), 0, PID[PID_MOTOR_L]);
+        //pwmOutUpdate[SERVO_T] = updatePID(targetRot[2], 0, PID[PID_SERVO_T]);
+
+        // Add pwmOutUpdate to pwmOut along with motor offsets and throttle.
+        //pwmOut[MOTOR_T] = updatePID(MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) - (targetRot[0]*2),
+        //                            pwmOut[MOTOR_T],
+        //                            PID[PID_MOTOR_T]);
+        //pwmOut[MOTOR_R] = updatePID(MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + (targetRot[0] - targetRot[1]*sqrt(3)),
+        //                            pwmOut[MOTOR_R],
+        //                            PID[PID_MOTOR_R]);
+        //pwmOut[MOTOR_L] = updatePID(MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + (targetRot[0] + targetRot[1]*sqrt(3)),
+        //                            pwmOut[MOTOR_L],
+        //                            PID[PID_MOTOR_L]);
+        //pwmOut[SERVO_T] = updatePID(TAIL_SERVO_DEFAULT_POSITION + targetRot[2],
+        //                            pwmOut[SERVO_T],
+        //                            PID[PID_SERVO_T]);
+
+        // MOTORVAL SCHEME 5 (pidRot to motorVal conversion)
+        pwmOut[MOTOR_T] = MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + -pidRot[0]*2;
+        pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) +  pidRot[0] - pidRot[1]*sqrt(3);
+        pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) +  pidRot[0] + pidRot[1]*sqrt(3);
+        pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + pidRot[2];
 
         // DEPRECATED.
         //pwmOut[MOTOR_T] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
