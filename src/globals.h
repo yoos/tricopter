@@ -71,7 +71,7 @@ struct PIDdata {
  *****************************************************************************/
 
 #define MASTER_DT              12   // 12 ms interval = 83 Hz master loop.
-#define CONTROL_LOOP_INTERVAL   2   // 1/2 master = 42 Hz. NOTE: This frequency should be HIGHER than comm.py's dataSend frequency!
+#define CONTROL_LOOP_INTERVAL   1   // 1/2 master = 42 Hz. NOTE: This frequency should be HIGHER than comm.py's dataSend frequency!
 #define TELEMETRY_LOOP_INTERVAL 5   // 1/5 master = 21 Hz.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
 
@@ -79,7 +79,7 @@ struct PIDdata {
 //#define GYRO_COEFF 15   // Try to stabilize craft.
 //#define ACCEL_COEFF 90   // TEST: Try to stabilize craft.
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
-#define TMAX 90   // Servo signal that registers as maximum throttle to ESC.
+#define TMAX 60   // Servo signal that registers as maximum throttle to ESC.
 #define TIME_TO_ARM 2000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 3   // This is added to TMIN to determine whether or not to arm the system.
 
@@ -100,7 +100,7 @@ struct PIDdata {
 #define MOTOR_T_SCALE  8   // Scale speed of tail motor.
 #define MOTOR_R_SCALE  8   // Scale speed of right motor.
 #define MOTOR_L_SCALE  8   // Scale speed of left motor.
-#define TAIL_SERVO_DEFAULT_POSITION 50
+#define TAIL_SERVO_DEFAULT_POSITION 60
 #define TAIL_SERVO_SCALE 70   // Scale tail servo rotation.
 
 #define PMT 4   // Tail motor pin.
