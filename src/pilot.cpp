@@ -23,17 +23,17 @@ Pilot::Pilot() {
         pwmOutUpdate[i] = 0;
     }
 
-    PID[PID_ROT_X].P = 3.2;
+    PID[PID_ROT_X].P = 8.0;
     PID[PID_ROT_X].I = 0.0;
-    PID[PID_ROT_X].D = -0.060;
+    PID[PID_ROT_X].D = -1.4;
 
-    PID[PID_ROT_Y].P = 3.2;
+    PID[PID_ROT_Y].P = 8.0;
     PID[PID_ROT_Y].I = 0.0;
-    PID[PID_ROT_Y].D = -0.060;
+    PID[PID_ROT_Y].D = -1.4;
 
     PID[PID_ROT_Z].P = 50.0;
     PID[PID_ROT_Z].I = 0.0;
-    PID[PID_ROT_Z].D = 1.0;
+    PID[PID_ROT_Z].D = 1000.0;
 
     //PID[PID_MOTOR_T].P = 0.01;
     //PID[PID_MOTOR_T].I = 0;
@@ -147,10 +147,10 @@ void Pilot::Fly() {
         // TODO: The first two are approximations! Need to figure out how to
         // properly use the DCM.
         // ====================================================================
-        pidRot[0] = updatePID(-axisVal[SY]/125 * PI/6,
+        pidRot[0] = updatePID(-axisVal[SY]/125 * PI/12,
                               gyroDCM[1][2],
                               PID[PID_ROT_X]);
-        pidRot[1] = updatePID(axisVal[SX]/125 * PI/6,
+        pidRot[1] = updatePID(axisVal[SX]/125 * PI/12,
                               -gyroDCM[0][2],
                               PID[PID_ROT_Y]);
         pidRot[2] = updatePID(-axisVal[ST]/125 * PI/6,

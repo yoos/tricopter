@@ -12,7 +12,7 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
 
     PIDparameters.integratedError += error * deltaPIDTime;
 
-    dTerm = (currentValue - PIDparameters.lastValue) / deltaPIDTime * 1000;
+    dTerm = (currentValue - PIDparameters.lastValue) / deltaPIDTime;
 
     PIDparameters.lastValue = currentValue;
 
