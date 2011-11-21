@@ -79,7 +79,7 @@ struct PIDdata {
 //#define GYRO_COEFF 15   // Try to stabilize craft.
 //#define ACCEL_COEFF 90   // TEST: Try to stabilize craft.
 #define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
-#define TMAX 60   // Servo signal that registers as maximum throttle to ESC.
+#define TMAX 80   // Servo signal that registers as maximum throttle to ESC.
 #define TIME_TO_ARM 2000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 3   // This is added to TMIN to determine whether or not to arm the system.
 
@@ -94,12 +94,12 @@ struct PIDdata {
  * it may as well be hard-coded.
  *****************************************************************************/
 
-#define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
+#define MOTOR_T_OFFSET 5   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define MOTOR_T_SCALE  8   // Scale speed of tail motor.
-#define MOTOR_R_SCALE  8   // Scale speed of right motor.
-#define MOTOR_L_SCALE  8   // Scale speed of left motor.
+//#define MOTOR_T_SCALE  8   // Scale speed of tail motor.
+//#define MOTOR_R_SCALE  8   // Scale speed of right motor.
+//#define MOTOR_L_SCALE  8   // Scale speed of left motor.
 #define TAIL_SERVO_DEFAULT_POSITION 60
 #define TAIL_SERVO_SCALE 70   // Scale tail servo rotation.
 
