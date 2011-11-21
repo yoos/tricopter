@@ -52,12 +52,12 @@ def callback(myJoy):
     """
     axisValues[0] = int(250*((axisSigns[0] * myJoy.axes[0] + 1) / 2) + 1)   # X
     axisValues[1] = int(250*((axisSigns[1] * myJoy.axes[1] + 1) / 2) + 1)   # Y
-    axisValues[2] = int(250*((axisSigns[2] * myJoy.axes[2] + 1) / 2) + 1)   # T
-    axisValues[3] = int(250*((axisSigns[3] * myJoy.axes[3] + 1) / 2) + 1)   # Z
+    #axisValues[2] = int(250*((axisSigns[2] * myJoy.axes[2] + 1) / 2) + 1)   # T
+    #axisValues[3] = int(250*((axisSigns[3] * myJoy.axes[3] + 1) / 2) + 1)   # Z
 
     # Joystick at OSURC
-    #axisValues[3] = int(250*((axisSigns[3] * myJoy.axes[2] + 1) / 2) + 1)   # Z
-    #axisValues[2] = int(250*((axisSigns[2] * myJoy.axes[3] + 1) / 2) + 1)   # T
+    axisValues[3] = int(250*((axisSigns[3] * myJoy.axes[2] + 1) / 2) + 1)   # Z
+    axisValues[2] = int(250*((axisSigns[2] * myJoy.axes[3] + 1) / 2) + 1)   # T
     #rospy.loginfo("Joystick moved!")
 
 def communicate():
