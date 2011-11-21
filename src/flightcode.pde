@@ -75,9 +75,9 @@ int main(void) {
 
                     // Check that motor values set by Pilot are within the
                     // arming threshold.
-                    if (abs(pwmOut[MOTOR_T] - TMIN) < MOTOR_ARM_THRESHOLD &&
-                        abs(pwmOut[MOTOR_R] - TMIN) < MOTOR_ARM_THRESHOLD &&
-                        abs(pwmOut[MOTOR_L] - TMIN) < MOTOR_ARM_THRESHOLD) {
+                    if (abs(pwmOut[MOTOR_T] - (TMIN + MOTOR_T_OFFSET)) < MOTOR_ARM_THRESHOLD &&
+                        abs(pwmOut[MOTOR_R] - (TMIN + MOTOR_R_OFFSET)) < MOTOR_ARM_THRESHOLD &&
+                        abs(pwmOut[MOTOR_L] - (TMIN + MOTOR_L_OFFSET)) < MOTOR_ARM_THRESHOLD) {
                         armCount--;   // Once Pilot shows some sense, arm.
                     }
                 }
