@@ -40,6 +40,7 @@ INSTALL_DIR = $(HOME)/apps/arduino-0022
 PORT = /dev/ttyUSB*
 UPLOAD_RATE = 57600
 AVRDUDE_PROGRAMMER = stk500v1
+#AVRDUDE_PROGRAMMER = arduino
 #MCU = atmega328p
 MCU = atmega1280
 F_CPU = 16000000
@@ -50,7 +51,8 @@ ARDUINO_LIBS = $(INSTALL_DIR)/libraries/{ArduinoTestSuite,EEPROM,Ethernet,Firmat
 
 #AVR_TOOLS_PATH = $(INSTALL_DIR)/hardware/tools/avr/bin
 AVR_TOOLS_PATH = /usr/bin
-AVRDUDE_PATH = $(INSTALL_DIR)/hardware/tools
+#AVRDUDE_PATH = $(INSTALL_DIR)/hardware/tools
+AVRDUDE_PATH = /usr/bin
 C_MODULES =  \
 $(ARDUINO)/wiring_pulse.c \
 $(ARDUINO)/wiring_analog.c \
