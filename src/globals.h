@@ -94,12 +94,12 @@ struct PIDdata {
  * it may as well be hard-coded.
  *****************************************************************************/
 
-#define MOTOR_T_OFFSET 5   // Speed offset for tail motor.
+#define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-//#define MOTOR_T_SCALE  8   // Scale speed of tail motor.
-//#define MOTOR_R_SCALE  8   // Scale speed of right motor.
-//#define MOTOR_L_SCALE  8   // Scale speed of left motor.
+#define MOTOR_T_SCALE  1.18   // Scale speed of tail motor.
+#define MOTOR_R_SCALE  1   // Scale speed of right motor.
+#define MOTOR_L_SCALE  1   // Scale speed of left motor.
 #define TAIL_SERVO_DEFAULT_POSITION 60
 #define TAIL_SERVO_SCALE 70   // Scale tail servo rotation.
 

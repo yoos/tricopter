@@ -23,13 +23,13 @@ Pilot::Pilot() {
         pwmOutUpdate[i] = 0;
     }
 
-    PID[PID_ROT_X].P = 8.0;
+    PID[PID_ROT_X].P = 3.2;
     PID[PID_ROT_X].I = 0.0;
-    PID[PID_ROT_X].D = -1.4;
+    PID[PID_ROT_X].D = -470.0;
 
-    PID[PID_ROT_Y].P = 8.0;
+    PID[PID_ROT_Y].P = 3.2;
     PID[PID_ROT_Y].I = 0.0;
-    PID[PID_ROT_Y].D = -1.4;
+    PID[PID_ROT_Y].D = -470.0;
 
     PID[PID_ROT_Z].P = 50.0;
     PID[PID_ROT_Z].I = 0.0;
@@ -147,10 +147,10 @@ void Pilot::Fly() {
         // TODO: The first two are approximations! Need to figure out how to
         // properly use the DCM.
         // ====================================================================
-        pidRot[0] = updatePID(-axisVal[SY]/125 * PI/12,
+        pidRot[0] = updatePID(-axisVal[SY]/125 * PI/10,
                               gyroDCM[1][2],
                               PID[PID_ROT_X]);
-        pidRot[1] = updatePID(axisVal[SX]/125 * PI/12,
+        pidRot[1] = updatePID(axisVal[SX]/125 * PI/10,
                               -gyroDCM[0][2],
                               PID[PID_ROT_Y]);
         pidRot[2] = updatePID(-axisVal[ST]/125 * PI/6,
@@ -216,6 +216,10 @@ void Pilot::Fly() {
         pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) +  pidRot[0] - pidRot[1]*sqrt(3);
         pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) +  pidRot[0] + pidRot[1]*sqrt(3);
         pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + pidRot[2];
+
+        pwmOut[MOTOR_T] = MOTOR_T_SCALE * pwmOut[MOTOR_T];
+        pwmOut[MOTOR_R] = MOTOR_R_SCALE * pwmOut[MOTOR_R];
+        pwmOut[MOTOR_L] = MOTOR_L_SCALE * pwmOut[MOTOR_L];
 
         // DEPRECATED.
         //pwmOut[MOTOR_T] = MOTOR_T_SCALE * (MOTOR_T_OFFSET + axisVal[SZ] + 0.6667*(GYRO_COEFF*gVal[0] + commandPitch));   // Watch out for floats vs. ints
