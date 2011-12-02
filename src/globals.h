@@ -27,7 +27,7 @@ float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 struct PIDdata {
     float P, I, D;
     float lastValue;
-    float integratedError;
+    float integral;
 } PID[4];
 
 //#define PID_MOTOR_T 0

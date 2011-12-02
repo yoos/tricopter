@@ -4,27 +4,27 @@
 #include "globals.h"
 
 float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparameters) {
-    float error;
-    float dTerm;
+    float proportional;
+    float derivative;
     float deltaPIDTime = MASTER_DT * CONTROL_LOOP_INTERVAL;
 
-    error = targetValue - currentValue;
+    proportional = targetValue - currentValue;
 
-    PIDparameters.integratedError += error * deltaPIDTime;
+    PIDparameters.integral += proportional * deltaPIDTime;
 
-    dTerm = (currentValue - PIDparameters.lastValue) / deltaPIDTime;
+    derivative = (currentValue - PIDparameters.lastValue) / deltaPIDTime;
 
     PIDparameters.lastValue = currentValue;
 
-    return PIDparameters.P * error +
-           PIDparameters.I * PIDparameters.integratedError +
-           PIDparameters.D * dTerm;
+    return PIDparameters.P * proportional +
+           PIDparameters.I * PIDparameters.integral +
+           PIDparameters.D * derivative;
 }
 
-// void zeroIntegralError() __attribute__ ((noinline));
-// void zeroIntegralError() {
+// void zeroIntegralproportional() __attribute__ ((noinline));
+// void zeroIntegralproportional() {
 //   for (byte axis = ROLL; axis < LASTLEVELAXIS; axis++) {
-//     PID[axis].integratedError = 0;
+//     PID[axis].integral = 0;
 //     PID[axis].previousPIDTime = currentTime;
 //   }
 // }
