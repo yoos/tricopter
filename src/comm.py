@@ -14,7 +14,7 @@ import rospy
 from sensor_msgs.msg import Joy
 
 # Comm values
-serialPort = "/dev/ttyUSB0"
+#serialPort = "/dev/ttyUSB0"   # Uncomment to specify serial port. Otherwise, will connect to first available port.
 baudRate = 57600
 dataSendInterval = 0.030   # 30 ms interval = 33.3 Hz. NOTE: This frequency should be LOWER than the microcontroller's control loop frequency!
 dogFeedInterval = 0.1
@@ -36,12 +36,27 @@ buttonValues = []
 
 rospy.init_node("tric_comm", anonymous=True)
 
-# Open serial connection
+# =============================================================================
+# Try to initialize a serial connection. If serialPort is defined, try opening
+# that. If it is not defined, loop through a range of integers starting from 0
+# and try to connect to /dev/ttyUSBX where X is the integer. In either case,
+# process dies if serial port cannot be opened.
+# =============================================================================
 try:
     ser = serial.Serial(serialPort, baudRate, timeout=0)
-    rospy.loginfo("Serial at %s", serialPort)
-except:
-    rospy.logerr("Serial unavailable at %s!", serialPort)
+except serial.SerialException:
+    rospy.logerr("Unable to open specified serial port!")
+    exit(1)
+except NameError:
+    for i in range(4):
+        try:
+            ser = serial.Serial("/dev/ttyUSB"+str(i), baudRate, timeout=0)
+            rospy.loginfo("Opened serial at /dev/ttyUSB%d.", i)
+        except serial.SerialException:
+            rospy.logerr("No serial at /dev/ttyUSB%d.", i)
+            if i == 3:
+                rospy.logerr("No serial found. Giving up!")
+                exit(1)
 
 
 ############################ ROS get joystick input ###########################

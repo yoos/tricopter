@@ -26,7 +26,7 @@ try:
     print "OpenGL successfully imported."
 except:
     print "Error: PyOpenGL not installed properly. Exiting..."
-    sys.exit()
+    exit(1)
 
 # Initialize ROS node.
 rospy.init_node("tric_vis", anonymous=True)
@@ -34,6 +34,7 @@ rospy.init_node("tric_vis", anonymous=True)
 # =============================================================================
 # Serial configuration
 # =============================================================================
+#serialPort     = "/dev/ttyUSB0"   # Uncomment to specify serial port. Otherwise, will connect to first available port.
 baudRate       = 57600
 newlineSerTag  = '\xde\xad\xbe\xef'
 fieldSerTag    = '\xff\xff'
@@ -336,13 +337,28 @@ class telemetryThread(threading.Thread):
         serBuffer = ''
         serLines = ''
 
+        # =====================================================================
+        # Try to initialize a serial connection. If serialPort is defined, try
+        # opening that. If it is not defined, loop through a range of integers
+        # starting from 0 and try to connect to /dev/ttyUSBX where X is the
+        # integer. In either case, process dies if serial port cannot be
+        # opened.
+        # =====================================================================
         try:
-            ser = serial.Serial("/dev/ttyUSB0", baudRate)
-        except:
-            try:
-                ser = serial.Serial("/dev/ttyUSB1", baudRate)
-            except:
-                print "Serial unavailable!"
+            ser = serial.Serial(serialPort, baudRate, timeout=0)
+        except serial.SerialException:
+            rospy.logerr("Unable to open specified serial port!")
+            exit(1)
+        except NameError:
+            for i in range(4):
+                try:
+                    ser = serial.Serial("/dev/ttyUSB"+str(i), baudRate, timeout=0)
+                    rospy.loginfo("Opened serial at /dev/ttyUSB%d.", i)
+                except serial.SerialException:
+                    rospy.logerr("No serial at /dev/ttyUSB%d.", i)
+                    if i == 3:
+                        rospy.logerr("No serial found. Giving up!")
+                        exit(1)
 
         while self.running and not rospy.is_shutdown():
             try:
