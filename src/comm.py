@@ -14,7 +14,7 @@ import rospy
 from sensor_msgs.msg import Joy
 
 # Comm values
-serialPort = "/dev/ttyUSB1"
+serialPort = "/dev/ttyUSB0"
 baudRate = 57600
 dataSendInterval = 0.030   # 30 ms interval = 33.3 Hz. NOTE: This frequency should be LOWER than the microcontroller's control loop frequency!
 dogFeedInterval = 0.1
@@ -26,6 +26,10 @@ armed = False
 printString = ''
 
 axisSigns = [-1, 1, -1, 1, -1, 1]   # Axis sign flips
+axisX = 0
+axisY = 1
+axisT = 2
+axisZ = 3
 
 axisValues = [126, 126, 126, 3]   # Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 buttonValues = []
@@ -42,6 +46,12 @@ except:
 
 ############################ ROS get joystick input ###########################
 
+# Convert joystick values of [-1.0, 1.0] to [1, 251] so we can send them over
+# serial as bytes.
+def joy2int(joyVal, axisIndex):
+    return int(250*((axisSigns[axisIndex] * joyVal + 1) / 2) + 1)
+
+# Update axisValues when joystick is updated.
 def callback(myJoy):
     global axisValues
     """
@@ -50,30 +60,36 @@ def callback(myJoy):
         then mapped to [0, 250], which is finally shifted to [1, 251] to be
         sent as bytes.
     """
-    axisValues[0] = int(250*((axisSigns[0] * myJoy.axes[0] + 1) / 2) + 1)   # X
-    axisValues[1] = int(250*((axisSigns[1] * myJoy.axes[1] + 1) / 2) + 1)   # Y
-    #axisValues[2] = int(250*((axisSigns[2] * myJoy.axes[2] + 1) / 2) + 1)   # T
-    #axisValues[3] = int(250*((axisSigns[3] * myJoy.axes[3] + 1) / 2) + 1)   # Z
+    axisValues[axisX] = joy2int(myJoy.axes[0], axisX)   # X
+    axisValues[axisY] = joy2int(myJoy.axes[1], axisY)   # Y
 
-    # Joystick at OSURC
-    axisValues[3] = int(250*((axisSigns[3] * myJoy.axes[2] + 1) / 2) + 1)   # Z
-    axisValues[2] = int(250*((axisSigns[2] * myJoy.axes[3] + 1) / 2) + 1)   # T
-    #rospy.loginfo("Joystick moved!")
+    if len(myJoy.axes) == 3:
+        axisValues[axisT] = joy2int(0, axisT)   # Dummy T
+        axisValues[axisZ] = joy2int(myJoy.axes[2], axisZ)   # Z
+    else:
+        #axisValues[axisT] = joy2int(myJoy.axes[2], axisT)   # T
+        #axisValues[axisZ] = joy2int(myJoy.axes[3], axisZ)   # Z
 
+        # Joystick at OSURC
+        axisValues[axisT] = joy2int(myJoy.axes[3], axisT)   # T
+        axisValues[axisZ] = joy2int(myJoy.axes[2], axisZ)   # Z
+
+# Send axisValues to tricopter.
 def communicate():
     global armed
     global printString
     if armed:
-        sendData(serHeader + chr(axisValues[0]) + chr(axisValues[1]) + chr(axisValues[2]) + chr(axisValues[3]))
+        sendData(serHeader + chr(axisValues[axisX]) + chr(axisValues[axisY]) + chr(axisValues[axisT]) + chr(axisValues[axisZ]))
         # sendData(serHeader + chr(126) + chr(126) + chr(126) + chr(74))
-        rospy.loginfo(str(axisValues[0]) + " " + str(axisValues[1]) + " " + str(axisValues[2]) + " " + str(axisValues[3]))
+        rospy.loginfo(str(axisValues[axisX]) + " " + str(axisValues[axisY]) + " " + str(axisValues[axisT]) + " " + str(axisValues[axisZ]))
     elif not armed:
-        rospy.loginfo("Current throttle value: " + str(axisValues[3]))
-        if axisValues[3] == 1:   # If throttle is at minimum position
+        rospy.loginfo("Current throttle value: " + str(axisValues[axisZ]))
+        if axisValues[axisZ] == 1:   # If throttle is at minimum position
             armed = True
             rospy.loginfo("Joystick throttle at minimum! Motors armed!")
     # readData()   # TODO: make this work.
     
+# Serial write.
 def sendData(myStr):
     try:
         # ser.write(myStr)
@@ -84,14 +100,15 @@ def sendData(myStr):
         if verboseOn: rospy.logerr("ERROR: Unable to send data. Check connection.")
         # TODO: Comm should do something to ensure safety when it loses connection.
 
-def readData():
-    global printString
-    try:
-        while ser.inWaiting() > 0:
-            RX = ser.readline()   # TODO: Try changing this to ser.read(1)?
-        printString += RX
-    except:
-        return 0
+# DEPRECATED: Serial read.
+#def readData():
+#    global printString
+#    try:
+#        while ser.inWaiting() > 0:
+#            RX = ser.readline()   # TODO: Try changing this to ser.read(1)?
+#        printString += RX
+#    except:
+#        return 0
 
 class TricSubscriber(threading.Thread):
     def __init__(self):
