@@ -34,6 +34,7 @@ rospy.init_node("tric_vis", anonymous=True)
 # =============================================================================
 # Serial configuration
 # =============================================================================
+baudRate       = 57600
 newlineSerTag  = '\xde\xad\xbe\xef'
 fieldSerTag    = '\xff\xff'
 dcmSerTag      = '\xfb'
@@ -336,9 +337,12 @@ class telemetryThread(threading.Thread):
         serLines = ''
 
         try:
-            ser = serial.Serial("/dev/ttyUSB1", 57600)
+            ser = serial.Serial("/dev/ttyUSB0", baudRate)
         except:
-            print "Serial unavailable!"
+            try:
+                ser = serial.Serial("/dev/ttyUSB1", baudRate)
+            except:
+                print "Serial unavailable!"
 
         while self.running and not rospy.is_shutdown():
             try:
