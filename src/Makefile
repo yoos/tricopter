@@ -39,8 +39,8 @@ TARGET = flightcode
 INSTALL_DIR = $(HOME)/apps/arduino-0022
 PORT = /dev/ttyUSB*
 UPLOAD_RATE = 57600
-AVRDUDE_PROGRAMMER = stk500v1
-#AVRDUDE_PROGRAMMER = arduino
+#AVRDUDE_PROGRAMMER = stk500v1
+AVRDUDE_PROGRAMMER = arduino
 #MCU = atmega328p
 MCU = atmega1280
 F_CPU = 16000000
@@ -124,8 +124,9 @@ AVRDUDE_PORT = $(PORT)
 AVRDUDE_WRITE_FLASH = -U flash:w:applet/$(TARGET).hex
 
 #AVRDUDE_FLAGS = -V -F -C $(INSTALL_DIR)/hardware/tools/avr/etc/avrdude.conf \
+#AVRDUDE_FLAGS = -V -F -C $(INSTALL_DIR)/hardware/tools/avrdude.conf \
 
-AVRDUDE_FLAGS = -V -F -C $(INSTALL_DIR)/hardware/tools/avrdude.conf \
+AVRDUDE_FLAGS = -V -F -C /etc/avrdude.conf \
 -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) \
 -b $(UPLOAD_RATE)
 
