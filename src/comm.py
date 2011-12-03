@@ -52,6 +52,7 @@ except NameError:
         try:
             ser = serial.Serial("/dev/ttyUSB"+str(i), baudRate, timeout=0)
             rospy.loginfo("Opened serial at /dev/ttyUSB%d.", i)
+            break
         except serial.SerialException:
             rospy.logerr("No serial at /dev/ttyUSB%d.", i)
             if i == 3:
