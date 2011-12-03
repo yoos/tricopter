@@ -6,7 +6,7 @@
 float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparameters) {
     float proportional;
     float derivative;
-    float deltaPIDTime = MASTER_DT * CONTROL_LOOP_INTERVAL;
+    float deltaPIDTime = (float) MASTER_DT * CONTROL_LOOP_INTERVAL / 1000;
 
     proportional = targetValue - currentValue;
 
