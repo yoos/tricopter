@@ -23,17 +23,19 @@ Pilot::Pilot() {
         pwmOutUpdate[i] = 0;
     }
 
-    PID[PID_ROT_X].P = 3.2;
-    PID[PID_ROT_X].I = 0.0;
-    PID[PID_ROT_X].D = -470.0;
+    // 111201: Semi-working P, I, and D gains: 3.2, 0.0, -470
 
-    PID[PID_ROT_Y].P = 3.2;
+    PID[PID_ROT_X].P = 3.8;
+    PID[PID_ROT_X].I = 2.5;
+    PID[PID_ROT_X].D = -0.70;
+
+    PID[PID_ROT_Y].P = 5.0;
     PID[PID_ROT_Y].I = 0.0;
-    PID[PID_ROT_Y].D = -470.0;
+    PID[PID_ROT_Y].D = -0.6;
 
     PID[PID_ROT_Z].P = 50.0;
     PID[PID_ROT_Z].I = 0.0;
-    PID[PID_ROT_Z].D = 1000.0;
+    PID[PID_ROT_Z].D = 1.0;
 
     //PID[PID_MOTOR_T].P = 0.01;
     //PID[PID_MOTOR_T].I = 0;
