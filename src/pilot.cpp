@@ -23,45 +23,29 @@ Pilot::Pilot() {
         pwmOutUpdate[i] = 0;
     }
 
+    // Zero rotation values.
+    for (int i=0; i<3; i++) {
+        targetRot[i] = 0;
+        pidRot[i] = 0;
+    }
+
     // 111201: Semi-working P, I, and D gains: 3.2, 0.0, -470
 
-    PID[PID_ROT_X].P = 3.8;
-    PID[PID_ROT_X].I = 2.5;
-    PID[PID_ROT_X].D = -0.70;
+    PID[PID_ROT_X].P = 4.0;
+    PID[PID_ROT_X].I = 0;//2.5;
+    PID[PID_ROT_X].D = -0.76;
 
-    PID[PID_ROT_Y].P = 5.0;
-    PID[PID_ROT_Y].I = 0.0;
-    PID[PID_ROT_Y].D = -0.6;
+    PID[PID_ROT_Y].P = 4.0;
+    PID[PID_ROT_Y].I = 0;//2.5;
+    PID[PID_ROT_Y].D = -0.76;
 
-    PID[PID_ROT_Z].P = 50.0;
+    PID[PID_ROT_Z].P = 7.0;
     PID[PID_ROT_Z].I = 0.0;
-    PID[PID_ROT_Z].D = 1.0;
-
-    //PID[PID_MOTOR_T].P = 0.01;
-    //PID[PID_MOTOR_T].I = 0;
-    //PID[PID_MOTOR_T].D = 0;
-
-    //PID[PID_MOTOR_R].P = 0.01;
-    //PID[PID_MOTOR_R].I = 0;
-    //PID[PID_MOTOR_R].D = 0;
-
-    //PID[PID_MOTOR_L].P = 0.01;
-    //PID[PID_MOTOR_L].I = 0;
-    //PID[PID_MOTOR_L].D = 0;
-
-    //PID[PID_SERVO_T].P = 0.1;
-    //PID[PID_SERVO_T].I = 0;
-    //PID[PID_SERVO_T].D = 0;
+    PID[PID_ROT_Z].D = 0.0;
 
     #ifdef DEBUG
     spln("Pilot here!");
     #endif
-
-    //for (int i=0; i<3; i++) {
-    //    for (int j=0; j<3; j++) {
-    //        targetDCM[i][j] = gyroDCM[i][j];
-    //    }
-    //}
 
     numGoodComm = 0;   // Number of good communication packets.
     numBadComm = 0;   // Number of bad communication packets.
@@ -75,28 +59,14 @@ void Pilot::Listen() {
         // as it will go.
         delayMicroseconds(500);
 
-        // if (serRead == DOGBONE) {   // Receive dogbone.
-        //     hasFood = true;
-        // }
         if (serRead == SERHEAD) {   // Receive header.
             hasFood = true;   // Prepare food for watchdog.
             for (int i=0; i<PACKETSIZE; i++) {
                 serRead = Serial.read();
                 delayMicroseconds(500);   // Delay to prevent dropped bits.
 
-                // if (serRead == SERHEAD) {   // Dropped byte?
-                //     // i = -1;   // Discard and start over.
-                //     // spln("Pilot detected packet drop.");
-                //     Serial.flush();
-                //     okayToFly = false;
-                // }
-                // else if (serRead == -1) {   // This happens when serial is empty.
-                //     // spln("Pilot detected malformed packet.");
-                //     okayToFly = false;
-                // }
                 if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
                     serInput[i] = serRead;
-                    // spln("Pilot determined motor value.");
                     okayToFly = true;
                     numGoodComm++;
                 }
@@ -111,13 +81,8 @@ void Pilot::Listen() {
             }
         }
         else {
-            // #ifdef DEBUG
-            // sp("Weird header! ");
-            // sp((int) serRead);   // Warn if something weird happens.
-            // #endif
             okayToFly = false;
         }
-        // Serial.flush();
     }
 }
 
@@ -149,15 +114,36 @@ void Pilot::Fly() {
         // TODO: The first two are approximations! Need to figure out how to
         // properly use the DCM.
         // ====================================================================
-        pidRot[0] = updatePID(-axisVal[SY]/125 * PI/10,
-                              gyroDCM[1][2],
-                              PID[PID_ROT_X]);
-        pidRot[1] = updatePID(axisVal[SX]/125 * PI/10,
-                              -gyroDCM[0][2],
-                              PID[PID_ROT_Y]);
-        pidRot[2] = updatePID(-axisVal[ST]/125 * PI/6,
-                              0,//atan2(gyroDCM[0][1], gyroDCM[0][0]),
-                              PID[PID_ROT_Z]);
+        targetRot[0] = -axisVal[SY]/125 * PI/10;
+        targetRot[1] =  axisVal[SX]/125 * PI/10;
+        targetRot[2] += axisVal[ST]/125 / (MASTER_DT * CONTROL_LOOP_INTERVAL);
+
+        // Keep targetRot within [-PI, PI].
+        for (int i=0; i<3; i++) {
+            if (targetRot[i] > PI) {
+                targetRot[i] -= 2*PI;
+            }
+            else if (targetRot[i] < -PI) {
+                targetRot[i] += 2*PI;
+            }
+        }
+
+        pidRot[0] = updatePID(targetRot[0], gyroDCM[1][2], PID[PID_ROT_X]);
+        pidRot[1] = updatePID(targetRot[1], -gyroDCM[0][2], PID[PID_ROT_Y]);
+        pidRot[2] = updatePID(targetRot[2], atan2(gyroDCM[0][1], gyroDCM[0][0]), PID[PID_ROT_Z]);
+
+        // Keep pidRot[2] within [-PI, PI]. TODO: Rename pidRot, because it is
+        // not necessarily an actual rotation angle.
+        if (pidRot[2] > PI) {
+            pidRot[2] -= PI;
+        }
+        else if (pidRot[2] < -PI) {
+            pidRot[2] += PI;
+        }
+
+        //pidRot[2] = updatePID(axisVal[ST]/125 * PI/6,
+        //                      0,//atan2(gyroDCM[0][1], gyroDCM[0][0]),
+        //                      PID[PID_ROT_Z]);
 
         //targetRot[0] = -(axisVal[SY]/125 * PI/6 + gyroDCM[1][2]);
         //targetRot[1] =  (axisVal[SX]/125 * PI/6 + gyroDCM[0][2]);
