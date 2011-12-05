@@ -28,13 +28,5 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
            PIDparameters.D * derivative;
 }
 
-// void zeroIntegralproportional() __attribute__ ((noinline));
-// void zeroIntegralproportional() {
-//   for (byte axis = ROLL; axis < LASTLEVELAXIS; axis++) {
-//     PID[axis].integral = 0;
-//     PID[axis].previousPIDTime = currentTime;
-//   }
-// }
-
 #endif // PID_H
 
