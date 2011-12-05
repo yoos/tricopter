@@ -25,7 +25,7 @@ verboseOn = True
 armed = False
 printString = ''
 
-axisSigns = [-1, 1, -1, 1, -1, 1]   # Axis sign flips
+axisSigns = [-1, 1, 1, 1, -1, 1]   # Axis sign flips
 axisX = 0
 axisY = 1
 axisT = 2
