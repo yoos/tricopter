@@ -243,7 +243,7 @@ def drawScene():
 
         # Rotate tail motor based on yaw motorVal[3]
         if i == 0:
-            glRotatef(motorVal[3]-60, 0.0, 1.0, 0.0)
+            glRotatef(motorVal[3]-69, 0.0, 1.0, 0.0)
 
         #gluQuadricOrientation(quadratic, GLU_OUTSIDE);
         gluCylinder(quadratic, 0.3, 0.3, (motorVal[i]-0.001)/400, 32, 32);
@@ -418,7 +418,7 @@ class telemetryThread(threading.Thread):
                     if rotationDataIndex:
                         try:
                             for i in range(3):
-                                targetRot[i] = (int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16)-1)/250*2-1
+                                targetRot[i] = float(int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16)-1)/250*2*pi-pi
                                 #targetRot[i] = struct.unpack('f', fields[rotationDataIndex][3+i*4:3+i*4+4])[0]
                         except Exception, e:
                             print "ROT:", str(e)
@@ -439,7 +439,7 @@ class telemetryThread(threading.Thread):
                     # =========================================================
                     #print fields
                     #print [dcm, fields[-1]]
-                    print [int(fields[0].encode('hex'), 16), motorVal, targetRot, fields[-1]]
+                    print [int(fields[0].encode('hex'), 16), targetRot, motorVal, fields[-1]]
 
             except:
                 pass
