@@ -83,12 +83,12 @@ def callback(myJoy):
         axisValues[axisT] = joy2int(0, axisT)   # Dummy T
         axisValues[axisZ] = joy2int(myJoy.axes[2], axisZ)   # Z
     else:
-        #axisValues[axisT] = joy2int(myJoy.axes[2], axisT)   # T
-        #axisValues[axisZ] = joy2int(myJoy.axes[3], axisZ)   # Z
+        axisValues[axisT] = joy2int(myJoy.axes[2], axisT)   # T
+        axisValues[axisZ] = joy2int(myJoy.axes[3], axisZ)   # Z
 
         # Joystick at OSURC
-        axisValues[axisT] = joy2int(myJoy.axes[3], axisT)   # T
-        axisValues[axisZ] = joy2int(myJoy.axes[2], axisZ)   # Z
+        #axisValues[axisT] = joy2int(myJoy.axes[3], axisT)   # T
+        #axisValues[axisZ] = joy2int(myJoy.axes[2], axisZ)   # Z
 
 # Send axisValues to tricopter.
 def communicate():
