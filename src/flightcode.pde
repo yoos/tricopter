@@ -125,11 +125,11 @@ int main(void) {
                 // is a target DCM we could calculate but is unneeded at this
                 // moment.
                 // ============================================================
-                //sw(ROT_SER_TAG);
-                //for (int i=0; i<3; i++) {
-                //    sw((byte) (250*(targetRot[i]+1)/2+1));
-                //}
-                //sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
+                sw(ROT_SER_TAG);
+                for (int i=0; i<3; i++) {
+                    sw((250*(targetRot[i]+PI)/(2*PI)+1));
+                }
+                sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
 
                 // ============================================================
                 // Report motor values.
