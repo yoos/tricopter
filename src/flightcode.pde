@@ -33,7 +33,7 @@ int main(void) {
 
     // Write 0 to motors to prevent them from spinning up upon Seeeduino reset!
     for (int i=0; i<3; i++) {
-        pwmDevice[i].write(0);
+        pwmDevice[i].writeMicroseconds(0);
         pwmOut[i] = 0;
     }
 
@@ -68,10 +68,10 @@ int main(void) {
                  */
                 if (armCount > 0) {   // First check that system is armed.
                     // sp("System: Motors not armed.\n");
-                    pwmDevice[MOTOR_T].write(TMIN);   // Disregard what Pilot says and write TMIN.
-                    pwmDevice[MOTOR_R].write(TMIN);   // Disregard what Pilot says and write TMIN.
-                    pwmDevice[MOTOR_L].write(TMIN);   // Disregard what Pilot says and write TMIN.
-                    pwmDevice[SERVO_T].write(90);
+                    pwmDevice[MOTOR_T].writeMicroseconds(TMIN);   // Disregard what Pilot says and write TMIN.
+                    pwmDevice[MOTOR_R].writeMicroseconds(TMIN);   // Disregard what Pilot says and write TMIN.
+                    pwmDevice[MOTOR_L].writeMicroseconds(TMIN);   // Disregard what Pilot says and write TMIN.
+                    pwmDevice[SERVO_T].writeMicroseconds(1900);
 
                     // Check that motor values set by Pilot are within the
                     // arming threshold.
@@ -83,7 +83,7 @@ int main(void) {
                 }
                 else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
                     for (int i=0; i<4; i++) {
-                        pwmDevice[i].write(pwmOut[i]);   // Write motor values to motors.
+                        pwmDevice[i].writeMicroseconds(pwmOut[i]);   // Write motor values to motors.
                     }
                 }
                 else {   // ..otherwise, die.
@@ -91,12 +91,12 @@ int main(void) {
                     if (armCount <= 0)
                         armCount = (int) TIME_TO_ARM/(MASTER_DT*CONTROL_LOOP_INTERVAL);   // Set armed status back off.
                     for (int i=0; i<3; i++) {
-                        pwmOut[i] -= 3;   // Slowly turn off.
-                        if (pwmOut[i] < 0) pwmOut[i] = 0;
-                        pwmDevice[i].write(pwmOut[i]);
+                        pwmOut[i] -= 5;   // Slowly turn off.
+                        if (pwmOut[i] < TMIN) pwmOut[i] = TMIN;
+                        pwmDevice[i].writeMicroseconds(pwmOut[i]);
                     }
-                    pwmOut[SERVO_T] = 90;
-                    pwmDevice[SERVO_T].write(pwmOut[SERVO_T]);
+                    pwmOut[SERVO_T] = 1900;
+                    pwmDevice[SERVO_T].writeMicroseconds(pwmOut[SERVO_T]);
                 }
             }
 
@@ -136,7 +136,8 @@ int main(void) {
                 // ============================================================
                 sw(MOT_SER_TAG);
                 for (int i=0; i<4; i++) {
-                    sw((byte) pwmOut[i]);
+                    //sw((byte) pwmOut[i]);
+                    sp(pwmOut[i]);
                     //sw((byte*) &pwmOut[i], 4);
                 }
                 sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);

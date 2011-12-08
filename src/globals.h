@@ -1,8 +1,6 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-//#include <avr/pgmspace.h>
-
 // #define DEBUG
 
 /*****************************************************************************
@@ -16,7 +14,7 @@ char commStr[250];   // String to be sent out to base.
 float commandPitch;   // Pitch command to be processed through PID.
 float commandRoll;   // Roll command to be processed through PID.
 float gyroDCM[3][3];   // Current position DCM calculated by IMU.
-float targetRot[3], pidRot[3];
+float targetRot[3], currentRot[3], pidRot[3];
 float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 
 
@@ -78,8 +76,8 @@ struct PIDdata {
 //#define DCM_COEFF 90   // Scale current-to-target DCM difference.
 //#define GYRO_COEFF 15   // Try to stabilize craft.
 //#define ACCEL_COEFF 90   // TEST: Try to stabilize craft.
-#define TMIN 16   // Servo signal that registers as minimum throttle to ESC.
-#define TMAX 80   // Servo signal that registers as maximum throttle to ESC.
+#define TMIN 700   // Minimum throttle signal in ms. (Absolute minimum is 700.)
+#define TMAX 1200   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
 #define TIME_TO_ARM 2000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 3   // This is added to TMIN to determine whether or not to arm the system.
 
@@ -97,11 +95,11 @@ struct PIDdata {
 #define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define MOTOR_T_SCALE  1.02   // Scale speed of tail motor.
+#define MOTOR_T_SCALE  1   // Scale speed of tail motor.
 #define MOTOR_R_SCALE  1   // Scale speed of right motor.
 #define MOTOR_L_SCALE  1   // Scale speed of left motor.
-#define TAIL_SERVO_DEFAULT_POSITION 69
-#define TAIL_SERVO_SCALE 70   // Scale tail servo rotation.
+#define TAIL_SERVO_DEFAULT_POSITION 1250
+#define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
 
 #define PMT 4   // Tail motor pin.
 #define PMR 2   // Right motor pin.
