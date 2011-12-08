@@ -136,8 +136,7 @@ int main(void) {
                 // ============================================================
                 sw(MOT_SER_TAG);
                 for (int i=0; i<4; i++) {
-                    //sw((byte) pwmOut[i]);
-                    sp(pwmOut[i]);
+                    sw((byte) ((int) (pwmOut[i]-750.0)*250.0/1450.0));
                     //sw((byte*) &pwmOut[i], 4);
                 }
                 sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
