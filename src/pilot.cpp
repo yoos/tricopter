@@ -29,15 +29,15 @@ Pilot::Pilot() {
         pidRot[i] = 0;
     }
 
-    PID[PID_ROT_X].P = 3.0;
-    PID[PID_ROT_X].I = 2.0;
-    PID[PID_ROT_X].D = -0.43;
+    PID[PID_ROT_X].P = 1.0;
+    PID[PID_ROT_X].I = 0.0;
+    PID[PID_ROT_X].D = -0.0;
 
-    PID[PID_ROT_Y].P = 4.0;
-    PID[PID_ROT_Y].I = 0;//2.5;
-    PID[PID_ROT_Y].D = -0.76;
+    PID[PID_ROT_Y].P = 0.0;
+    PID[PID_ROT_Y].I = 0;
+    PID[PID_ROT_Y].D = -0.0;
 
-    PID[PID_ROT_Z].P = 7.0;
+    PID[PID_ROT_Z].P = 50.0;
     PID[PID_ROT_Z].I = 0.0;
     PID[PID_ROT_Z].D = 0.0;
 
@@ -114,7 +114,7 @@ void Pilot::Fly() {
         // ====================================================================
         targetRot[0] = -axisVal[SY]/125 * PI/10;
         targetRot[1] =  axisVal[SX]/125 * PI/10;
-        targetRot[2] += axisVal[ST]/125 / (MASTER_DT * CONTROL_LOOP_INTERVAL);
+        targetRot[2] += axisVal[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
 
         // Keep targetRot within [-PI, PI].
         for (int i=0; i<3; i++) {
@@ -126,32 +126,33 @@ void Pilot::Fly() {
             }
         }
 
-        // Calculate Euler angles.
+        // ====================================================================
+        // Calculate current rotation vector (Euler angles) from DCM and make
+        // appropriate modifications to make PID calculations work later.
+        // ====================================================================
         currentRot[0] = gyroDCM[1][2];
         currentRot[1] = -gyroDCM[0][2];
         currentRot[2] = atan2(gyroDCM[0][1], gyroDCM[0][0]);
 
+        // Keep abs(targetRot[i] - currentRot[i]) within [-PI, PI]. This way,
+        // nothing bad happens as we rotate to any angle in [-PI, PI].
+        for (int i=0; i<3; i++) {
+            if (targetRot[i] - currentRot[i] > PI) {
+                currentRot[i] += 2*PI;
+            }
+            else if (targetRot[i] - currentRot[i] < -PI) {
+                currentRot[i] -= 2*PI;
+            }
+        }
+
+        // ====================================================================
         // Calculate the PID outputs that update motor values.
+        //
+        // TODO: rename pidRot because it is not necessary a rotation value.
+        // ====================================================================
         pidRot[0] = updatePID(targetRot[0], currentRot[0], PID[PID_ROT_X]);
         pidRot[1] = updatePID(targetRot[1], currentRot[1], PID[PID_ROT_Y]);
         pidRot[2] = updatePID(targetRot[2], currentRot[2], PID[PID_ROT_Z]);
-
-        // Keep pidRot[2] within [-PI, PI]. TODO: Rename pidRot, because it is
-        // not necessarily an actual rotation angle.
-        if (pidRot[2] > PI) {
-            pidRot[2] -= PI;
-        }
-        else if (pidRot[2] < -PI) {
-            pidRot[2] += PI;
-        }
-
-        //pidRot[2] = updatePID(axisVal[ST]/125 * PI/6,
-        //                      0,//atan2(gyroDCM[0][1], gyroDCM[0][0]),
-        //                      PID[PID_ROT_Z]);
-
-        //targetRot[0] = -(axisVal[SY]/125 * PI/6 + gyroDCM[1][2]);
-        //targetRot[1] =  (axisVal[SX]/125 * PI/6 + gyroDCM[0][2]);
-        //targetRot[2] = -(axisVal[ST]/125 * PI/6);
 
         // ====================================================================
         // Calculate motor/servo values.
