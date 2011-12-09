@@ -18,24 +18,20 @@ Pilot::Pilot() {
      * throttle before motors arm. */
     serInput[SZ] = 3;   
 
-    // Zero all PWM update values.
-    for (int i=0; i<4; i++) {
-        pwmOutUpdate[i] = 0;
-    }
-
     // Zero rotation values.
     for (int i=0; i<3; i++) {
         targetRot[i] = 0;
+        currentRot[i] = 0;
         pidRot[i] = 0;
     }
 
-    PID[PID_ROT_X].P = 1.0;
+    PID[PID_ROT_X].P = 20.0;
     PID[PID_ROT_X].I = 0.0;
-    PID[PID_ROT_X].D = -0.0;
+    PID[PID_ROT_X].D = -10.0;
 
-    PID[PID_ROT_Y].P = 0.0;
-    PID[PID_ROT_Y].I = 0;
-    PID[PID_ROT_Y].D = -0.0;
+    PID[PID_ROT_Y].P = 20.0;
+    PID[PID_ROT_Y].I = 0.0;
+    PID[PID_ROT_Y].D = -10.0;
 
     PID[PID_ROT_Z].P = 50.0;
     PID[PID_ROT_Z].I = 0.0;
@@ -55,13 +51,13 @@ void Pilot::Listen() {
 
         // Need delay to prevent dropped bits. 500 microseconds is about as low
         // as it will go.
-        delayMicroseconds(500);
+        //delayMicroseconds(500);
 
         if (serRead == SERHEAD) {   // Receive header.
             hasFood = true;   // Prepare food for watchdog.
             for (int i=0; i<PACKETSIZE; i++) {
                 serRead = Serial.read();
-                delayMicroseconds(500);   // Delay to prevent dropped bits.
+                //delayMicroseconds(500);   // Delay to prevent dropped bits.
 
                 if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
                     serInput[i] = serRead;
@@ -72,7 +68,6 @@ void Pilot::Listen() {
                     i = 10;
                     okayToFly = false;
                     numBadComm++;
-                    sp("Bad!");
                     // Flush remaining buffer to avoid taking in the wrong values.
                     Serial.flush();
                 }
@@ -106,6 +101,15 @@ void Pilot::Fly() {
         axisVal[SZ] = (float) serInput[SZ] - 1;     // [0, 250]
 
         // ====================================================================
+        // Set button values. We utilize only the lower 7 bits since doing
+        // otherwise would cause overlaps with serial headers.
+        // ====================================================================
+        for (int i=0; i<7; i++) {
+            buttonVal[i] = serInput[SB1] & (1<<i);
+            buttonVal[7+i] = serInput[SB2] & (1<<i);
+        }
+
+        // ====================================================================
         // Calculate target rotation vector based on joystick input scaled to a
         // maximum rotation of PI/6.
         //
@@ -114,6 +118,11 @@ void Pilot::Fly() {
         // ====================================================================
         targetRot[0] = -axisVal[SY]/125 * PI/10;
         targetRot[1] =  axisVal[SX]/125 * PI/10;
+
+        // "Reset" targetRot[2] to currentRot[2] if thumb button is pressed.
+        if (buttonVal[1]) {
+            targetRot[2] = currentRot[2];
+        }
         targetRot[2] += axisVal[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
 
         // Keep targetRot within [-PI, PI].
@@ -237,18 +246,18 @@ void Pilot::Abort() {
     // When communication is lost, pilot should set a bunch of stuff to safe
     // values.
     // ========================================================================
-    serInput[SX] = 126;
-    serInput[SY] = 126;
-    serInput[ST] = 126;
-    serInput[SZ] = 3;
-    okayToFly = false;
-    pwmOut[MOTOR_T] = TMIN;
-    pwmOut[MOTOR_R] = TMIN;
-    pwmOut[MOTOR_L] = TMIN;
-    pwmOut[SERVO_T] = 90;
-    
-    #ifdef DEBUG
-    spln("Pilot ejected!");
-    #endif
+    //serInput[SX] = 126;
+    //serInput[SY] = 126;
+    //serInput[ST] = 126;
+    //serInput[SZ] = 3;
+    //okayToFly = false;
+    //pwmOut[MOTOR_T] = TMIN;
+    //pwmOut[MOTOR_R] = TMIN;
+    //pwmOut[MOTOR_L] = TMIN;
+    //pwmOut[SERVO_T] = 90;
+    //
+    //#ifdef DEBUG
+    //spln("Pilot ejected!");
+    //#endif
 }
 
