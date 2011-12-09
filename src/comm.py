@@ -32,7 +32,7 @@ axisT = 2
 axisZ = 3
 
 axisValues = [126, 126, 126, 3]   # Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
-buttonValues = []
+buttonValues = 0b0000000000000000   # Bitfield.
 
 rospy.init_node("tric_comm", anonymous=True)
 
@@ -69,7 +69,7 @@ def joy2int(joyVal, axisIndex):
 
 # Update axisValues when joystick is updated.
 def callback(myJoy):
-    global axisValues
+    global axisValues, buttonValues
     """
         Raw axis values [-1, 1] for X, Y, and T axes are cubed (to facilitate
         fine control before being scaled and mapped to [0, 1]. All of this is
@@ -90,14 +90,19 @@ def callback(myJoy):
         #axisValues[axisT] = joy2int(myJoy.axes[3], axisT)   # T
         #axisValues[axisZ] = joy2int(myJoy.axes[2], axisZ)   # Z
 
+    buttonValues = 0
+    for i in range(len(myJoy.buttons)):
+        buttonValues += myJoy.buttons[i]<<i
+
+
 # Send axisValues to tricopter.
 def communicate():
     global armed
     global printString
     if armed:
-        sendData(serHeader + chr(axisValues[axisX]) + chr(axisValues[axisY]) + chr(axisValues[axisT]) + chr(axisValues[axisZ]))
+        sendData(serHeader + chr(axisValues[axisX]) + chr(axisValues[axisY]) + chr(axisValues[axisT]) + chr(axisValues[axisZ]) + chr(buttonValues & 0xff) + chr(buttonValues >> 8))
         # sendData(serHeader + chr(126) + chr(126) + chr(126) + chr(74))
-        rospy.loginfo(str(axisValues[axisX]) + " " + str(axisValues[axisY]) + " " + str(axisValues[axisT]) + " " + str(axisValues[axisZ]))
+        rospy.loginfo(str(axisValues[axisX]) + " " + str(axisValues[axisY]) + " " + str(axisValues[axisT]) + " " + str(axisValues[axisZ]) + " " + str(buttonValues))
     elif not armed:
         rospy.loginfo("Current throttle value: " + str(axisValues[axisZ]))
         if axisValues[axisZ] == 1:   # If throttle is at minimum position
