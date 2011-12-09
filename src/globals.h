@@ -9,7 +9,7 @@
 
 int armCount;   // Arm status counter.
 int loopCount;   // Count system loops.
-float pwmOut[4], pwmOutUpdate[4];
+float pwmOut[4];
 char commStr[250];   // String to be sent out to base.
 float commandPitch;   // Pitch command to be processed through PID.
 float commandRoll;   // Roll command to be processed through PID.
@@ -47,7 +47,7 @@ struct PIDdata {
 // ============================================================================
 #define BAUDRATE 57600   // Fiddle with this. The XBee sometimes seems to have trouble with high baudrates like 57600.
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
-#define PACKETSIZE 4     // Each packet contains header plus X, Y, Twist, and Z.
+#define PACKETSIZE 6     // Each packet contains (excluding header) X, Y, Twist, Z, and two bytes for button values.
 #define INPUT_MIN  1     // Minimum integer input value from joystick.
 #define INPUT_MAX  251   // Maximum integer input value from joystick.
 #define SX 0   // Serial byte location for joystick X axis.
@@ -76,10 +76,14 @@ struct PIDdata {
 //#define DCM_COEFF 90   // Scale current-to-target DCM difference.
 //#define GYRO_COEFF 15   // Try to stabilize craft.
 //#define ACCEL_COEFF 90   // TEST: Try to stabilize craft.
-#define TMIN 700   // Minimum throttle signal in ms. (Absolute minimum is 700.)
-#define TMAX 1200   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
+
+// Throttle stuff. Minimum signal is 750 ms. Maximum signal is 2200 ms. Hover
+// is around 1200 ms.
+#define TMIN 750   // Minimum throttle signal in ms. (Absolute minimum is 750.)
+#define TMAX 1500   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
+
 #define TIME_TO_ARM 2000   // This divided by MASTER_DT determines how long it takes to arm the system.
-#define MOTOR_ARM_THRESHOLD 3   // This is added to TMIN to determine whether or not to arm the system.
+#define MOTOR_ARM_THRESHOLD 30   // This is added to TMIN to determine whether or not to arm the system.
 
 #define MOTOR_T 0   // Tail motor array index.
 #define MOTOR_R 1   // Right motor array index.
@@ -95,11 +99,12 @@ struct PIDdata {
 #define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define MOTOR_T_SCALE  1   // Scale speed of tail motor.
+#define MOTOR_T_SCALE  1.002   // Scale speed of tail motor.
 #define MOTOR_R_SCALE  1   // Scale speed of right motor.
 #define MOTOR_L_SCALE  1   // Scale speed of left motor.
 #define TAIL_SERVO_DEFAULT_POSITION 1250
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
+#define Z_ROT_SPEED 1   // Scale how much joystick twist input affects target Z rotation. A value of 1 here means a maximum Z rotation speed is 1 rad/s.
 
 #define PMT 4   // Tail motor pin.
 #define PMR 2   // Right motor pin.
