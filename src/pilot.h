@@ -5,9 +5,10 @@
 #include "pid.h"
 
 class Pilot {
-    int serRead;
-    int serInput[PACKETSIZE];
-    float axisVal[PACKETSIZE];
+    byte serRead;
+    byte serInput[PACKETSIZE];
+    float axisVal[4];
+    bool buttonVal[14];
     float mapLower, mapUpper;
 //  double dir;   // Direction in radians
     bool okayToFly;
