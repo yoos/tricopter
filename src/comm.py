@@ -32,7 +32,7 @@ axisT = 2
 axisZ = 3
 
 axisValues = [126, 126, 126, 3]   # Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
-buttonValues = 0b0000000000000000   # Bitfield.
+buttonValues = 0   # Bitfield.
 
 rospy.init_node("tric_comm", anonymous=True)
 
@@ -100,7 +100,7 @@ def communicate():
     global armed
     global printString
     if armed:
-        sendData(serHeader + chr(axisValues[axisX]) + chr(axisValues[axisY]) + chr(axisValues[axisT]) + chr(axisValues[axisZ]) + chr(buttonValues & 0xff) + chr(buttonValues >> 8))
+        sendData(serHeader + chr(axisValues[axisX]) + chr(axisValues[axisY]) + chr(axisValues[axisT]) + chr(axisValues[axisZ]) + chr(buttonValues & 0b01111111) + chr(buttonValues >> 7))
         # sendData(serHeader + chr(126) + chr(126) + chr(126) + chr(74))
         rospy.loginfo(str(axisValues[axisX]) + " " + str(axisValues[axisY]) + " " + str(axisValues[axisT]) + " " + str(axisValues[axisZ]) + " " + str(buttonValues))
     elif not armed:
@@ -114,7 +114,7 @@ def communicate():
 def sendData(myStr):
     try:
         # ser.write(myStr)
-        for i in range(0, len(myStr)):
+        for i in range(len(myStr)):
             ser.write(myStr[i])
             rospy.sleep(0.0001)   # Sometimes, a delay seems to help. Maybe?
     except:
