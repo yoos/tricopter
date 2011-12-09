@@ -10,9 +10,9 @@ Pilot::Pilot() {
     okayToFly = false;
     
     // Assume serial inputs, all axes zeroed.
-    serInput[SX] = 126;
-    serInput[SY] = 126;
-    serInput[ST] = 126;
+    serInput[SX] = 125;
+    serInput[SY] = 125;
+    serInput[ST] = 125;
     /* Keep Z value at some non-zero value (albeit very low so the tricopter 
      * doesn't fly off if something goes awry) so user is forced to adjust 
      * throttle before motors arm. */
@@ -92,13 +92,13 @@ void Pilot::Fly() {
     // Update axisVal only if okayToFly is true.
     if (okayToFly) {
         // ====================================================================
-        // Shift serial input values [1, 251] to correct range for each axis. Z
+        // Shift serial input values [0, 250] to correct range for each axis. Z
         // stays positive for ease of calculation.
         // ====================================================================
-        axisVal[SX] = (float) serInput[SX] - 126;   // [-125, 125]
-        axisVal[SY] = (float) serInput[SY] - 126;   // [-125, 125]
-        axisVal[ST] = (float) serInput[ST] - 126;   // [-125, 125]
-        axisVal[SZ] = (float) serInput[SZ] - 1;     // [0, 250]
+        axisVal[SX] = (float) serInput[SX] - 125;   // [-125, 125]
+        axisVal[SY] = (float) serInput[SY] - 125;   // [-125, 125]
+        axisVal[ST] = (float) serInput[ST] - 125;   // [-125, 125]
+        axisVal[SZ] = (float) serInput[SZ];         // [0, 250]
 
         // ====================================================================
         // Set button values. We utilize only the lower 7 bits since doing
@@ -122,8 +122,11 @@ void Pilot::Fly() {
         // "Reset" targetRot[2] to currentRot[2] if thumb button is pressed.
         if (buttonVal[1]) {
             targetRot[2] = currentRot[2];
+            targetRot[2] += axisVal[ST]/125 * Z_ROT_SPEED;
         }
-        targetRot[2] += axisVal[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
+        else {
+            targetRot[2] += axisVal[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
+        }
 
         // Keep targetRot within [-PI, PI].
         for (int i=0; i<3; i++) {

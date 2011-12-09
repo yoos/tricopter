@@ -49,7 +49,7 @@ struct PIDdata {
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
 #define PACKETSIZE 6     // Each packet contains (excluding header) X, Y, Twist, Z, and two bytes for button values.
 #define INPUT_MIN  0     // Minimum integer input value from joystick.
-#define INPUT_MAX  251   // Maximum integer input value from joystick.
+#define INPUT_MAX  250   // Maximum integer input value from joystick.
 #define SX 0   // Serial byte location for joystick X axis.
 #define SY 1   // Serial byte location for joystick Y axis.
 #define ST 2   // Serial byte location for joystick T (twist) axis.

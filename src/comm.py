@@ -31,7 +31,7 @@ axisY = 1
 axisT = 2
 axisZ = 3
 
-axisValues = [126, 126, 126, 3]   # Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
+axisValues = [125, 125, 125, 3]   # Keep Z value at some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 buttonValues = 0   # Bitfield.
 
 rospy.init_node("tric_comm", anonymous=True)
@@ -62,10 +62,10 @@ except NameError:
 
 ############################ ROS get joystick input ###########################
 
-# Convert joystick values of [-1.0, 1.0] to [1, 251] so we can send them over
+# Convert joystick values of [-1.0, 1.0] to [0, 250] so we can send them over
 # serial as bytes.
 def joy2int(joyVal, axisIndex):
-    return int(250*((axisSigns[axisIndex] * joyVal + 1) / 2) + 1)
+    return int(250*((axisSigns[axisIndex] * joyVal + 1) / 2))
 
 # Update axisValues when joystick is updated.
 def callback(myJoy):
@@ -73,7 +73,7 @@ def callback(myJoy):
     """
         Raw axis values [-1, 1] for X, Y, and T axes are cubed (to facilitate
         fine control before being scaled and mapped to [0, 1]. All of this is
-        then mapped to [0, 250], which is finally shifted to [1, 251] to be
+        then mapped to [0, 250], which is finally shifted to [0, 250] to be
         sent as bytes.
     """
     axisValues[axisX] = joy2int(myJoy.axes[0], axisX)   # X
@@ -101,7 +101,6 @@ def communicate():
     global printString
     if armed:
         sendData(serHeader + chr(axisValues[axisX]) + chr(axisValues[axisY]) + chr(axisValues[axisT]) + chr(axisValues[axisZ]) + chr(buttonValues & 0b01111111) + chr(buttonValues >> 7))
-        # sendData(serHeader + chr(126) + chr(126) + chr(126) + chr(74))
         rospy.loginfo(str(axisValues[axisX]) + " " + str(axisValues[axisY]) + " " + str(axisValues[axisT]) + " " + str(axisValues[axisZ]) + " " + str(buttonValues))
     elif not armed:
         rospy.loginfo("Current throttle value: " + str(axisValues[axisZ]))
