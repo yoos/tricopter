@@ -25,13 +25,13 @@ Pilot::Pilot() {
         pidRot[i] = 0;
     }
 
-    PID[PID_ROT_X].P = 20.0;
-    PID[PID_ROT_X].I = 0.0;
-    PID[PID_ROT_X].D = -10.0;
+    PID[PID_ROT_X].P = 12.0;   // P controller starts oscillating at around P = 18.
+    PID[PID_ROT_X].I = 60.0;
+    PID[PID_ROT_X].D = -7.0;
 
-    PID[PID_ROT_Y].P = 20.0;
+    PID[PID_ROT_Y].P = 0.0;
     PID[PID_ROT_Y].I = 0.0;
-    PID[PID_ROT_Y].D = -10.0;
+    PID[PID_ROT_Y].D = -0.0;
 
     PID[PID_ROT_Z].P = 50.0;
     PID[PID_ROT_Z].I = 0.0;
