@@ -9,6 +9,7 @@ class Pilot {
     byte serInput[PACKETSIZE];
     float axisVal[4];
     bool buttonVal[14];
+    int throttleTrim;
     float mapLower, mapUpper;
 //  double dir;   // Direction in radians
     bool okayToFly;

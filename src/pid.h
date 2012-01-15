@@ -11,15 +11,17 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
     proportional = targetValue - currentValue;
 
     PIDparameters.integral += proportional * deltaPIDTime;
+    //PIDparameters.integral *= 0.98;
 
     derivative = (currentValue - PIDparameters.lastValue) / deltaPIDTime;
     PIDparameters.lastValue = currentValue;
+    // TODO: D squared control?
 
     // Zero integral once overshoot is detected.
-    if ((proportional < 0 && derivative > 0) ||
-        (proportional > 0 && derivative < 0)) {
-        PIDparameters.integral = 0;
-    }
+    //if ((proportional < 0 && derivative > 0) ||
+    //    (proportional > 0 && derivative < 0)) {
+    //    PIDparameters.integral *= 0.95;
+    //}
 
     // NOTE: The P, I, and D gains should end up being no more than a single
     // degree of magnitude away from 1.

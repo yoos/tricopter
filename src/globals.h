@@ -70,9 +70,9 @@ struct PIDdata {
  * relatively frequently changed.
  *****************************************************************************/
 
-#define MASTER_DT              12   // 12 ms interval = 83 Hz master loop.
-#define CONTROL_LOOP_INTERVAL   1   // 1/2 master = 42 Hz. NOTE: This frequency should be HIGHER than comm.py's dataSend frequency!
-#define TELEMETRY_LOOP_INTERVAL 5   // 1/5 master = 21 Hz.
+#define MASTER_DT              10   // 10 ms interval = 100 Hz master loop.
+#define CONTROL_LOOP_INTERVAL   2   // 1/2 master = 50 Hz. NOTE: This frequency should be HIGHER than comm.py's dataSend frequency!
+#define TELEMETRY_LOOP_INTERVAL 5   // 1/5 master = 20 Hz.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
 
 //#define DCM_COEFF 90   // Scale current-to-target DCM difference.
@@ -81,8 +81,9 @@ struct PIDdata {
 
 // Throttle stuff. Minimum signal is 750 ms. Maximum signal is 2200 ms. Hover
 // is around 1200 ms.
-#define TMIN 750   // Minimum throttle signal in ms. (Absolute minimum is 750.)
-#define TMAX 1500   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
+#define TMIN   750   // Minimum throttle signal in ms. (Absolute minimum is 750.)
+#define THOVER 1200
+#define TMAX   1500   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
 
 #define TIME_TO_ARM 2000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 30   // This is added to TMIN to determine whether or not to arm the system.
@@ -101,7 +102,7 @@ struct PIDdata {
 #define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define MOTOR_T_SCALE  1.002   // Scale speed of tail motor.
+#define MOTOR_T_SCALE  1   // Scale speed of tail motor.
 #define MOTOR_R_SCALE  1   // Scale speed of right motor.
 #define MOTOR_L_SCALE  1   // Scale speed of left motor.
 #define TAIL_SERVO_DEFAULT_POSITION 1250

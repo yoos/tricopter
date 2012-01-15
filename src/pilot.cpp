@@ -16,7 +16,7 @@ Pilot::Pilot() {
     /* Keep Z value at some non-zero value (albeit very low so the tricopter 
      * doesn't fly off if something goes awry) so user is forced to adjust 
      * throttle before motors arm. */
-    serInput[SZ] = 3;   
+    serInput[SZ] = 3;
 
     // Zero rotation values.
     for (int i=0; i<3; i++) {
@@ -25,13 +25,16 @@ Pilot::Pilot() {
         pidRot[i] = 0;
     }
 
-    PID[PID_ROT_X].P = 12.0;   // P controller starts oscillating at around P = 18.
-    PID[PID_ROT_X].I = 60.0;
-    PID[PID_ROT_X].D = -7.0;
+    // Initialize trim to 0.
+    throttleTrim = 0;
+
+    PID[PID_ROT_X].P = 25.0;   // 35.0
+    PID[PID_ROT_X].I = 20.0;   // 50.0
+    PID[PID_ROT_X].D = -6.0;   // -9.0
 
     PID[PID_ROT_Y].P = 0.0;
     PID[PID_ROT_Y].I = 0.0;
-    PID[PID_ROT_Y].D = -0.0;
+    PID[PID_ROT_Y].D = 0.0;
 
     PID[PID_ROT_Z].P = 50.0;
     PID[PID_ROT_Z].I = 0.0;
@@ -128,6 +131,23 @@ void Pilot::Fly() {
             targetRot[2] += axisVal[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
         }
 
+        // Zero integral.
+        if (buttonVal[2]) {
+            PID[PID_ROT_X].integral = 0;
+            PID[PID_ROT_Y].integral = 0;
+        }
+
+        // Trim throttle value.
+        if (buttonVal[3] && buttonVal[5]) {
+            throttleTrim = 0;
+        }
+        else if (buttonVal[3]) {
+            throttleTrim--;
+        }
+        else if (buttonVal[5]) {
+            throttleTrim++;
+        }
+
         // Keep targetRot within [-PI, PI].
         for (int i=0; i<3; i++) {
             if (targetRot[i] > PI) {
@@ -186,9 +206,9 @@ void Pilot::Fly() {
         //pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + pidRot[2];
 
         // MOTORVAL SCHEME 6
-        pwmOut[MOTOR_T] = TMIN + MOTOR_T_OFFSET + axisVal[SZ]*(TMAX-TMIN)/250 + -pidRot[PID_ROT_X];
-        pwmOut[MOTOR_R] = TMIN + MOTOR_R_OFFSET + axisVal[SZ]*(TMAX-TMIN)/250 +  pidRot[PID_ROT_X] - pidRot[PID_ROT_Y]*sqrt(3);
-        pwmOut[MOTOR_L] = TMIN + MOTOR_L_OFFSET + axisVal[SZ]*(TMAX-TMIN)/250 +  pidRot[PID_ROT_X] + pidRot[PID_ROT_Y]*sqrt(3);
+        pwmOut[MOTOR_T] = TMIN + throttleTrim + MOTOR_T_OFFSET + axisVal[SZ]*(TMAX-TMIN)/250 + -pidRot[PID_ROT_X];
+        pwmOut[MOTOR_R] = TMIN + throttleTrim + MOTOR_R_OFFSET + axisVal[SZ]*(TMAX-TMIN)/250 +  pidRot[PID_ROT_X] - pidRot[PID_ROT_Y]*sqrt(3);
+        pwmOut[MOTOR_L] = TMIN + throttleTrim + MOTOR_L_OFFSET + axisVal[SZ]*(TMAX-TMIN)/250 +  pidRot[PID_ROT_X] + pidRot[PID_ROT_Y]*sqrt(3);
         pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + pidRot[PID_ROT_Z];
 
         pwmOut[MOTOR_T] = MOTOR_T_SCALE * pwmOut[MOTOR_T];
