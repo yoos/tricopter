@@ -28,17 +28,13 @@ Pilot::Pilot() {
     // Initialize trim to 0.
     throttleTrim = 0;
 
-    PID[PID_ROT_X].P = 25.0;   // 35.0
-    PID[PID_ROT_X].I = 20.0;   // 50.0
-    PID[PID_ROT_X].D = -6.0;   // -9.0
+    PID[PID_ROT_X].P = PID[PID_ROT_Y].P = XY_P_GAIN;
+    PID[PID_ROT_X].I = PID[PID_ROT_Y].I = XY_I_GAIN;
+    PID[PID_ROT_X].D = PID[PID_ROT_Y].D = XY_D_GAIN;
 
-    PID[PID_ROT_Y].P = 0.0;
-    PID[PID_ROT_Y].I = 0.0;
-    PID[PID_ROT_Y].D = 0.0;
-
-    PID[PID_ROT_Z].P = 50.0;
-    PID[PID_ROT_Z].I = 0.0;
-    PID[PID_ROT_Z].D = 0.0;
+    PID[PID_ROT_Z].P = Z_P_GAIN;
+    PID[PID_ROT_Z].I = Z_I_GAIN;
+    PID[PID_ROT_Z].D = Z_D_GAIN;
 
     #ifdef DEBUG
     spln("Pilot here!");
@@ -123,7 +119,7 @@ void Pilot::Fly() {
         targetRot[1] =  axisVal[SX]/125 * PI/10;
 
         // "Reset" targetRot[2] to currentRot[2] if thumb button is pressed.
-        if (buttonVal[1]) {
+        if (buttonVal[BUTTON_RESET_YAW]) {
             targetRot[2] = currentRot[2];
             targetRot[2] += axisVal[ST]/125 * Z_ROT_SPEED;
         }
@@ -132,20 +128,60 @@ void Pilot::Fly() {
         }
 
         // Zero integral.
-        if (buttonVal[2]) {
+        if (buttonVal[BUTTON_ZERO_INTEGRAL]) {
             PID[PID_ROT_X].integral = 0;
             PID[PID_ROT_Y].integral = 0;
         }
 
         // Trim throttle value.
-        if (buttonVal[3] && buttonVal[5]) {
+        if (buttonVal[BUTTON_DECREASE_TRIM] && buttonVal[BUTTON_INCREASE_TRIM]) {
             throttleTrim = 0;
         }
-        else if (buttonVal[3]) {
+        else if (buttonVal[BUTTON_DECREASE_TRIM]) {
             throttleTrim--;
         }
-        else if (buttonVal[5]) {
+        else if (buttonVal[BUTTON_INCREASE_TRIM]) {
             throttleTrim++;
+        }
+
+        // Adjust gains on-the-fly.
+        if (buttonVal[BUTTON_DECREASE_XY_P_GAIN] && buttonVal[BUTTON_INCREASE_XY_P_GAIN]) {
+            PID[PID_ROT_X].P = XY_P_GAIN;
+            PID[PID_ROT_Y].P = XY_P_GAIN;
+        }
+        else if (buttonVal[BUTTON_DECREASE_XY_P_GAIN]) {
+            PID[PID_ROT_X].P -= 1.0;
+            PID[PID_ROT_Y].P -= 1.0;
+        }
+        else if (buttonVal[BUTTON_INCREASE_XY_P_GAIN]) {
+            PID[PID_ROT_X].P += 1.0;
+            PID[PID_ROT_Y].P += 1.0;
+        }
+
+        if (buttonVal[BUTTON_DECREASE_XY_I_GAIN] && buttonVal[BUTTON_INCREASE_XY_I_GAIN]) {
+            PID[PID_ROT_X].I = XY_I_GAIN;
+            PID[PID_ROT_Y].I = XY_I_GAIN;
+        }
+        else if (buttonVal[BUTTON_DECREASE_XY_I_GAIN]) {
+            PID[PID_ROT_X].I -= 1.0;
+            PID[PID_ROT_Y].I -= 1.0;
+        }
+        else if (buttonVal[BUTTON_INCREASE_XY_I_GAIN]) {
+            PID[PID_ROT_X].I += 1.0;
+            PID[PID_ROT_Y].I += 1.0;
+        }
+
+        if (buttonVal[BUTTON_DECREASE_XY_D_GAIN] && buttonVal[BUTTON_INCREASE_XY_D_GAIN]) {
+            PID[PID_ROT_X].D = XY_D_GAIN;
+            PID[PID_ROT_Y].D = XY_D_GAIN;
+        }
+        else if (buttonVal[BUTTON_DECREASE_XY_D_GAIN]) {
+            PID[PID_ROT_X].D += 1.0;
+            PID[PID_ROT_Y].D += 1.0;
+        }
+        else if (buttonVal[BUTTON_INCREASE_XY_D_GAIN]) {
+            PID[PID_ROT_X].D -= 1.0;
+            PID[PID_ROT_Y].D -= 1.0;
         }
 
         // Keep targetRot within [-PI, PI].

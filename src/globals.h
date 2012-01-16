@@ -37,6 +37,13 @@ struct PIDdata {
 #define PID_ROT_Y 1
 #define PID_ROT_Z 2
 
+#define XY_P_GAIN 30.0   // 35.0
+#define XY_I_GAIN 20.0   // 50.0
+#define XY_D_GAIN -10.0   // -9.0
+
+#define Z_P_GAIN 100.0
+#define Z_I_GAIN 0.0
+#define Z_D_GAIN 0.0
 
 /*****************************************************************************
  * Serial: everything that has to do with TX/RX.
@@ -82,7 +89,7 @@ struct PIDdata {
 // Throttle stuff. Minimum signal is 750 ms. Maximum signal is 2200 ms. Hover
 // is around 1200 ms.
 #define TMIN   750   // Minimum throttle signal in ms. (Absolute minimum is 750.)
-#define THOVER 1200
+#define THOVER 1200   // Hover throttle signal in ms.
 #define TMAX   1500   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
 
 #define TIME_TO_ARM 2000   // This divided by MASTER_DT determines how long it takes to arm the system.
@@ -93,6 +100,21 @@ struct PIDdata {
 #define MOTOR_L 2   // Left motor array index.
 #define SERVO_T 3   // Tail servo array index.
 
+// ============================================================================
+// Buttons
+// ============================================================================
+#define BUTTON_UNDEFINED            0
+#define BUTTON_RESET_YAW            1
+#define BUTTON_ZERO_INTEGRAL        2
+#define BUTTON_DECREASE_TRIM        3
+#define BUTTON_UNDEFINED            4
+#define BUTTON_INCREASE_TRIM        5
+#define BUTTON_DECREASE_XY_P_GAIN   6
+#define BUTTON_INCREASE_XY_P_GAIN   7
+#define BUTTON_DECREASE_XY_I_GAIN   8
+#define BUTTON_INCREASE_XY_I_GAIN   9
+#define BUTTON_DECREASE_XY_D_GAIN   10
+#define BUTTON_INCREASE_XY_D_GAIN   11
 
 /*****************************************************************************
  * Hardware configuration: any parameter that is changed so infrequently that
