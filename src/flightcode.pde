@@ -1,3 +1,10 @@
+/*! \file flightcode.pde
+ *  \author Soo-Hyun Yoo
+ *  \brief Main loop.
+ *
+ *  Details.
+ */
+
 #include <Servo.h>
 #include <Wire.h>
 #include "globals.h"

@@ -1,3 +1,10 @@
+/*! \file itg3200.h
+ *  \author Soo-Hyun Yoo
+ *  \brief Header for ITG3200 gyroscope class.
+ *
+ *  Details.
+ */
+
 #ifndef GYRO_H
 #define GYRO_H
 

@@ -1,3 +1,10 @@
+/*! \file pilot.h
+ *  \author Soo-Hyun Yoo
+ *  \brief Header for Pilot class.
+ *
+ *  Details.
+ */
+
 #ifndef PILOT_H
 #define PILOT_H
 

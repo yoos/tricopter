@@ -1,3 +1,10 @@
+/*! \file itg3200.cpp
+ *  \author Soo-Hyun Yoo
+ *  \brief Source for ITG3200 gyroscope class.
+ *
+ *  Details.
+ */
+
 #include "itg3200.h"
 
 ITG3200::ITG3200(uint8_t range) {

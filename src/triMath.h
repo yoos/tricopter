@@ -1,6 +1,10 @@
-// ============================================================================
-// triMath.h
-// ============================================================================
+/*! \file triMath.h
+ *  \author Soo-Hyun Yoo
+ *  \brief Math functions.
+ *
+ *  Details.
+ */
+
 // TODO: Most (if not all) of these functions should return instead of changing
 // values internally.
 

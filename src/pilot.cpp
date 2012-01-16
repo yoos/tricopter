@@ -1,6 +1,9 @@
-// ============================================================================
-// pilot.cpp
-// ============================================================================
+/*! \file pilot.cpp
+ *  \author Soo-Hyun Yoo
+ *  \brief Source for Pilot class.
+ *
+ *  Details.
+ */
 
 #include "pilot.h"
 
@@ -8,7 +11,7 @@ Pilot::Pilot() {
     Serial.begin(BAUDRATE);
     hasFood = false;
     okayToFly = false;
-    
+
     // Assume serial inputs, all axes zeroed.
     serInput[SX] = 125;
     serInput[SY] = 125;

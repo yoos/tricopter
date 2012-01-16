@@ -1,3 +1,10 @@
+/*! \file bma180.cpp
+ *  \author Soo-Hyun Yoo
+ *  \brief Source for BMA180 accelerometer class.
+ *
+ *  Details.
+ */
+
 #include "bma180.h"
 
 BMA180::BMA180(byte range, byte bw) {

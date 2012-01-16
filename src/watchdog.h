@@ -1,3 +1,10 @@
+/*! \file watchdog.h
+ *  \author Soo-Hyun Yoo
+ *  \brief Header for Watchdog class.
+ *
+ *  Details.
+ */
+
 #ifndef WATCHDOG_H
 #define WATCHDOG_H
 

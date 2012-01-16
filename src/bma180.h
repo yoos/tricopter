@@ -1,3 +1,10 @@
+/*! \file bma180.h
+ *  \author Soo-Hyun Yoo
+ *  \brief Header file for BMA180 accelerometer class.
+ *
+ *  Details.
+ */
+
 #ifndef BMA180_H
 #define BMA180_H
 

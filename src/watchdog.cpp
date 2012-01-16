@@ -1,3 +1,10 @@
+/*! \file watchdog.cpp
+ *  \author Soo-Hyun Yoo
+ *  \brief Simple watchdog class.
+ *
+ *  Details.
+ */
+
 #include "watchdog.h"
 
 Watchdog::Watchdog(int timeout) {
@@ -27,7 +34,7 @@ void Watchdog::Watch(bool &seeFood) {   // If this runs too late, dogLife may al
         seeFood = false;   // Eat the food.
         time = millis();
         isAlive = true;
-        
+
         #ifdef DEBUG
         spln("Watchdog received dogbone!");
         #endif

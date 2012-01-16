@@ -1,3 +1,10 @@
+/*! \file globals.h
+ *  \author Soo-Hyun Yoo
+ *  \brief Various global definitions and variables.
+ *
+ *  Details.
+ */
+
 #ifndef GLOBALS_H
 #define GLOBALS_H
 

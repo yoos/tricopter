@@ -1,3 +1,10 @@
+/*! \file pid.h
+ *  \author Soo-Hyun Yoo
+ *  \brief PID function modified from AeroQuad project.
+ *
+ *  Details.
+ */
+
 #ifndef PID_H
 #define PID_H
 

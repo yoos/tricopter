@@ -1,23 +1,24 @@
-// ============================================================================
-// imu.cpp
-// ============================================================================
-// I, J, K unit vectors of global coordinate system
-//     I - east
-//     J - north
-//     K - zenith
-// i, j, k unit vectors of body coordinate system
-//     i - right
-//     j - forward
-//     k - up
-// ============================================================================
-// We keep track of the body frame in relation to the global coordinate frame.
-// That is, orientation is described in the global coordinate system.
-//
-//           [i.I i.J i.K]
-//     DCM = [j.I j.J j.K]
-//           [k.I k.J k.K]
-//
-// ============================================================================
+/*! \file imu.cpp
+ *  \author Soo-Hyun Yoo
+ *  \brief Source for IMU class.
+ *
+ *  I, J, K unit vectors of global coordinate system
+ *      I - east
+ *      J - north
+ *      K - zenith
+ *
+ *  i, j, k unit vectors of body coordinate system
+ *      i - right
+ *      j - forward
+ *      k - up
+ *
+ * We keep track of the body frame in relation to the global coordinate frame.
+ * That is, orientation is described in the global coordinate system.
+ *
+ *           [i.I i.J i.K]
+ *     DCM = [j.I j.J j.K]
+ *           [k.I k.J k.K]
+ */
 
 #include "imu.h"
 
