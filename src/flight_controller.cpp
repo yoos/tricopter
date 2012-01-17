@@ -1,4 +1,4 @@
-/*! \file flightcode.pde
+/*! \file flight_controller.cpp
  *  \author Soo-Hyun Yoo
  *  \brief Main loop.
  *
@@ -14,10 +14,10 @@
 
 int main(void) {
     init();   // For Arduino.
- 
+
     // Begin Arduino services.
     Wire.begin();
-    
+
     // Introduce crew.
     Pilot triPilot;
     Watchdog triWatchdog(DOGLIFE);   // Timeout in ms.
@@ -31,7 +31,7 @@ int main(void) {
     pwmDevice[MOTOR_R].attach(PMR);
     pwmDevice[MOTOR_L].attach(PML);
     pwmDevice[SERVO_T].attach(PST);
-    
+
     // Variables
 
     armCount = (int) TIME_TO_ARM/(MASTER_DT*CONTROL_LOOP_INTERVAL);   // We will subtract 1 from the armed value every time we receive the arming numbers from comm. Arming numbers will have to be sent for a total of TIME_TO_ARM (in ms) before this variable reaches 0.

@@ -35,7 +35,7 @@
 # $Id$
 
 #TARGET = $(notdir $(CURDIR))
-TARGET = flightcode
+TARGET = flight_controller
 INSTALL_DIR = $(HOME)/apps/arduino-0022
 PORT = /dev/ttyUSB*
 UPLOAD_RATE = 57600
@@ -163,7 +163,7 @@ all: applet_files build sizeafter
 build: elf hex
 
 #applet_files: $(TARGET).pde
-applet/$(TARGET).cpp: $(TARGET).pde
+applet/$(TARGET).cpp: $(TARGET).cpp
 # Here is the "preprocessing".
 # It creates a .cpp file based with the same name as the .pde file.
 # On top of the new .cpp file comes the WProgram.h header.
@@ -175,7 +175,7 @@ applet/$(TARGET).cpp: $(TARGET).pde
 	echo -ne '#include "WProgram.h"\n#include "EEPROM.cpp"\n#include "LiquidCrystal.cpp"\n#include "Matrix.cpp"\n#include "Servo.cpp"\n#include "SoftwareSerial.cpp"\n#include "Sprite.cpp"\n#include "Stepper.cpp"\n#include "Wire.cpp"\n\n' > applet/$(TARGET).cpp
 #	echo 'void setup();' >> applet/$(TARGET).cpp
 #	echo 'void loop();' >> applet/$(TARGET).cpp
-	cat $(TARGET).pde >> applet/$(TARGET).cpp
+	cat $(TARGET).cpp >> applet/$(TARGET).cpp
 
 elf: applet/$(TARGET).elf
 hex: applet/$(TARGET).hex
