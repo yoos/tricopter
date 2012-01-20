@@ -25,13 +25,14 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
     // TODO: D squared control?
 
     // Zero integral once overshoot is detected.
-    //if ((proportional < 0 && derivative > 0) ||
-    //    (proportional > 0 && derivative < 0)) {
-    //    PIDparameters.integral *= 0.95;
-    //}
+    if ((proportional < 0 && derivative > 0) ||
+        (proportional > 0 && derivative < 0)) {
+        //PIDparameters.integral *= 0.95;
+        PIDparameters.integral = 0.0;
+    }
 
     // NOTE: The P, I, and D gains should end up being no more than a single
-    // degree of magnitude away from 1.
+    // degree of magnitude away from each other... maybe.
     return PIDparameters.P * proportional +
            PIDparameters.I * PIDparameters.integral +
            PIDparameters.D * derivative;
