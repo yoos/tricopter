@@ -183,7 +183,7 @@ eep: applet/$(TARGET).eep
 lss: applet/$(TARGET).lss
 sym: applet/$(TARGET).sym
 
-# Program the device.  
+# Program the device.
 upload: applet/$(TARGET).hex
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 

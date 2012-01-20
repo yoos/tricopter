@@ -152,7 +152,7 @@ void Pilot::Fly() {
             PID[PID_ROT_X].P = XY_P_GAIN;
             PID[PID_ROT_Y].P = XY_P_GAIN;
         }
-        else if (buttonVal[BUTTON_DECREASE_XY_P_GAIN]) {
+        else if (buttonVal[BUTTON_DECREASE_XY_P_GAIN] && PID[PID_ROT_X].P > 0) {
             PID[PID_ROT_X].P -= 1.0;
             PID[PID_ROT_Y].P -= 1.0;
         }
@@ -165,7 +165,7 @@ void Pilot::Fly() {
             PID[PID_ROT_X].I = XY_I_GAIN;
             PID[PID_ROT_Y].I = XY_I_GAIN;
         }
-        else if (buttonVal[BUTTON_DECREASE_XY_I_GAIN]) {
+        else if (buttonVal[BUTTON_DECREASE_XY_I_GAIN] && PID[PID_ROT_X].I > 0) {
             PID[PID_ROT_X].I -= 1.0;
             PID[PID_ROT_Y].I -= 1.0;
         }
@@ -178,7 +178,7 @@ void Pilot::Fly() {
             PID[PID_ROT_X].D = XY_D_GAIN;
             PID[PID_ROT_Y].D = XY_D_GAIN;
         }
-        else if (buttonVal[BUTTON_DECREASE_XY_D_GAIN]) {
+        else if (buttonVal[BUTTON_DECREASE_XY_D_GAIN] && PID[PID_ROT_X].D < 0) {
             PID[PID_ROT_X].D += 1.0;
             PID[PID_ROT_Y].D += 1.0;
         }

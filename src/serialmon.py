@@ -18,6 +18,7 @@ from signal import signal, SIGINT
 # ROS stuff
 import roslib; roslib.load_manifest("tricopter")
 import rospy
+from tricopter.msg import Telemetry
 
 try:
     from OpenGL.GL import *
@@ -30,6 +31,8 @@ except:
 
 # Initialize ROS node.
 rospy.init_node("tric_vis", anonymous=True)
+
+pub = rospy.Publisher('telemetry', Telemetry)
 
 # =============================================================================
 # Serial configuration
@@ -440,6 +443,7 @@ class telemetryThread(threading.Thread):
                     #print fields
                     #print [dcm, fields[-1]]
                     print [int(fields[0].encode('hex'), 16), motorVal, targetRot, fields[-1]]
+                    pub.publish(Telemetry(dcm[0], dcm[1], dcm[2]))
 
             except:
                 pass
