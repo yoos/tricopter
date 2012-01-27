@@ -44,9 +44,9 @@ struct PIDdata {
 #define PID_ROT_Y 1
 #define PID_ROT_Z 2
 
-#define XY_P_GAIN 30.0   // 35.0
-#define XY_I_GAIN 20.0   // 50.0
-#define XY_D_GAIN -10.0   // -9.0
+#define XY_P_GAIN  30.0   // 35  42
+#define XY_I_GAIN  20.0   // 50  24
+#define XY_D_GAIN -10.0   //  9  10
 
 #define Z_P_GAIN 100.0
 #define Z_I_GAIN 0.0
