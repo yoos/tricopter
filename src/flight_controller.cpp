@@ -161,6 +161,15 @@ int main(void) {
                 sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
 
                 // ============================================================
+                // Report PID gains and values.
+                // ============================================================
+                sw(PID_SER_TAG);   // Index tag 'PID'.
+                sw((byte) ((int) PID[PID_ROT_X].P));
+                sw((byte) ((int) PID[PID_ROT_X].I));
+                sw((byte) ((int) -PID[PID_ROT_X].D));
+                sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
+
+                // ============================================================
                 // Report loop time.
                 // ============================================================
                 //sp(nextRuntime);

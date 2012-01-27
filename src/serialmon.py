@@ -44,6 +44,7 @@ fieldSerTag    = '\xff\xff'
 dcmSerTag      = '\xfb'
 rotationSerTag = '\xfc'
 motorSerTag    = '\xfd'
+pidSerTag      = '\xfe'
 
 
 # =============================================================================
@@ -59,6 +60,9 @@ targetRot = [0.0, 0.0, 0.0]
 
 # Motor/servo values (MT, MR, ML, ST)
 motorVal = [0.0, 0.0, 0.0, 0.0]
+
+# PID gains (P, I, D)
+pidData = [0.0, 0.0, 0.0]
 
 
 # =============================================================================
@@ -333,10 +337,11 @@ class telemetryThread(threading.Thread):
         threading.Thread.__init__(self)
         self.running = True
     def run(self):
-        global dcm, dcmT, targetRot, motorVal, newlineSerTag, fieldSerTag, dcmSerTag, rotationSerTag, motorSerTag
+        global dcm, dcmT, targetRot, motorVal, pidData, newlineSerTag, fieldSerTag, dcmSerTag, rotationSerTag, motorSerTag
         dcmDataIndex = 0       # Do I see IMU data?
         rotationDataIndex = 0       # Do I see rotation data?
         motorDataIndex = 0     # Do I see motor data?
+        pidDataIndex = 0     # Do I see PID data?
         serBuffer = ''
         serLines = ''
 
@@ -395,6 +400,8 @@ class telemetryThread(threading.Thread):
                             rotationDataIndex = i
                         elif not motorDataIndex and fields[i][0] == motorSerTag:
                             motorDataIndex = i
+                        elif not pidDataIndex and fields[i][0] == pidSerTag:
+                            pidDataIndex = i
 
                     # =========================================================
                     # Check if we're receiving DCM data.
@@ -437,12 +444,24 @@ class telemetryThread(threading.Thread):
                         except Exception, e:
                             print "MTR:", str(e)
 
+
+                    # =========================================================
+                    # Check if we're receiving PID gains and values.
+                    # =========================================================
+
+                    if pidDataIndex:
+                        try:
+                            for i in range(3):
+                                pidData[i] = int(fields[pidDataIndex][i+1:i+2].encode('hex'), 16)
+                        except Exception, e:
+                            print "PID:", str(e)
+
                     # =========================================================
                     # Printout
                     # =========================================================
                     #print fields
                     #print [dcm, fields[-1]]
-                    print [int(fields[0].encode('hex'), 16), motorVal, targetRot, fields[-1]]
+                    print [int(fields[0].encode('hex'), 16), motorVal, pidData, fields[-1]]
                     pub.publish(Telemetry(dcm[0], dcm[1], dcm[2]))
 
             except:

@@ -77,6 +77,7 @@ struct PIDdata {
 #define DCM_SER_TAG 0xfb
 #define ROT_SER_TAG 0xfc
 #define MOT_SER_TAG 0xfd
+#define PID_SER_TAG 0xfe
 #define FIELD_SER_TAG 0xff
 
 /*****************************************************************************
