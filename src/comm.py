@@ -104,7 +104,7 @@ def communicate():
         rospy.loginfo(str(axisValues[axisX]) + " " + str(axisValues[axisY]) + " " + str(axisValues[axisT]) + " " + str(axisValues[axisZ]) + " " + str(buttonValues))
     elif not armed:
         rospy.loginfo("Current throttle value: " + str(axisValues[axisZ]))
-        if axisValues[axisZ] == 1:   # If throttle is at minimum position
+        if axisValues[axisZ] == 0:   # If throttle is at minimum position
             armed = True
             rospy.loginfo("Joystick throttle at minimum! Motors armed!")
     # readData()   # TODO: make this work.
