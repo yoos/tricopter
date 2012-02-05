@@ -11,6 +11,8 @@
 #include "i2c.h"
 #include "globals.h"
 
+//#define ENABLE_GYRO_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
+
 #define READ_SIZE 6   // Number of bytes to read each time
 #define REGADDR 0x1D
 

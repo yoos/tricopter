@@ -78,6 +78,7 @@ void BMA180::Poll() {
     }
 
     // Runge-Kutta smoothing.
+    #ifdef ENABLE_ACC_RK_SMOOTH
     for (int i=0; i<3; i++) {
         rkVal[i][rkIndex] = aVal[i];
         aVal[i] = (1*rkVal[i][rkIndex] +
@@ -86,6 +87,7 @@ void BMA180::Poll() {
                 1*rkVal[i][(rkIndex+3)%4])/6;
     }
     rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
+    #endif // ENABLE_ACC_RK_SMOOTH
 }
 
 float* BMA180::Get() {

@@ -11,6 +11,8 @@
 #include "i2c.h"
 #include "globals.h"
 
+//#define ENABLE_ACC_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
+
 #define ACCADDR 0x40   // BMA180 device address.
 #define READ_SIZE 6   // Number of bytes to read at a time.
 #define REGADDR ACCXLSB   // Location of accelerometer data register.

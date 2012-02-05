@@ -103,7 +103,8 @@ void ITG3200::Poll() {
         //sp(" ");
     }
 
-    // Runge-Kutta smoothing and integration.
+    // Runge-Kutta smoothing.
+    #ifdef ENABLE_GYRO_RK_SMOOTH
     if (calibrated) {
         for (int i=0; i<3; i++) {
             rkVal[i][rkIndex] = gVal[i];
@@ -111,10 +112,10 @@ void ITG3200::Poll() {
                        2*rkVal[i][(rkIndex+1)%4] +
                        2*rkVal[i][(rkIndex+2)%4] +
                        1*rkVal[i][(rkIndex+3)%4])/6;
-            //angle[i] = angle[i] + gVal[i];   // Integration.
         }
         rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
     }
+    #endif // ENABLE_GYRO_RK_SMOOTH
 }
 
 float* ITG3200::GetRate() {
