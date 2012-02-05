@@ -21,8 +21,13 @@ float32 dcmZZ
 #float32[3] rotationVector
 
 # Motor values
-#float32[4] motorVals
+float32 motorT
+float32 motorR
+float32 motorL
+float32 servoT
 
 # PID gains for X, Y, Z axes.
-#float32[3] pidGains
+float32 P
+float32 I
+float32 D
 
