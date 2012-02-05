@@ -464,7 +464,9 @@ class telemetryThread(threading.Thread):
                     print [int(fields[0].encode('hex'), 16), motorVal, pidData, fields[-1]]
                     pub.publish(Telemetry(dcm[0][0], dcm[0][1], dcm[0][2],
                                           dcm[1][0], dcm[1][1], dcm[1][2],
-                                          dcm[2][0], dcm[2][1], dcm[2][2]))
+                                          dcm[2][0], dcm[2][1], dcm[2][2],
+                                          motorVal[0], motorVal[1], motorVal[2], motorVal[3],
+                                          pidData[0], pidData[1], pidData[2]))
 
             except:
                 pass
