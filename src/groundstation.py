@@ -3,6 +3,7 @@
 
 import sys
 import serial
+import threading
 from threading import Timer, Thread
 from signal import signal, SIGINT
 
@@ -19,31 +20,6 @@ armed = False   # System arm status. Set to True once throttle is set to zero. C
 axisValues = [125, 125, 125, 3]   # [X, Y, T, Z] -- Initialize Z as some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 buttonValues = 0   # Bitfield.
 
-
-# =============================================================================
-# Try to initialize a serial connection. If serialPort is defined, try opening
-# that. If it is not defined, loop through a range of integers starting from 0
-# and try to connect to /dev/ttyUSBX where X is the integer. In either case,
-# process dies if serial port cannot be opened.
-#
-# TODO: This needs to be made more concise.
-# =============================================================================
-try:
-    ser = serial.Serial(cfg.serialPort, cfg.baudRate, timeout=0)
-except serial.SerialException:
-    rospy.logerr("[GS] Unable to open specified serial port! Exiting...")
-    exit(1)
-except AttributeError:
-    for i in range(4):
-        try:
-            ser = serial.Serial("/dev/ttyUSB"+str(i), cfg.baudRate, timeout=0)
-            rospy.loginfo("[GS] Opened serial port at /dev/ttyUSB%d.", i)
-            break
-        except serial.SerialException:
-            rospy.logerr("[GS] No seral at /dev/ttyUSB%d.", i)
-            if i == 3:
-                rospy.logerr("[GS] No serial found. Giving up!")
-                exit(1)
 
 # =============================================================================
 # Process joystick input.
@@ -135,7 +111,7 @@ class TriTX(threading.Thread):
         while self.running and not rospy.is_shutdown():
             transmit()
             self.times += 1
-            rospy.sleep(dataSendInterval)
+            rospy.sleep(cfg.dataSendInterval)
 
 class TriWatchdog(threading.Thread):
     def __init__(self):
@@ -146,14 +122,38 @@ class TriWatchdog(threading.Thread):
         while self.running and not rospy.is_shutdown():
             serWrite(dogBone)
             self.times += 1
-            rospy.sleep(dogFeedInterval)
+            rospy.sleep(cfg.dogFeedInterval)
 
-# =============================================================================
-# Main loop
-# =============================================================================
+
+###############################################################################
 
 if __name__ == "__main__":
     rospy.init_node("tricopter_ground_station", anonymous=False)
+
+    # =========================================================================
+    # Try to initialize a serial connection. If serialPort is defined, try
+    # opening that. If it is not defined, loop through a range of integers
+    # starting from 0 and try to connect to /dev/ttyUSBX where X is the
+    # integer. In either case, process dies if serial port cannot be opened.
+    #
+    # TODO: This needs to be made more concise.
+    # =========================================================================
+    try:
+        ser = serial.Serial(cfg.serialPort, cfg.baudRate, timeout=0)
+    except serial.SerialException:
+        rospy.logerr("[GS] Unable to open specified serial port! Exiting...")
+        exit(1)
+    except AttributeError:
+        for i in range(4):
+            try:
+                ser = serial.Serial("/dev/ttyUSB"+str(i), cfg.baudRate, timeout=0)
+                rospy.loginfo("[GS] Opened serial port at /dev/ttyUSB%d.", i)
+                break
+            except serial.SerialException:
+                rospy.logerr("[GS] No serial at /dev/ttyUSB%d.", i)
+                if i == 3:
+                    rospy.logerr("[GS] No serial found. Giving up!")
+                    exit(1)
 
     try:
         sub = TriSubscriber()
@@ -162,8 +162,8 @@ if __name__ == "__main__":
         tx.start()
         dog = TriWatchdog()
         dog.start()
+        raw_input("Hit <enter> to quit.")
 
-    except rospy.ROSInterruptException:
         # Stop the while loops.
         sub.running = False
         tx.running = False
@@ -173,4 +173,7 @@ if __name__ == "__main__":
         sub.join()
         tx.join()
         dog.join()
+
+    except rospy.ROSInterruptException:
+        pass
 
