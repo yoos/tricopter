@@ -1,10 +1,12 @@
 *.swp
+*.pyc
 .svn
 applet
 /build
 /msg_gen
 /src/tricopter
 /src/tags
+/bagfiles
 
 misc/picquadcontroller-read-only
 misc/tricopter-read-only/arduino/Tricopter-eclipse
