@@ -87,7 +87,7 @@ struct PIDdata {
 
 #define MASTER_DT              10   // 10 ms interval = 100 Hz master loop.
 #define CONTROL_LOOP_INTERVAL   2   // 1/2 master = 50 Hz. NOTE: This frequency should be HIGHER than comm.py's dataSend frequency!
-#define TELEMETRY_LOOP_INTERVAL 5   // 1/5 master = 20 Hz.
+#define TELEMETRY_LOOP_INTERVAL 2   // 1/5 master = 20 Hz.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
 
 //#define DCM_COEFF 90   // Scale current-to-target DCM difference.
