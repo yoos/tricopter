@@ -12,7 +12,7 @@ import rospy
 from sensor_msgs.msg import Joy
 
 # Tricopter
-import gsconfig as cfg   # Import config for ground station.
+import triconfig as cfg   # Import config.
 
 armed = False   # System arm status. Set to True once throttle is set to zero. Communication will not start until this is True.
 
@@ -81,7 +81,7 @@ def joyCallback (myJoy):
 # =============================================================================
 # Communicate.
 # =============================================================================
-def communicate():
+def transmit():
     global armed
 
     if armed:
@@ -126,14 +126,14 @@ class TriSubscriber(threading.Thread):
             rospy.Subscriber("joy", Joy, joyCallback, queue_size=1)
             rospy.spin()
 
-class TriCommunicator(threading.Thread):
+class TriTX(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.running = True
         self.times = 0
     def run(self):
         while self.running and not rospy.is_shutdown():
-            communicate()
+            transmit()
             self.times += 1
             rospy.sleep(dataSendInterval)
 
@@ -158,19 +158,19 @@ if __name__ == "__main__":
     try:
         sub = TriSubscriber()
         sub.start()
-        comm = TriCommunicator()
-        comm.start()
+        tx = TriTX()
+        tx.start()
         dog = TriWatchdog()
         dog.start()
 
     except rospy.ROSInterruptException:
         # Stop the while loops.
         sub.running = False
-        comm.running = False
+        tx.running = False
         dog.running = False
 
         # Wait for threads to finish jobs.
         sub.join()
-        comm.join()
+        tx.join()
         dog.join()
 
