@@ -141,7 +141,7 @@ class telemetryThread(threading.Thread):
 
 if __name__ == "__main__":
     # Initialize ROS node.
-    rospy.init_node("tricopter_receiver", anonymous=True)
+    rospy.init_node("tricopter_receiver", anonymous=False)
     pub = rospy.Publisher("telemetry", Telemetry)
 
     # =========================================================================
