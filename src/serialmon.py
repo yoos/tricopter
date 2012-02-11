@@ -20,6 +20,8 @@ import roslib; roslib.load_manifest("tricopter")
 import rospy
 from tricopter.msg import Telemetry
 
+import triconfig as cfg   # Import config.
+
 try:
     from OpenGL.GL import *
     from OpenGL.GLUT import *
@@ -28,23 +30,6 @@ try:
 except:
     print "Error: PyOpenGL not installed properly. Exiting..."
     exit(1)
-
-# Initialize ROS node.
-rospy.init_node("tric_vis", anonymous=True)
-
-pub = rospy.Publisher('telemetry', Telemetry)
-
-# =============================================================================
-# Serial configuration
-# =============================================================================
-#serialPort     = "/dev/ttyUSB0"   # Uncomment to specify serial port. Otherwise, will connect to first available port.
-baudRate       = 57600
-newlineSerTag  = '\xde\xad\xbe\xef'
-fieldSerTag    = '\xff\xff'
-dcmSerTag      = '\xfb'
-rotationSerTag = '\xfc'
-motorSerTag    = '\xfd'
-pidSerTag      = '\xfe'
 
 
 # =============================================================================
@@ -351,23 +336,26 @@ class telemetryThread(threading.Thread):
         # starting from 0 and try to connect to /dev/ttyUSBX where X is the
         # integer. In either case, process dies if serial port cannot be
         # opened.
+        #
+        # TODO: This needs to be made more concise.
         # =====================================================================
         try:
-            ser = serial.Serial(serialPort, baudRate, timeout=0)
+            ser = serial.Serial(cfg.serialPort, cfg.baudRate, timeout=0)
         except serial.SerialException:
-            rospy.logerr("Unable to open specified serial port!")
+            rospy.logerr("[SM] Unable to open specified serial port! Exiting...")
             exit(1)
-        except NameError:
+        except AttributeError:
             for i in range(4):
                 try:
-                    ser = serial.Serial("/dev/ttyUSB"+str(i), baudRate, timeout=0)
-                    rospy.loginfo("Opened serial at /dev/ttyUSB%d.", i)
+                    ser = serial.Serial("/dev/ttyUSB"+str(i), cfg.baudRate, timeout=0)
+                    rospy.loginfo("[SM] Opened serial port at /dev/ttyUSB%d.", i)
                     break
                 except serial.SerialException:
-                    rospy.logerr("No serial at /dev/ttyUSB%d.", i)
+                    rospy.logerr("[SM] No seral at /dev/ttyUSB%d.", i)
                     if i == 3:
-                        rospy.logerr("No serial found. Giving up!")
+                        rospy.logerr("[SM] No serial found. Giving up!")
                         exit(1)
+
 
         while self.running and not rospy.is_shutdown():
             try:
@@ -378,29 +366,29 @@ class telemetryThread(threading.Thread):
                     serBuffer = serBuffer + ser.read(ser.inWaiting())
 
                     # =========================================================
-                    # Check for separator tag 0xdeadbeef and split one entry
-                    # off buffer.
+                    # Check for separator tag and split one entry off buffer.
                     # =========================================================
-                    if newlineSerTag in serBuffer:
-                        serLines = serBuffer.split(newlineSerTag)
+                    if cfg.newlineSerTag in serBuffer:
+                        serLines = serBuffer.split(cfg.newlineSerTag)
 
                         # Parse fields separated by 0xf0f0.
-                        fields = serLines[-2].split(fieldSerTag)
+                        fields = serLines[-2].split(cfg.fieldSerTag)
 
                         # Save second to last line and discard rest.
                         serBuffer = serLines[-1]
 
                     # =========================================================
                     # Scan for data field headers.
+                    # TODO: Move this someplace else so it's run only once.
                     # =========================================================
                     for i in range(1, len(fields)):
-                        if not dcmDataIndex and fields[i][0] == dcmSerTag:
+                        if not dcmDataIndex and fields[i][0] == cfg.dcmSerTag:
                             dcmDataIndex = i
-                        elif not rotationDataIndex and fields[i][0] == rotationSerTag:
+                        elif not rotationDataIndex and fields[i][0] == cfg.rotationSerTag:
                             rotationDataIndex = i
-                        elif not motorDataIndex and fields[i][0] == motorSerTag:
+                        elif not motorDataIndex and fields[i][0] == cfg.motorSerTag:
                             motorDataIndex = i
-                        elif not pidDataIndex and fields[i][0] == pidSerTag:
+                        elif not pidDataIndex and fields[i][0] == cfg.pidSerTag:
                             pidDataIndex = i
 
                     # =========================================================
@@ -413,6 +401,8 @@ class telemetryThread(threading.Thread):
                         #     integers before being pushed to serial in the
                         #     same scheme in which we encode joystick values in
                         #     comm.py.
+                        # TODO: Make a function to make reading from serial
+                        # easier.
                         try:
                             for i in range(3):
                                 for j in range(3):
@@ -448,7 +438,6 @@ class telemetryThread(threading.Thread):
                     # =========================================================
                     # Check if we're receiving PID gains and values.
                     # =========================================================
-
                     if pidDataIndex:
                         try:
                             for i in range(3):
@@ -476,6 +465,10 @@ class telemetryThread(threading.Thread):
 ###############################################################################
 
 if __name__ == "__main__":
+    # Initialize ROS node.
+    rospy.init_node("tric_vis", anonymous=True)
+    pub = rospy.Publisher('telemetry', Telemetry)
+
     try:
         telemetry = telemetryThread()
         telemetry.start()
