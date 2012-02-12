@@ -18,13 +18,29 @@ from tricopter.msg import Telemetry
 
 import triconfig as cfg   # Import config.
 
+# =============================================================================
+# Telemetry data
+# =============================================================================
+
+# Initial DCM values.
+dcm = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+
+# Target rotation values
+targetRot = [0.0, 0.0, 0.0]
+
+# Motor/servo values (MT, MR, ML, ST)
+motorVal = [0.0, 0.0, 0.0, 0.0]
+
+# PID data
+pidData = [0.0, 0.0, 0.0]
+
 
 class telemetryThread(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.running = True
     def run(self):
-        global dcm, dcmT, targetRot, motorVal, pidData, newlineSerTag, fieldSerTag, dcmSerTag, rotationSerTag, motorSerTag
+        global dcm, targetRot, motorVal, pidData
         dcmDataIndex = 0       # Do I see IMU data?
         rotationDataIndex = 0       # Do I see rotation data?
         motorDataIndex = 0     # Do I see motor data?
@@ -83,7 +99,7 @@ class telemetryThread(threading.Thread):
                                 for j in range(3):
                                     dcm[i][j] = float(int(fields[dcmDataIndex][i*3+j+1:i*3+j+2].encode('hex'), 16)-1)/250*2-1
                                     #dcm[i][j] = struct.unpack('f', fields[dcmDataIndex][3+(i*3+j)*4:3+(i*3+j)*4+4])[0]
-                                    dcmT[j][i] = dcm[i][j]
+                                    #dcmT[j][i] = dcm[i][j]
                         except Exception, e:
                             print "DCM:", str(e)
 
