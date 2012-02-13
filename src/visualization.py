@@ -238,7 +238,7 @@ def drawScene():
 
         # Rotate tail motor based on yaw motorVal[3]
         if i == 0:
-            glRotatef(motorVal[3]-69, 0.0, 1.0, 0.0)
+            glRotatef(motorVal[3]-74, 0.0, 1.0, 0.0)
 
         #gluQuadricOrientation(quadratic, GLU_OUTSIDE);
         gluCylinder(quadratic, 0.3, 0.3, (motorVal[i]-0.001)/400, 32, 32);
