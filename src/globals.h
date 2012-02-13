@@ -98,7 +98,7 @@ struct PIDdata {
 // is around 1200 ms.
 #define TMIN   750   // Minimum throttle signal in ms. (Absolute minimum is 750.)
 #define THOVER 1200   // Hover throttle signal in ms.
-#define TMAX   1500   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
+#define TMAX   1600   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
 
 #define TIME_TO_ARM 2000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 30   // This is added to TMIN to determine whether or not to arm the system.
@@ -135,7 +135,7 @@ struct PIDdata {
 #define MOTOR_T_SCALE  1   // Scale speed of tail motor.
 #define MOTOR_R_SCALE  1   // Scale speed of right motor.
 #define MOTOR_L_SCALE  1   // Scale speed of left motor.
-#define TAIL_SERVO_DEFAULT_POSITION 1250
+#define TAIL_SERVO_DEFAULT_POSITION 1185
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
 #define Z_ROT_SPEED 1   // Scale how much joystick twist input affects target Z rotation. A value of 1 here means a maximum Z rotation speed is 1 rad/s.
 
