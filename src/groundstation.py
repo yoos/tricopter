@@ -68,11 +68,11 @@ def transmit():
                  chr(axisValues[cfg.axisZ]) +
                  chr(buttonValues & 0b01111111) +
                  chr(buttonValues >> 7))
-        #rospy.loginfo(str(axisValues[cfg.axisX]) + " " +
-        #              str(axisValues[cfg.axisY]) + " " +
-        #              str(axisValues[cfg.axisT]) + " " +
-        #              str(axisValues[cfg.axisZ]) + " " +
-        #              str(buttonValues))
+        rospy.loginfo(str(axisValues[cfg.axisX]) + " " +
+                      str(axisValues[cfg.axisY]) + " " +
+                      str(axisValues[cfg.axisT]) + " " +
+                      str(axisValues[cfg.axisZ]) + " " +
+                      str(buttonValues))
     elif not armed:
         rospy.loginfo("[GS] Current throttle value: " + str(axisValues[cfg.axisZ]))
         if axisValues[cfg.axisZ] == 0:   # If throttle is at minimum position

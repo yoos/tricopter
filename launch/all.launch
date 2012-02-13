@@ -7,7 +7,7 @@
         <param name="deadzone" value="0" />
     </node>
 
-    <node name="tri_tx"  pkg="tricopter" type="groundstation.py" output="screen" />
+    <node name="tri_tx"  pkg="tricopter" type="groundstation.py"                 />
     <node name="tri_rx"  pkg="tricopter" type="serialmon.py"     output="screen" />
     <node name="tri_vis" pkg="tricopter" type="visualization.py" output="screen" />
 
