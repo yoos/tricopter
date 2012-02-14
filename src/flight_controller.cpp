@@ -75,10 +75,16 @@ int main(void) {
                  */
                 if (armCount > 0) {   // First check that system is armed.
                     // sp("System: Motors not armed.\n");
-                    pwmDevice[MOTOR_T].writeMicroseconds(TMIN);   // Disregard what Pilot says and write TMIN.
-                    pwmDevice[MOTOR_R].writeMicroseconds(TMIN);   // Disregard what Pilot says and write TMIN.
-                    pwmDevice[MOTOR_L].writeMicroseconds(TMIN);   // Disregard what Pilot says and write TMIN.
+
+                    // Disregard what Pilot says and write TMIN.
+                    pwmDevice[MOTOR_T].writeMicroseconds(TMIN);
+                    pwmDevice[MOTOR_R].writeMicroseconds(TMIN);
+                    pwmDevice[MOTOR_L].writeMicroseconds(TMIN);
                     pwmDevice[SERVO_T].writeMicroseconds(1900);
+
+                    for (int i=0; i<3; i++) {
+                        pwmOut[i] = TMIN;
+                    }
 
                     // Check that motor values set by Pilot are within the
                     // arming threshold.
