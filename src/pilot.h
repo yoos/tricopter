@@ -9,11 +9,13 @@
 #define PILOT_H
 
 #include "globals.h"
+#include "motors.h"
 #include "pid.h"
 
 class Pilot {
     byte serRead;
     uint8_t serInput[PACKETSIZE];
+    float throttle;
     int throttleTrim;
     float mapLower, mapUpper;
 //  double dir;   // Direction in radians
