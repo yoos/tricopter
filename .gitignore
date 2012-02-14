@@ -8,8 +8,3 @@ applet
 /src/tags
 /bagfiles
 
-misc/picquadcontroller-read-only
-misc/tricopter-read-only/arduino/Tricopter-eclipse
-misc/tricopter-read-only/arduino/libraries
-misc/tricopter-read-only/arduino/test_sketch
-misc/tricopter-read-only/commander
