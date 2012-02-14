@@ -39,10 +39,6 @@ Pilot::Pilot() {
     PID[PID_ROT_Z].I = Z_I_GAIN;
     PID[PID_ROT_Z].D = Z_D_GAIN;
 
-    #ifdef DEBUG
-    spln("Pilot here!");
-    #endif
-
     numGoodComm = 0;   // Number of good communication packets.
     numBadComm = 0;   // Number of bad communication packets.
 }
@@ -51,15 +47,10 @@ void Pilot::Listen() {
     if (Serial.available()) {
         serRead = Serial.read();
 
-        // Need delay to prevent dropped bits. 500 microseconds is about as low
-        // as it will go.
-        //delayMicroseconds(500);
-
         if (serRead == SERHEAD) {   // Receive header.
             hasFood = true;   // Prepare food for watchdog.
             for (int i=0; i<PACKETSIZE; i++) {
                 serRead = Serial.read();
-                //delayMicroseconds(500);   // Delay to prevent dropped bits.
 
                 if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
                     serInput[i] = serRead;
@@ -91,7 +82,6 @@ void Pilot::Fly() {
     //sp(numBadComm);
     //sp(") ");
 
-    // Update joy.axes only if okayToFly is true.
     if (okayToFly) {
         update_joystick_input();
 
@@ -155,10 +145,6 @@ void Pilot::Fly() {
     else {
         // spln("Pilot not okay to fly.");
     }
-
-    #ifdef DEBUG
-    spln("Pilot is flying.");
-    #endif
 }
 
 void Pilot::Abort() {
