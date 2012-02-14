@@ -91,25 +91,9 @@ void Pilot::Fly() {
     //sp(numBadComm);
     //sp(") ");
 
-    // Update axisVal only if okayToFly is true.
+    // Update joy.axes only if okayToFly is true.
     if (okayToFly) {
-        // ====================================================================
-        // Shift serial input values [0, 250] to correct range for each axis. Z
-        // stays positive for ease of calculation.
-        // ====================================================================
-        axisVal[SX] = (float) serInput[SX] - 125;   // [-125, 125]
-        axisVal[SY] = (float) serInput[SY] - 125;   // [-125, 125]
-        axisVal[ST] = (float) serInput[ST] - 125;   // [-125, 125]
-        axisVal[SZ] = (float) serInput[SZ];         // [0, 250]
-
-        // ====================================================================
-        // Set button values. We utilize only the lower 7 bits since doing
-        // otherwise would cause overlaps with serial headers.
-        // ====================================================================
-        for (int i=0; i<7; i++) {
-            buttonVal[i] = serInput[SB1] & (1<<i);
-            buttonVal[7+i] = serInput[SB2] & (1<<i);
-        }
+        update_joystick_input(serInput);
 
         // ====================================================================
         // Calculate target rotation vector based on joystick input scaled to a
@@ -118,74 +102,11 @@ void Pilot::Fly() {
         // TODO: The first two are approximations! Need to figure out how to
         // properly use the DCM.
         // ====================================================================
-        targetRot[0] = -axisVal[SY]/125 * PI/10;
-        targetRot[1] =  axisVal[SX]/125 * PI/10;
+        targetRot[0] = -joy.axes[SY]/125 * PI/10;
+        targetRot[1] =  joy.axes[SX]/125 * PI/10;
+        targetRot[2] += joy.axes[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
 
-        // "Reset" targetRot[2] to currentRot[2] if thumb button is pressed.
-        if (buttonVal[BUTTON_RESET_YAW]) {
-            targetRot[2] = currentRot[2];
-            targetRot[2] += axisVal[ST]/125 * Z_ROT_SPEED;
-        }
-        else {
-            targetRot[2] += axisVal[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
-        }
-
-        // Zero integral.
-        if (buttonVal[BUTTON_ZERO_INTEGRAL]) {
-            PID[PID_ROT_X].integral = 0;
-            PID[PID_ROT_Y].integral = 0;
-        }
-
-        // Trim throttle value.
-        if (buttonVal[BUTTON_DECREASE_TRIM] && buttonVal[BUTTON_INCREASE_TRIM]) {
-            throttleTrim = 0;
-        }
-        else if (buttonVal[BUTTON_DECREASE_TRIM]) {
-            throttleTrim--;
-        }
-        else if (buttonVal[BUTTON_INCREASE_TRIM]) {
-            throttleTrim++;
-        }
-
-        // Adjust gains on-the-fly.
-        if (buttonVal[BUTTON_DECREASE_XY_P_GAIN] && buttonVal[BUTTON_INCREASE_XY_P_GAIN]) {
-            PID[PID_ROT_X].P = XY_P_GAIN;
-            PID[PID_ROT_Y].P = XY_P_GAIN;
-        }
-        else if (buttonVal[BUTTON_DECREASE_XY_P_GAIN] && PID[PID_ROT_X].P > 0) {
-            PID[PID_ROT_X].P -= 1.0;
-            PID[PID_ROT_Y].P -= 1.0;
-        }
-        else if (buttonVal[BUTTON_INCREASE_XY_P_GAIN]) {
-            PID[PID_ROT_X].P += 1.0;
-            PID[PID_ROT_Y].P += 1.0;
-        }
-
-        if (buttonVal[BUTTON_DECREASE_XY_I_GAIN] && buttonVal[BUTTON_INCREASE_XY_I_GAIN]) {
-            PID[PID_ROT_X].I = XY_I_GAIN;
-            PID[PID_ROT_Y].I = XY_I_GAIN;
-        }
-        else if (buttonVal[BUTTON_DECREASE_XY_I_GAIN] && PID[PID_ROT_X].I > 0) {
-            PID[PID_ROT_X].I -= 1.0;
-            PID[PID_ROT_Y].I -= 1.0;
-        }
-        else if (buttonVal[BUTTON_INCREASE_XY_I_GAIN]) {
-            PID[PID_ROT_X].I += 1.0;
-            PID[PID_ROT_Y].I += 1.0;
-        }
-
-        if (buttonVal[BUTTON_DECREASE_XY_D_GAIN] && buttonVal[BUTTON_INCREASE_XY_D_GAIN]) {
-            PID[PID_ROT_X].D = XY_D_GAIN;
-            PID[PID_ROT_Y].D = XY_D_GAIN;
-        }
-        else if (buttonVal[BUTTON_DECREASE_XY_D_GAIN] && PID[PID_ROT_X].D < 0) {
-            PID[PID_ROT_X].D += 1.0;
-            PID[PID_ROT_Y].D += 1.0;
-        }
-        else if (buttonVal[BUTTON_INCREASE_XY_D_GAIN]) {
-            PID[PID_ROT_X].D -= 1.0;
-            PID[PID_ROT_Y].D -= 1.0;
-        }
+        process_joystick_buttons();
 
         // Keep targetRot within [-PI, PI].
         for (int i=0; i<3; i++) {
@@ -230,7 +151,7 @@ void Pilot::Fly() {
         //     MOTOR_X_OFFSET: Offset starting motor values to account for
         //                     chassis imbalance.
         //     MOTOR_X_SCALE: Scale targetRot.
-        //     axisVal[SZ]: Throttle.
+        //     joy.axes[SZ]: Throttle.
         //
         // TODO: MOTOR_X_SCALE should be replaced by actual PID gains. Besides,
         // it's incorrect to scale in the negative direction if the
@@ -239,15 +160,15 @@ void Pilot::Fly() {
         // ====================================================================
 
         // MOTORVAL SCHEME 5 (pidRot to motorVal conversion)
-        //pwmOut[MOTOR_T] = MOTOR_T_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) + -pidRot[0]*2;
-        //pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) +  pidRot[0] - pidRot[1]*sqrt(3);
-        //pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + axisVal[SZ]*(TMAX-TMIN)/250) +  pidRot[0] + pidRot[1]*sqrt(3);
+        //pwmOut[MOTOR_T] = MOTOR_T_OFFSET + (TMIN + joy.axes[SZ]*(TMAX-TMIN)/250) + -pidRot[0]*2;
+        //pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + joy.axes[SZ]*(TMAX-TMIN)/250) +  pidRot[0] - pidRot[1]*sqrt(3);
+        //pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + joy.axes[SZ]*(TMAX-TMIN)/250) +  pidRot[0] + pidRot[1]*sqrt(3);
         //pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + pidRot[2];
 
         // MOTORVAL SCHEME 6
-        pwmOut[MOTOR_T] = TMIN + throttleTrim + MOTOR_T_OFFSET + axisVal[SZ]*(TMAX-TMIN)/250 + -pidRot[PID_ROT_X];
-        pwmOut[MOTOR_R] = TMIN + throttleTrim + MOTOR_R_OFFSET + axisVal[SZ]*(TMAX-TMIN)/250 +  pidRot[PID_ROT_X] - pidRot[PID_ROT_Y]*sqrt(3);
-        pwmOut[MOTOR_L] = TMIN + throttleTrim + MOTOR_L_OFFSET + axisVal[SZ]*(TMAX-TMIN)/250 +  pidRot[PID_ROT_X] + pidRot[PID_ROT_Y]*sqrt(3);
+        pwmOut[MOTOR_T] = TMIN + throttleTrim + MOTOR_T_OFFSET + joy.axes[SZ]*(TMAX-TMIN)/250 + -pidRot[PID_ROT_X];
+        pwmOut[MOTOR_R] = TMIN + throttleTrim + MOTOR_R_OFFSET + joy.axes[SZ]*(TMAX-TMIN)/250 +  pidRot[PID_ROT_X] - pidRot[PID_ROT_Y]*sqrt(3);
+        pwmOut[MOTOR_L] = TMIN + throttleTrim + MOTOR_L_OFFSET + joy.axes[SZ]*(TMAX-TMIN)/250 +  pidRot[PID_ROT_X] + pidRot[PID_ROT_Y]*sqrt(3);
         pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + pidRot[PID_ROT_Z];
 
         pwmOut[MOTOR_T] = MOTOR_T_SCALE * pwmOut[MOTOR_T];
