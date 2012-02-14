@@ -93,7 +93,7 @@ void Pilot::Fly() {
 
     // Update joy.axes only if okayToFly is true.
     if (okayToFly) {
-        update_joystick_input(serInput);
+        update_joystick_input();
 
         // ====================================================================
         // Calculate target rotation vector based on joystick input scaled to a
@@ -242,5 +242,90 @@ void Pilot::Abort() {
     //#ifdef DEBUG
     //spln("Pilot ejected!");
     //#endif
+}
+
+void Pilot::update_joystick_input(void) {
+    // ========================================================================
+    // Shift serial input values [0, 250] to correct range for each axis. Z
+    // stays positive for ease of calculation.
+    // ========================================================================
+    joy.axes[SX] = (float) serInput[SX] - 125;   // [-125, 125]
+    joy.axes[SY] = (float) serInput[SY] - 125;   // [-125, 125]
+    joy.axes[ST] = (float) serInput[ST] - 125;   // [-125, 125]
+    joy.axes[SZ] = (float) serInput[SZ];         // [   0, 250]
+
+    // ========================================================================
+    // Set button values. We utilize only the lower 7 bits, since doing
+    // otherwise would cause overlaps with serial headers.
+    // ========================================================================
+    for (int i=0; i<7; i++) {
+        joy.buttons[i]   = serInput[SB1] & (1<<i);
+        joy.buttons[7+i] = serInput[SB2] & (1<<i);
+    }
+}
+
+void Pilot::process_joystick_buttons(void) {
+    // "Reset" targetRot[2] to currentRot[2] if thumb button is pressed.
+    if (joy.buttons[BUTTON_RESET_YAW]) {
+        targetRot[2] = currentRot[2];
+        targetRot[2] += joy.axes[ST]/125 * Z_ROT_SPEED;
+    }
+
+    // Zero integral.
+    if (joy.buttons[BUTTON_ZERO_INTEGRAL]) {
+        PID[PID_ROT_X].integral = 0;
+        PID[PID_ROT_Y].integral = 0;
+    }
+
+    // Trim throttle value.
+    if (joy.buttons[BUTTON_DECREASE_TRIM] && joy.buttons[BUTTON_INCREASE_TRIM]) {
+        throttleTrim = 0;
+    }
+    else if (joy.buttons[BUTTON_DECREASE_TRIM]) {
+        throttleTrim--;
+    }
+    else if (joy.buttons[BUTTON_INCREASE_TRIM]) {
+        throttleTrim++;
+    }
+
+    // Adjust gains on-the-fly.
+    if (joy.buttons[BUTTON_DECREASE_XY_P_GAIN] && joy.buttons[BUTTON_INCREASE_XY_P_GAIN]) {
+        PID[PID_ROT_X].P = XY_P_GAIN;
+        PID[PID_ROT_Y].P = XY_P_GAIN;
+    }
+    else if (joy.buttons[BUTTON_DECREASE_XY_P_GAIN] && PID[PID_ROT_X].P > 0) {
+        PID[PID_ROT_X].P -= 1.0;
+        PID[PID_ROT_Y].P -= 1.0;
+    }
+    else if (joy.buttons[BUTTON_INCREASE_XY_P_GAIN]) {
+        PID[PID_ROT_X].P += 1.0;
+        PID[PID_ROT_Y].P += 1.0;
+    }
+
+    if (joy.buttons[BUTTON_DECREASE_XY_I_GAIN] && joy.buttons[BUTTON_INCREASE_XY_I_GAIN]) {
+        PID[PID_ROT_X].I = XY_I_GAIN;
+        PID[PID_ROT_Y].I = XY_I_GAIN;
+    }
+    else if (joy.buttons[BUTTON_DECREASE_XY_I_GAIN] && PID[PID_ROT_X].I > 0) {
+        PID[PID_ROT_X].I -= 1.0;
+        PID[PID_ROT_Y].I -= 1.0;
+    }
+    else if (joy.buttons[BUTTON_INCREASE_XY_I_GAIN]) {
+        PID[PID_ROT_X].I += 1.0;
+        PID[PID_ROT_Y].I += 1.0;
+    }
+
+    if (joy.buttons[BUTTON_DECREASE_XY_D_GAIN] && joy.buttons[BUTTON_INCREASE_XY_D_GAIN]) {
+        PID[PID_ROT_X].D = XY_D_GAIN;
+        PID[PID_ROT_Y].D = XY_D_GAIN;
+    }
+    else if (joy.buttons[BUTTON_DECREASE_XY_D_GAIN] && PID[PID_ROT_X].D < 0) {
+        PID[PID_ROT_X].D += 1.0;
+        PID[PID_ROT_Y].D += 1.0;
+    }
+    else if (joy.buttons[BUTTON_INCREASE_XY_D_GAIN]) {
+        PID[PID_ROT_X].D -= 1.0;
+        PID[PID_ROT_Y].D -= 1.0;
+    }
 }
 
