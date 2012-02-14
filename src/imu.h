@@ -24,8 +24,9 @@ class IMU {
 
     // TODO: Implement variable weight coefficient for accelerometer based on
     // total observed acceleration.
-    float KB[3];     // K unity vector expressed in BODY frame of reference.
-    float wA[3];     // Corrective rotation vector based on acceleration vector.
+    static float kbb[3];   // K body unit vector expressed in body coordinates.
+    float kgb[3];   // K global unit vector expressed in body coordinates.
+    float wA[3];    // Corrective rotation vector based on acceleration vector.
     float wAOffset[3];   // Correction vector for wA.
     float wdt[3];    // Angular displacement vector = w * dt, where w is the angular velocity vector and dt is the time elapsed.
 

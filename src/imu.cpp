@@ -39,9 +39,10 @@ void IMU::Init() {
         for (int j=0; j<3; j++)
             gyroDCM[i][j] = (i==j) ? 1.0 : 0.0;
 
-    oneG[0] = 0.0;
-    oneG[1] = 0.0;
-    oneG[2] = 1.0;
+    // k body unit vector in body coordinates.
+    kbb[0] = 0.0;
+    kbb[1] = 0.0;
+    kbb[2] = 1.0;
 
     // Initialize skewed gravity vector aVecOffset to account for imperfections
     // in IMU mounting and repurpose aVecOffset to be the correctional rotation
@@ -49,7 +50,7 @@ void IMU::Init() {
     wAOffset[0] = ACCEL_X_OFFSET;
     wAOffset[1] = ACCEL_Y_OFFSET;
     wAOffset[2] = ACCEL_Z_OFFSET;
-    vCrossP(wAOffset, oneG, wAOffset);
+    vCrossP(wAOffset, kbb, wAOffset);
 }
 
 void IMU::Update() {
@@ -77,15 +78,15 @@ void IMU::Update() {
     //    sp(")");
     //}
 
-    // Express K unity vector in BODY frame as KB for use in drift correction
-    // (we need K to be described in the BODY frame because gravity is measured
-    // by the accelerometer in the BODY frame). Technically we could just
-    // create a transpose of gyroDCM, but since we don't (yet) have a
-    // magnetometer, we don't need the first two rows of the transpose. This
+    // Express K global unit vector in BODY frame as kgb for use in drift
+    // correction (we need K to be described in the BODY frame because gravity
+    // is measured by the accelerometer in the BODY frame). Technically we
+    // could just create a transpose of gyroDCM, but since we don't (yet) have
+    // a magnetometer, we don't need the first two rows of the transpose. This
     // saves a few clock cycles.
-    KB[0] = gyroDCM[0][2];
-    KB[1] = gyroDCM[1][2];
-    KB[2] = gyroDCM[2][2];
+    kgb[0] = gyroDCM[0][2];
+    kgb[1] = gyroDCM[1][2];
+    kgb[2] = gyroDCM[2][2];
 
     // Calculate gyro drift correction rotation vector wA, which will be used
     // later to bring KB closer to the gravity vector (i.e., the negative of
@@ -93,7 +94,7 @@ void IMU::Update() {
     // the cross product below produces a rotation vector that we can later add
     // to the angular displacement vector to correct for gyro drift in the X
     // and Y axes.
-    vCrossP(KB, aVec, wA);
+    vCrossP(kgb, aVec, wA);
 
     // Correct the correction vector to account for imperfect hardware mounting
     // of the IMU.
