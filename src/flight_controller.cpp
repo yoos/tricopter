@@ -84,7 +84,7 @@ int main(void) {
                     pwmDevice[SERVO_T].writeMicroseconds(1900);
 
                     for (int i=0; i<3; i++) {
-                        pwmOut[i] = TMIN;
+                        pwmOut[i] = 0;   // Set pwmOut to some bad value.
                     }
 
                     // Check that motor values set by Pilot are within the
@@ -120,10 +120,7 @@ int main(void) {
             // ================================================================
 
             if (loopCount % TELEMETRY_LOOP_INTERVAL == 0) {
-                sendTelemetry();
-
-                // Report loop time.
-                sp((int) (millis() - (nextRuntime - MASTER_DT)));
+                sendTelemetry(nextRuntime);
             }
 
             loopCount++;
