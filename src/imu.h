@@ -26,6 +26,7 @@ class IMU {
     // total observed acceleration.
     float KB[3];     // K unity vector expressed in BODY frame of reference.
     float wA[3];     // Corrective rotation vector based on acceleration vector.
+    float wAOffset[3];   // Correction vector for wA.
     float wdt[3];    // Angular displacement vector = w * dt, where w is the angular velocity vector and dt is the time elapsed.
 
     float dDCM[3][3];   // First used to store the change in DCM to update the current DCM. Repurposed during orthonormalization to store the correction vectors for the i and j unit vectors.

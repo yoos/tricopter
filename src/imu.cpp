@@ -38,6 +38,18 @@ void IMU::Init() {
     for (int i=0; i<3; i++)
         for (int j=0; j<3; j++)
             gyroDCM[i][j] = (i==j) ? 1.0 : 0.0;
+
+    oneG[0] = 0.0;
+    oneG[1] = 0.0;
+    oneG[2] = 1.0;
+
+    // Initialize skewed gravity vector aVecOffset to account for imperfections
+    // in IMU mounting and repurpose aVecOffset to be the correctional rotation
+    // vector to be added to wA later.
+    wAOffset[0] = ACCEL_X_OFFSET;
+    wAOffset[1] = ACCEL_Y_OFFSET;
+    wAOffset[2] = ACCEL_Z_OFFSET;
+    vCrossP(wAOffset, oneG, wAOffset);
 }
 
 void IMU::Update() {
@@ -54,6 +66,16 @@ void IMU::Update() {
     aVec[1] = myAcc.Get(1);
     aVec[2] = myAcc.Get(2);
     vNorm(aVec);
+
+    // Uncomment the loop below to get accelerometer readings in order to
+    // obtain aVecOffset.
+    //if (loopCount % TELEMETRY_LOOP_INTERVAL == 0) {
+    //    sp("(");
+    //    sp(aVec[0]*1000); sp(", ");
+    //    sp(aVec[1]*1000); sp(", ");
+    //    sp(aVec[2]*1000);
+    //    sp(")");
+    //}
 
     // Express K unity vector in BODY frame as KB for use in drift correction
     // (we need K to be described in the BODY frame because gravity is measured
@@ -72,6 +94,10 @@ void IMU::Update() {
     // to the angular displacement vector to correct for gyro drift in the X
     // and Y axes.
     vCrossP(KB, aVec, wA);
+
+    // Correct the correction vector to account for imperfect hardware mounting
+    // of the IMU.
+    vAdd(wA, wAOffset, wA);
 
     // Uncomment to debug K and gravity vectors.
     //if (loopCount % TELEMETRY_LOOP_INTERVAL == 0) {

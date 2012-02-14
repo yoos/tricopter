@@ -23,6 +23,7 @@ float commandRoll;   // Roll command to be processed through PID.
 float gyroDCM[3][3];   // Current position DCM calculated by IMU.
 float targetRot[3], currentRot[3], pidRot[3];
 float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
+static float oneG[3];
 
 
 // ============================================================================
@@ -138,6 +139,11 @@ struct PIDdata {
 #define TAIL_SERVO_DEFAULT_POSITION 1185
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
 #define Z_ROT_SPEED 1   // Scale how much joystick twist input affects target Z rotation. A value of 1 here means a maximum Z rotation speed is 1 rad/s.
+
+// "Offset" values for accelerometer.
+#define ACCEL_X_OFFSET -0.047
+#define ACCEL_Y_OFFSET -0.022
+#define ACCEL_Z_OFFSET -0.998
 
 #define PMT 4   // Tail motor pin.
 #define PMR 2   // Right motor pin.
