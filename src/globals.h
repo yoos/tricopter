@@ -45,9 +45,9 @@ struct PIDdata {
 #define PID_ROT_Y 1
 #define PID_ROT_Z 2
 
-#define XY_P_GAIN  30.0   // 35  42
-#define XY_I_GAIN  20.0   // 50  24
-#define XY_D_GAIN -10.0   //  9  10
+#define XY_P_GAIN 17.0 // 30  35  42
+#define XY_I_GAIN 10.0 // 20  50  24
+#define XY_D_GAIN -6.0 // 10   9  10
 
 #define Z_P_GAIN 100.0
 #define Z_I_GAIN 0.0
@@ -133,7 +133,7 @@ struct PIDdata {
 #define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define MOTOR_T_SCALE  1   // Scale speed of tail motor.
+#define MOTOR_T_SCALE  1.02   // Scale speed of tail motor.
 #define MOTOR_R_SCALE  1   // Scale speed of right motor.
 #define MOTOR_L_SCALE  1   // Scale speed of left motor.
 #define TAIL_SERVO_DEFAULT_POSITION 1185
