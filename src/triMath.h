@@ -20,9 +20,15 @@ float vDotP (float v1[3], float v2[3]) {
 
 // Cross product
 void vCrossP (float v1[3], float v2[3], float vOut[3]) {
-    vOut[0] = (v1[1]*v2[2]) - (v1[2]*v2[1]);
-    vOut[1] = (v1[2]*v2[0]) - (v1[0]*v2[2]);
-    vOut[2] = (v1[0]*v2[1]) - (v1[1]*v2[0]);
+    float output[3];
+
+    output[0] = (v1[1]*v2[2]) - (v1[2]*v2[1]);
+    output[1] = (v1[2]*v2[0]) - (v1[0]*v2[2]);
+    output[2] = (v1[0]*v2[1]) - (v1[1]*v2[0]);
+
+    for (int i=0; i<3; i++) {
+        vOut[i] = output[i];
+    }
 }
 
 // Scalar multiplication
