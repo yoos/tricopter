@@ -124,7 +124,7 @@ void IMU::Update() {
     // Scale gVec by elapsed time (in seconds) to get angle w*dt in radians,
     // then compute weighted average with the accelerometer correction vector.
     for (int i=0; i<3; i++) {
-        wdt[i] = gVec[i] * MASTER_DT/1000;
+        wdt[i] = gVec[i] * MASTER_DT/1000000;
         wdt[i] = (wdt[i] + ACC_WEIGHT*wA[i]) / (1.0 + ACC_WEIGHT);
     }
 

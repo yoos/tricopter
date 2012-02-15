@@ -77,7 +77,7 @@ struct PIDdata {
 #define SEND_ARM_STATUS
 //#define SEND_TARGET_ROTATION
 //#define SEND_MOTOR_VALUES
-//#define SEND_DCM
+#define SEND_DCM
 //#define SEND_PID
 
 #define DCM_SER_TAG 0xfb
@@ -91,7 +91,7 @@ struct PIDdata {
  * relatively frequently changed.
  *****************************************************************************/
 
-#define MASTER_DT              10   // 10 ms interval = 100 Hz master loop.
+#define MASTER_DT           10000   // 10000 us interval = 100 Hz master loop.
 #define CONTROL_LOOP_INTERVAL   2   // 1/2 master = 50 Hz. NOTE: This frequency should be HIGHER than comm.py's dataSend frequency!
 #define TELEMETRY_LOOP_INTERVAL 2   // 1/5 master = 20 Hz.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
@@ -106,7 +106,7 @@ struct PIDdata {
 #define THOVER 1200   // Hover throttle signal in ms.
 #define TMAX   1600   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
 
-#define TIME_TO_ARM 2000   // This divided by MASTER_DT determines how long it takes to arm the system.
+#define TIME_TO_ARM 2000000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 30   // This is added to TMIN to determine whether or not to arm the system.
 
 #define MOTOR_T 0   // Tail motor array index.

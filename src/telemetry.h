@@ -71,7 +71,7 @@ void sendTelemetry(int nextRuntime) {
     #endif // SEND_PID
 
     // Report loop time.
-    sp((int) (millis() - (nextRuntime - MASTER_DT)));
+    sp((int) (micros() - (nextRuntime - MASTER_DT)));
 
     sw(0xde); sw(0xad); sw(0xbe); sw(0xef);
 }

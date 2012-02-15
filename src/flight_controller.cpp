@@ -35,8 +35,8 @@ int main(void) {
 
     // Variables
 
-    armCount = (int) TIME_TO_ARM/(MASTER_DT*CONTROL_LOOP_INTERVAL);   // We will subtract 1 from the armed value every time we receive the arming numbers from comm. Arming numbers will have to be sent for a total of TIME_TO_ARM (in ms) before this variable reaches 0.
-    unsigned long nextRuntime = millis();
+    armCount = TIME_TO_ARM/(MASTER_DT*CONTROL_LOOP_INTERVAL);   // We will subtract 1 from the armed value every time we receive the arming numbers from comm. Arming numbers will have to be sent for a total of TIME_TO_ARM (in ms) before this variable reaches 0.
+    unsigned long nextRuntime = micros();
     loopCount = 0;
 
     // Write 0 to motors to prevent them from spinning up upon Seeeduino reset!
@@ -47,7 +47,7 @@ int main(void) {
 
 
     for (;;) {
-        if (millis() >= nextRuntime) {
+        if (micros() >= nextRuntime) {
             // ================================================================
             // System loop
             // ================================================================
