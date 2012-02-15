@@ -9,10 +9,10 @@
 
 BMA180::BMA180(byte range, byte bw) {
     readI2C(ACCADDR, 0x00, 1, aBuffer);
-    
+
     sp("BMA180 ID = ");
     spln((int) aBuffer[0]);
-    
+
     // Set ee_w bit
     readI2C(ACCADDR, CTRLREG0, 1, aBuffer);
     aBuffer[0] |= 0x10;   // Bitwise OR operator to set ee_w bit.
@@ -61,12 +61,12 @@ void BMA180::Poll() {
 
     for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
         float tmp;
-       
+
         if (aRaw[i] < 0x2000)   // If zero to negative accel.: 0 to 2^13-1...
             tmp = -((signed) aRaw[i]);   // ...negate after casting as signed int.
         else   // If zero to positive accel.: 2^14-1 to 2^13...
             tmp = 0x3FFF - aRaw[i];   // ...subtract from 2^14-1.
-        
+
         // Account for accelerometer offset, divide by maximum magnitude, and 
         // multiply by 4 to get values in range [-4g, 4g].
         switch (i) {

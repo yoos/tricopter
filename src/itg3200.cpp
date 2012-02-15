@@ -9,7 +9,7 @@
 
 ITG3200::ITG3200(uint8_t range) {
     readI2C(GYRADDR, 0x00, 1, gBuffer);   // Who am I?
-    
+
     sp("ITG-3200 ID = ");
     spln((int) gBuffer[0]);
 
@@ -65,18 +65,15 @@ void ITG3200::Calibrate(int sampleNum) {
 
 void ITG3200::Poll() {
     readI2C(GYRADDR, REGADDR, READ_SIZE, gBuffer);
-    
+
     // Shift high byte to be high 8 bits and append with low byte.
     gRaw[1] = ((gBuffer[0] << 8) | gBuffer[1]);   // Tricopter Y axis is chip X axis.
     gRaw[0] = ((gBuffer[2] << 8) | gBuffer[3]);   // Tricopter X axis is chip Y axis. Must be negated later!
     gRaw[2] = ((gBuffer[4] << 8) | gBuffer[5]);   // Z axis is same.
 
     // Read gyro temperature.
-    readI2C(GYRADDR, TEMP_OUT, 2, gBuffer);
-    temp = 35 + (((gBuffer[0] << 8) | gBuffer[1]) + 13200)/280.0;
-    //sp("GT: ");
-    //sp(temp);
-    //sp(" ");
+    //readI2C(GYRADDR, TEMP_OUT, 2, gBuffer);
+    //temp = 35 + (((gBuffer[0] << 8) | gBuffer[1]) + 13200)/280.0;
 
     // Convert raw gyro output values to rad/s.
     //
