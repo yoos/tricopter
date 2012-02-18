@@ -45,14 +45,15 @@ void IMU::Init() {
      *  IMU will adjust gyroDCM according to whatever the accelerometer thinks
      *  is gravity. However, since it is nearly impossible to mount the
      *  accelerometer perfectly horizontal to the chassis, this also means that
-     *  gyroDCM will represent (partially) the orientation of the
-     *  accelerometer, not the chassis.
+     *  gyroDCM will represent the orientation of the accelerometer, not the
+     *  chassis, along the X and Y rotational axes.
      *
-     *  To account for this error, we calculate a rotation vector wAOffset
-     *  based on the accelerometer's reading of "gravity" when the chassis is
-     *  horizontal. We then turn wAOffset into an offsetDCM with which we
-     *  rotate gyroDCM to obtain bodyDCM, which is the DCM that represents the
-     *  orientation of the chassis.
+     *  The rotational difference between the orientations of the accelerometer
+     *  (gyroDCM) and the chassis (bodyDCM) is constant and can be represented
+     *  as another rotation matrix we will call offsetDCM. We first calculate a
+     *  rotation vector wAOffset based on the accelerometer's reading of
+     *  "gravity" when the chassis is horizontal. We then turn wAOffset into
+     *  offsetDCM with which we rotate gyroDCM to obtain bodyDCM.
      *
      *  Keep in mind, however, that we still update the IMU based on gyroDCM
      *  and not bodyDCM. This is because it is gyroDCM we are correcting with
@@ -64,7 +65,7 @@ void IMU::Init() {
      *  As a final note, this is a small-angle approximation! We could do
      *  something fancy with trigonometry, but if the hardware is so poorly
      *  built (or poorly designed) that small-angle approximations become
-     *  insufficient, don't expect software to fix your problems.
+     *  insufficient, we can't expect software to fix everything.
      */
     // k body unit vector in body coordinates.
     kbb[0] = 0.0;
@@ -216,6 +217,7 @@ void IMU::Update() {
 }
 
 void IMU::orthonormalize(float inputDCM[3][3]) {
+    // Takes 700 ns.
     // Orthogonalize the i and j unit vectors (DCMDraft2 Eqn. 19).
     errDCM = vDotP(inputDCM[0], inputDCM[1]);
     vScale(inputDCM[1], -errDCM/2, dDCM[0]);   // i vector correction
