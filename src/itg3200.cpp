@@ -7,7 +7,7 @@
 
 #include "itg3200.h"
 
-ITG3200::ITG3200(uint8_t range) {
+ITG3200::ITG3200() {
     readI2C(GYRADDR, 0x00, 1, gBuffer);   // Who am I?
 
     sp("ITG-3200 ID = ");
@@ -17,9 +17,9 @@ ITG3200::ITG3200(uint8_t range) {
     // Refer to DS Section 8: Register Description.
     sendI2C(GYRADDR, 0x15, 0x18);   // 00011000 -- Sample rate divider is 24(+1), so 40 Hz
 
-    // Set Range
+    // Set FS_SEL (operation range) to 3 as recommended on DS p. 24.
     readI2C(GYRADDR, 0x16, 1, gBuffer);
-    gBuffer[1] = range;
+    gBuffer[1] = 3;
     gBuffer[1] = (gBuffer[1] << 3);   // FS_SEL is on bits 4 and 3.
     gBuffer[0] |= gBuffer[1];
     sendI2C(GYRADDR, 0x16, gBuffer[0]);

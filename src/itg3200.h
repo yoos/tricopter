@@ -57,7 +57,7 @@ class ITG3200 {
     float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
 
 public:
-    ITG3200(uint8_t);
+    ITG3200();
     void calibrate(int);
     void poll();   // Get bits from ITG-3200 and update gVal[].
     float* getRate();

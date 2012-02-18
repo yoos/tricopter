@@ -23,7 +23,7 @@
 #include "imu.h"
 
 IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
-             myGyr(3)   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s
+             myGyr()
 {}
 
 void IMU::init() {
