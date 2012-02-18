@@ -26,13 +26,13 @@ IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
              myGyr(3)   // 0, 1, 2, 3 are Reserved, Reserved, Reserved, 2000 deg/s
 {}
 
-void IMU::Init() {
-    IMU::Reset();
+void IMU::init() {
+    IMU::reset();
     spln("IMU here!");
 
     // Calibrate sensors. TODO: use accelerometer to find initial tricopter
     // orientation.
-    myGyr.Calibrate(500);
+    myGyr.calibrate(500);
 
     // Set initial DCM as the identity matrix.
     for (int i=0; i<3; i++)
@@ -88,7 +88,7 @@ void IMU::Init() {
     offsetDCM[2][2] =            1;
 }
 
-void IMU::Update() {
+void IMU::update() {
     // ========================================================================
     // Acelerometer
     //     Frame of reference: BODY
@@ -97,10 +97,10 @@ void IMU::Update() {
     //              codirectional with the i, j, and k vectors. Note that the
     //              gravitational vector is the negative of the K vector.
     // ========================================================================
-    myAcc.Poll();   // Takes 1800 us.
-    aVec[0] = myAcc.Get(0);
-    aVec[1] = myAcc.Get(1);
-    aVec[2] = myAcc.Get(2);
+    myAcc.poll();   // Takes 1800 us.
+    aVec[0] = myAcc.get(0);
+    aVec[1] = myAcc.get(1);
+    aVec[2] = myAcc.get(2);
     vNorm(aVec);
 
     // Uncomment the loop below to get accelerometer readings in order to
@@ -138,10 +138,10 @@ void IMU::Update() {
     //     Purpose: Measure the rotation rate of the body about the body's i,
     //              j, and k axes.
     // ========================================================================
-    myGyr.Poll();   // Takes 2200 us.
-    gVec[0] = myGyr.GetRate(0);
-    gVec[1] = myGyr.GetRate(1);
-    gVec[2] = myGyr.GetRate(2);
+    myGyr.poll();   // Takes 2200 us.
+    gVec[0] = myGyr.getRate(0);
+    gVec[1] = myGyr.getRate(1);
+    gVec[2] = myGyr.getRate(2);
 
     // Scale gVec by elapsed time (in seconds) to get angle w*dt in radians,
     // then compute weighted average with the accelerometer correction vector.
@@ -234,6 +234,6 @@ void IMU::orthonormalize(float inputDCM[3][3]) {
     vNorm(inputDCM[2]);
 }
 
-void IMU::Reset() {
+void IMU::reset() {
 }
 

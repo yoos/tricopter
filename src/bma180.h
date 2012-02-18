@@ -60,9 +60,9 @@ class BMA180 {
 
 public:
     BMA180(byte, byte);
-    void Poll();
-    float* Get();
-    float Get(int);
+    void poll();
+    float* get();
+    float get(int);
 };
 
 #endif // BMA180_H

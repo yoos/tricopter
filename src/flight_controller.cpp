@@ -25,7 +25,7 @@ int main(void) {
 
     // Start system.
     IMU myIMU;
-    myIMU.Init();
+    myIMU.init();
 
     Servo pwmDevice[4];
     pwmDevice[MOTOR_T].attach(PMT);
@@ -52,7 +52,7 @@ int main(void) {
             // System loop
             // ================================================================
 
-            myIMU.Update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
+            myIMU.update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
             nextRuntime += MASTER_DT;   // Update next loop start time.
 
 
@@ -61,11 +61,11 @@ int main(void) {
             // ================================================================
 
             if (loopCount % CONTROL_LOOP_INTERVAL == 0) {
-                triPilot.Listen();
+                triPilot.listen();
                 /* The pilot communicates with base and updates pwmOut
                  * according to the joystick axis values it receives. */
-                triPilot.Fly();
-                triWatchdog.Watch(triPilot.hasFood);
+                triPilot.fly();
+                triWatchdog.watch(triPilot.hasFood);
 
                 /* Don't run system unless armed!
                  * Pilot will monitor serial inputs and update

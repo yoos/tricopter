@@ -46,9 +46,9 @@ ITG3200::ITG3200(uint8_t range) {
     calibrated = false;
 }
 
-void ITG3200::Calibrate(int sampleNum) {
+void ITG3200::calibrate(int sampleNum) {
     for (int i=0; i<sampleNum; i++) {
-        ITG3200::Poll();
+        ITG3200::poll();
         for (int j=0; j<3; j++) {
             tempData[j] = tempData[j] + gVal[j];
         }
@@ -63,7 +63,7 @@ void ITG3200::Calibrate(int sampleNum) {
     calibrated = true;
 }
 
-void ITG3200::Poll() {
+void ITG3200::poll() {
     readI2C(GYRADDR, REGADDR, READ_SIZE, gBuffer);
 
     // Shift high byte to be high 8 bits and append with low byte.
@@ -115,18 +115,18 @@ void ITG3200::Poll() {
     #endif // ENABLE_GYRO_RK_SMOOTH
 }
 
-float* ITG3200::GetRate() {
+float* ITG3200::getRate() {
     return gVal;
 }
 
-float ITG3200::GetRate(int axis) {
+float ITG3200::getRate(int axis) {
     return gVal[axis];
 }
 
-float* ITG3200::GetAngle() {
+float* ITG3200::getAngle() {
     return angle;
 }
 
-float ITG3200::GetAngle(int axis) {
+float ITG3200::getAngle(int axis) {
     return angle[axis];
 }

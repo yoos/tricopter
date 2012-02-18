@@ -43,7 +43,7 @@ Pilot::Pilot() {
     numBadComm = 0;   // Number of bad communication packets.
 }
 
-void Pilot::Listen() {
+void Pilot::listen() {
     if (Serial.available()) {
         serRead = Serial.read();
 
@@ -72,10 +72,7 @@ void Pilot::Listen() {
     }
 }
 
-void Pilot::Talk() {
-}
-
-void Pilot::Fly() {
+void Pilot::fly() {
     //sp("(");
     //sp(numGoodComm);
     //sp("/");
@@ -147,24 +144,16 @@ void Pilot::Fly() {
     }
 }
 
-void Pilot::Abort() {
+void Pilot::die() {
     // ========================================================================
     // When communication is lost, pilot should set a bunch of stuff to safe
     // values.
     // ========================================================================
-    //serInput[SX] = 126;
-    //serInput[SY] = 126;
-    //serInput[ST] = 126;
-    //serInput[SZ] = 3;
-    //okayToFly = false;
-    //pwmOut[MOTOR_T] = TMIN;
-    //pwmOut[MOTOR_R] = TMIN;
-    //pwmOut[MOTOR_L] = TMIN;
-    //pwmOut[SERVO_T] = 90;
-    //
-    //#ifdef DEBUG
-    //spln("Pilot ejected!");
-    //#endif
+    okayToFly = false;
+    pwmOut[MOTOR_T] = 0;
+    pwmOut[MOTOR_R] = 0;
+    pwmOut[MOTOR_L] = 0;
+    pwmOut[SERVO_T] = 1900;
 }
 
 void Pilot::update_joystick_input(void) {

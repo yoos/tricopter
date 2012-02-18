@@ -58,12 +58,12 @@ class ITG3200 {
 
 public:
     ITG3200(uint8_t);
-    void Calibrate(int);
-    void Poll();   // Get bits from ITG-3200 and update gVal[].
-    float* GetRate();
-    float GetRate(int);
-    float* GetAngle();
-    float GetAngle(int);
+    void calibrate(int);
+    void poll();   // Get bits from ITG-3200 and update gVal[].
+    float* getRate();
+    float getRate(int);
+    float* getAngle();
+    float getAngle(int);
 };
 
 #endif // GYRO_H

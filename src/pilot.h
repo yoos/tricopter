@@ -33,10 +33,9 @@ class Pilot {
 
 public:
     Pilot();
-    void Listen();
-    void Talk();
-    void Fly();
-    void Abort();
+    void listen();
+    void fly();
+    void die();
 
     bool hasFood;
 

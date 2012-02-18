@@ -17,7 +17,7 @@ Watchdog::Watchdog(int timeout) {
     #endif
 }
 
-void Watchdog::Watch(bool &seeFood) {   // If this runs too late, dogLife may already have ended.
+void Watchdog::watch(bool &seeFood) {   // If this runs too late, dogLife may already have ended.
     if (isAlive && !seeFood && millis() - time > dogLife) {
         isAlive = false;
         spln("Watchdog died!");

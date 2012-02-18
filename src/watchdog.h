@@ -15,7 +15,7 @@ class Watchdog {
 
 public:
     Watchdog(int);
-    void Watch(bool&);
+    void watch(bool&);
     bool isAlive;
 };
 

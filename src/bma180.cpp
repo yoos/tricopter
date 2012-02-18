@@ -52,7 +52,7 @@ BMA180::BMA180(byte range, byte bw) {
             rkVal[i][j] = 0;
 }
 
-void BMA180::Poll() {
+void BMA180::poll() {
     readI2C(ACCADDR, REGADDR, READ_SIZE, aBuffer);   // Read acceleration data
 
     aRaw[1] = ((aBuffer[1] << 6) | (aBuffer[0] >> 2));   // Tricopter Y axis is chip X axis.
@@ -90,11 +90,11 @@ void BMA180::Poll() {
     #endif // ENABLE_ACC_RK_SMOOTH
 }
 
-float* BMA180::Get() {
+float* BMA180::get() {
     return aVal;   // In g's.
 }
 
-float BMA180::Get(int axis) {
+float BMA180::get(int axis) {
     return aVal[axis];
 }
 
