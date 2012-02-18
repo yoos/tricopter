@@ -53,7 +53,7 @@ void sendTelemetry(int nextRuntime) {
     for (int i=0; i<3; i++) {
         for (int j=0; j<3; j++) {
             //sw((byte*) &gyroDCM[i][j], 4);
-            sw((byte) (250*(gyroDCM[i][j]+1)/2+1));
+            sw((byte) (250*(bodyDCM[i][j]+1)/2+1));
         }
     }
     sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);

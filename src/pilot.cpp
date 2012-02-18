@@ -112,9 +112,9 @@ void Pilot::Fly() {
         // Calculate current rotation vector (Euler angles) from DCM and make
         // appropriate modifications to make PID calculations work later.
         // ====================================================================
-        currentRot[0] = gyroDCM[1][2];
-        currentRot[1] = -gyroDCM[0][2];
-        currentRot[2] = atan2(gyroDCM[0][1], gyroDCM[0][0]);
+        currentRot[0] = bodyDCM[1][2];
+        currentRot[1] = -bodyDCM[0][2];
+        currentRot[2] = atan2(bodyDCM[0][1], bodyDCM[0][0]);
 
         // Keep abs(targetRot[i] - currentRot[i]) within [-PI, PI]. This way,
         // nothing bad happens as we rotate to any angle in [-PI, PI].

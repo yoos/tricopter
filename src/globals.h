@@ -20,7 +20,7 @@ float pwmOut[4];
 char commStr[250];   // String to be sent out to base.
 float commandPitch;   // Pitch command to be processed through PID.
 float commandRoll;   // Roll command to be processed through PID.
-float gyroDCM[3][3];   // Current position DCM calculated by IMU.
+float bodyDCM[3][3];   // Current body orientation calculated by IMU.
 float targetRot[3], currentRot[3], pidRot[3];
 float gVal[3];   // [-2000,2000] deg/s mapped to [-1,1]
 

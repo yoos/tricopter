@@ -39,18 +39,52 @@ void IMU::Init() {
         for (int j=0; j<3; j++)
             gyroDCM[i][j] = (i==j) ? 1.0 : 0.0;
 
+    /*! Calculate DCM offset.
+     *
+     *  We use an accelerometer to correct for gyro drift. This means that the
+     *  IMU will adjust gyroDCM according to whatever the accelerometer thinks
+     *  is gravity. However, since it is nearly impossible to mount the
+     *  accelerometer perfectly horizontal to the chassis, this also means that
+     *  gyroDCM will represent (partially) the orientation of the
+     *  accelerometer, not the chassis.
+     *
+     *  To account for this error, we calculate a rotation vector wAOffset
+     *  based on the accelerometer's reading of "gravity" when the chassis is
+     *  horizontal. We then turn wAOffset into an offsetDCM with which we
+     *  rotate gyroDCM to obtain bodyDCM, which is the DCM that represents the
+     *  orientation of the chassis.
+     *
+     *  Keep in mind, however, that we still update the IMU based on gyroDCM
+     *  and not bodyDCM. This is because it is gyroDCM we are correcting with
+     *  the accelerometer's measurement of the gravity vector, and bodyDCM is
+     *  only a transformation of that DCM based on offsetDCM. We use bodyDCM
+     *  for flight calculations, but gyroDCM is what we keep track of within
+     *  the IMU.
+     *
+     *  As a final note, this is a small-angle approximation! We could do
+     *  something fancy with trigonometry, but if the hardware is so poorly
+     *  built (or poorly designed) that small-angle approximations become
+     *  insufficient, don't expect software to fix your problems.
+     */
     // k body unit vector in body coordinates.
     kbb[0] = 0.0;
     kbb[1] = 0.0;
     kbb[2] = 1.0;
 
-    // Initialize skewed gravity vector aVecOffset to account for imperfections
-    // in IMU mounting and repurpose aVecOffset to be the correctional rotation
-    // vector to be added to wA later.
     wAOffset[0] = ACCEL_X_OFFSET;
     wAOffset[1] = ACCEL_Y_OFFSET;
     wAOffset[2] = ACCEL_Z_OFFSET;
     vCrossP(wAOffset, kbb, wAOffset);
+
+    offsetDCM[0][0] =            1;
+    offsetDCM[0][1] =  wAOffset[2];
+    offsetDCM[0][2] = -wAOffset[1];
+    offsetDCM[1][0] = -wAOffset[2];
+    offsetDCM[1][1] =            1;
+    offsetDCM[1][2] =  wAOffset[0];
+    offsetDCM[2][0] =  wAOffset[1];
+    offsetDCM[2][1] = -wAOffset[0];
+    offsetDCM[2][2] =            1;
 }
 
 void IMU::Update() {
@@ -62,14 +96,14 @@ void IMU::Update() {
     //              codirectional with the i, j, and k vectors. Note that the
     //              gravitational vector is the negative of the K vector.
     // ========================================================================
-    myAcc.Poll();
+    myAcc.Poll();   // Takes 1800 us.
     aVec[0] = myAcc.Get(0);
     aVec[1] = myAcc.Get(1);
     aVec[2] = myAcc.Get(2);
     vNorm(aVec);
 
     // Uncomment the loop below to get accelerometer readings in order to
-    // obtain aVecOffset.
+    // obtain wAOffset.
     //if (loopCount % TELEMETRY_LOOP_INTERVAL == 0) {
     //    sp("(");
     //    sp(aVec[0]*1000); sp(", ");
@@ -96,19 +130,6 @@ void IMU::Update() {
     // and Y axes.
     vCrossP(kgb, aVec, wA);
 
-    // Correct the correction vector to account for imperfect hardware mounting
-    // of the IMU.
-    vAdd(wA, wAOffset, wA);
-
-    // Uncomment to debug K and gravity vectors.
-    //if (loopCount % TELEMETRY_LOOP_INTERVAL == 0) {
-    //    sp("(");
-    //    sp(KB[0]); sp(" "); sp(aVec[0]); sp(" | ");
-    //    sp(KB[1]); sp(" "); sp(aVec[1]); sp(" | ");
-    //    sp(KB[2]); sp(" "); sp(aVec[2]);
-    //    sp(") ");
-    //}
-
     // ========================================================================
     // Gyroscope
     //     Frame of reference: BODY
@@ -116,7 +137,7 @@ void IMU::Update() {
     //     Purpose: Measure the rotation rate of the body about the body's i,
     //              j, and k axes.
     // ========================================================================
-    myGyr.Poll();
+    myGyr.Poll();   // Takes 2200 us.
     gVec[0] = myGyr.GetRate(0);
     gVec[1] = myGyr.GetRate(1);
     gVec[2] = myGyr.GetRate(2);
@@ -187,21 +208,28 @@ void IMU::Update() {
 
     // Multiply the current DCM with the change in DCM and update.
     mProduct(dDCM, gyroDCM, gyroDCM);
+    orthonormalize(gyroDCM);
 
+    // Rotate gyroDCM with offsetDCM.
+    mProduct(offsetDCM, gyroDCM, bodyDCM);
+    //orthonormalize(bodyDCM);   // TODO: This shouldn't be necessary.
+}
+
+void IMU::orthonormalize(float inputDCM[3][3]) {
     // Orthogonalize the i and j unit vectors (DCMDraft2 Eqn. 19).
-    errDCM = vDotP(gyroDCM[0], gyroDCM[1]);
-    vScale(gyroDCM[1], -errDCM/2, dDCM[0]);   // i vector correction
-    vScale(gyroDCM[0], -errDCM/2, dDCM[1]);   // j vector correction
-    vAdd(gyroDCM[0], dDCM[0], gyroDCM[0]);
-    vAdd(gyroDCM[1], dDCM[1], gyroDCM[1]);
+    errDCM = vDotP(inputDCM[0], inputDCM[1]);
+    vScale(inputDCM[1], -errDCM/2, dDCM[0]);   // i vector correction
+    vScale(inputDCM[0], -errDCM/2, dDCM[1]);   // j vector correction
+    vAdd(inputDCM[0], dDCM[0], inputDCM[0]);
+    vAdd(inputDCM[1], dDCM[1], inputDCM[1]);
 
     // k = i x j
-    vCrossP(gyroDCM[0], gyroDCM[1], gyroDCM[2]);
+    vCrossP(inputDCM[0], inputDCM[1], inputDCM[2]);
 
     // Normalize all three vectors.
-    vNorm(gyroDCM[0]);
-    vNorm(gyroDCM[1]);
-    vNorm(gyroDCM[2]);
+    vNorm(inputDCM[0]);
+    vNorm(inputDCM[1]);
+    vNorm(inputDCM[2]);
 }
 
 void IMU::Reset() {
