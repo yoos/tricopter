@@ -19,5 +19,5 @@ public:
     bool isAlive;
 };
 
-#endif
+#endif // WATCHDOG_H
 

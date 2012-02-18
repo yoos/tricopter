@@ -5,8 +5,8 @@
  *  Details.
  */
 
-#ifndef GYRO_H
-#define GYRO_H
+#ifndef ITG3200_H
+#define ITG3200_H
 
 #include "i2c.h"
 #include "globals.h"
@@ -66,5 +66,5 @@ public:
     float getAngle(int);
 };
 
-#endif // GYRO_H
+#endif // ITG3200_H
 

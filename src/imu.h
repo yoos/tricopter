@@ -44,5 +44,5 @@ public:
     void reset();
 };
 
-#endif
+#endif // IMU_H
 

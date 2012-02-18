@@ -130,3 +130,4 @@ float* ITG3200::getAngle() {
 float ITG3200::getAngle(int axis) {
     return angle[axis];
 }
+
