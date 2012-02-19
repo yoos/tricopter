@@ -10,23 +10,30 @@
 
 #include "itg3200.cpp"
 #include "bma180.cpp"
+#include "hmc5883.cpp"
 #include "triMath.h"
 #include "globals.h"
 
 #define ACC_WEIGHT 0.012   // Accelerometer data weight relative to gyro's weight of 1
+//#define MAG_WEIGHT 0.05
 
 class IMU {
-    BMA180 myAcc;
-    ITG3200 myGyr;
+    BMA180 acc;
+    ITG3200 gyro;
+    HMC5883 mag;
 
     float aVec[3];   // Accelerometer output.
     float gVec[3];   // Gyro output.
+    float mVec[3];   // Magnetometer output.
 
     // TODO: Implement variable weight coefficient for accelerometer based on
     // total observed acceleration.
     float kbb[3];   // K body unit vector expressed in body coordinates.
     float kgb[3];   // K global unit vector expressed in body coordinates.
-    float wA[3];    // Corrective rotation vector based on acceleration vector.
+    float jgb[3];   // J global unit vector expressed in body coordinates.
+
+    float wA[3];   // Corrective rotation vector based on acceleration vector.
+    float wM[3];   // Corrective rotation vector based on magnetic north vector.
     float wAOffset[3];   // Correction vector for wA.
     float wdt[3];    // Angular displacement vector = w * dt, where w is the angular velocity vector and dt is the time elapsed.
 

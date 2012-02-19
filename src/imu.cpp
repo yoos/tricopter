@@ -22,8 +22,8 @@
 
 #include "imu.h"
 
-IMU::IMU() : myAcc(4, 2),   // range, bandwidth: DS p. 27
-             myGyr()
+IMU::IMU() : acc(4, 2),   // range, bandwidth: DS p. 27
+             gyro()
 {}
 
 void IMU::init() {
@@ -32,7 +32,7 @@ void IMU::init() {
 
     // Calibrate sensors. TODO: use accelerometer to find initial tricopter
     // orientation.
-    myGyr.calibrate(500);
+    gyro.calibrate(500);
 
     // Set initial DCM as the identity matrix.
     for (int i=0; i<3; i++)
@@ -90,17 +90,18 @@ void IMU::init() {
 
 void IMU::update() {
     // ========================================================================
-    // Acelerometer
+    // Accelerometer
     //     Frame of reference: BODY
     //     Units: G (gravitational acceleration)
     //     Purpose: Measure the acceleration vector aVec with components
     //              codirectional with the i, j, and k vectors. Note that the
     //              gravitational vector is the negative of the K vector.
     // ========================================================================
-    myAcc.poll();   // Takes 1800 us.
-    aVec[0] = myAcc.get(0);
-    aVec[1] = myAcc.get(1);
-    aVec[2] = myAcc.get(2);
+    #ifdef ACC_WEIGHT
+    acc.poll();   // 1800 us
+    for (int i=0; i<3; i++) {
+        aVec[i] = acc.get(i);
+    }
     vNorm(aVec);
 
     // Uncomment the loop below to get accelerometer readings in order to
@@ -130,6 +131,29 @@ void IMU::update() {
     // to the angular displacement vector to correct for gyro drift in the X
     // and Y axes.
     vCrossP(kgb, aVec, wA);
+    #endif // ACC_WEIGHT
+
+    // ========================================================================
+    // Magnetometer
+    //     Frame of reference: BODY
+    //     Units: N/A
+    //     Purpose: Measure the magnetic north vector mVec with components
+    //              codirectional with the body's i, j, and k vectors.
+    // ========================================================================
+    #ifdef MAG_WEIGHT
+    mag.poll();   // ?
+    for (int i=0; i<3; i++) {
+        mVec[i] = mag.get(i);
+    }
+
+    // Express J global unit vectory in BODY frame as jgb.
+    for (int i=0; i<3; i++) {
+        jgb[i] = gyroDCM[i][1];
+    }
+
+    // Calculate yaw drift correction vector wM.
+    vCrossP(jgb, mVec, wM);
+    #endif // MAG_WEIGHT
 
     // ========================================================================
     // Gyroscope
@@ -138,16 +162,29 @@ void IMU::update() {
     //     Purpose: Measure the rotation rate of the body about the body's i,
     //              j, and k axes.
     // ========================================================================
-    myGyr.poll();   // Takes 2200 us.
-    gVec[0] = myGyr.getRate(0);
-    gVec[1] = myGyr.getRate(1);
-    gVec[2] = myGyr.getRate(2);
+    gyro.poll();   // 2200 us
+    for (int i=0; i<3; i++) {
+        gVec[i] = gyro.get(i);
+    }
 
     // Scale gVec by elapsed time (in seconds) to get angle w*dt in radians,
-    // then compute weighted average with the accelerometer correction vector.
+    // then compute weighted average with the accelerometer and magnetometer
+    // correction vectors to obtain final w*dt.
     for (int i=0; i<3; i++) {
-        wdt[i] = gVec[i] * MASTER_DT/1000000;
-        wdt[i] = (wdt[i] + ACC_WEIGHT*wA[i]) / (1.0 + ACC_WEIGHT);
+        float numerator   = gVec[i] * MASTER_DT/1000000;
+        float denominator = 1.0;
+
+        #ifdef ACC_WEIGHT
+        numerator   += ACC_WEIGHT * wA[i];
+        denominator += ACC_WEIGHT;
+        #endif // ACC_WEIGHT
+
+        #ifdef MAG_WEIGHT
+        numerator   += MAG_WEIGHT * wM[i];
+        denominator += MAG_WEIGHT;
+        #endif // MAG_WEIGHT
+
+        wdt[i] = numerator / denominator;
     }
 
     // ========================================================================
