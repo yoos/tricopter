@@ -70,9 +70,9 @@ void BMA180::poll() {
         // Account for accelerometer offset, divide by maximum magnitude, and 
         // multiply by 4 to get values in range [-4g, 4g].
         switch (i) {
-            case 0: aVal[i] = -(tmp - AXOFFSET)/0x2000 * 4; break;   // Negated.
-            case 1: aVal[i] =  (tmp - AYOFFSET)/0x2000 * 4; break;
-            case 2: aVal[i] =  (tmp - AZOFFSET)/0x2000 * 4; break;
+            case 0: aVal[i] = -tmp / 0x2000 * 4; break;   // Negated.
+            case 1: aVal[i] =  tmp / 0x2000 * 4; break;
+            case 2: aVal[i] =  tmp / 0x2000 * 4; break;
             default: break;
         }
     }

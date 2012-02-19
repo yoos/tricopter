@@ -19,11 +19,6 @@
 #define RANGEMASK 0x0E   // TODO: Figure out what this is (forgot).
 #define BWMASK 0xF0      // TODO: Figure out what this is (forgot).
 
-// Calibration values
-#define AXOFFSET 0
-#define AYOFFSET 0
-#define AZOFFSET 0
-
 // BMA180 address defines
 #define ID 0x00
 #define VERSION 0x01
