@@ -1,6 +1,6 @@
-/*! \file itg3200.h
+/*! \file hmc5883.h
  *  \author Soo-Hyun Yoo
- *  \brief Header for ITG3200 gyroscope class.
+ *  \brief Header for HMC5883 magnetometer class.
  *
  *  Details.
  */
@@ -9,12 +9,14 @@
 #define HMC5883_H
 
 #include "i2c.h"
+#include "triMath.h"
 #include "globals.h"
 
-//#define ENABLE_GYRO_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
+#define MAG_ADDRESS 0x1e
 
 class HMC5883 {
-    float mVal[3];
+    float mRaw[3];
+    float mVec[3];
 
 public:
     HMC5883();
