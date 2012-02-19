@@ -83,10 +83,6 @@ int main(void) {
                     pwmDevice[MOTOR_L].writeMicroseconds(TMIN);
                     pwmDevice[SERVO_T].writeMicroseconds(1900);
 
-                    for (int i=0; i<3; i++) {
-                        pwmOut[i] = 0;   // Set pwmOut to some bad value.
-                    }
-
                     // Check that motor values set by Pilot are within the
                     // arming threshold.
                     if (abs(pwmOut[MOTOR_T] - (TMIN + MOTOR_T_OFFSET)) < MOTOR_ARM_THRESHOLD &&
