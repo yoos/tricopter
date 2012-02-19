@@ -35,6 +35,9 @@ def joy2byte (joyVal, axisIndex):
 # mapped to [0, 1]. All of this is then mapped to [0, 250] to be sent as bytes.
 def joyCallback (myJoy):
     global axisValues, buttonValues
+
+    print "arstarst"
+
     axisValues[cfg.axisX] = joy2byte(myJoy.axes[0], cfg.axisX)   # X
     axisValues[cfg.axisY] = joy2byte(myJoy.axes[1], cfg.axisY)   # Y
 
@@ -120,7 +123,7 @@ class TriWatchdog(threading.Thread):
         self.times = 0
     def run(self):
         while self.running and not rospy.is_shutdown():
-            serWrite(dogBone)
+            serWrite(cfg.dogBone)
             self.times += 1
             rospy.sleep(cfg.dogFeedInterval)
 
