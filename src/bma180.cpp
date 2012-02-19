@@ -53,10 +53,10 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
     sendI2C(ACCADDR, BWTCS, buffer[0]);   // Keep tcs<3:0> in BWTCS, but write new BW.
 
     // Set mode_config to 0x01 (ultra low noise mode, DS p. 28).
-    readI2C(ACCADDR, 0x30, 1, buffer);
-    buffer[0] &= (~0x03);   // Clear mode_config bits <1:0>.
-    buffer[0] |= 0x01;
-    sendI2C(ACCADDR, 0x30, buffer[0]);
+    //readI2C(ACCADDR, 0x30, 1, buffer);
+    //buffer[0] &= (~0x03);   // Clear mode_config bits <1:0>.
+    //buffer[0] |= 0x01;
+    //sendI2C(ACCADDR, 0x30, buffer[0]);
 
     spln("BMA180 configured!");
 
