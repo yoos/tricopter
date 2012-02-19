@@ -38,7 +38,7 @@ BMA180::BMA180(byte range, byte bw) {
 
     for (int i=0; i<3; i++) {
         aRaw[i] = 0;
-        aVal[i] = 0;
+        aVec[i] = 0;
     }
 
     // Zero buffer.
@@ -70,9 +70,9 @@ void BMA180::poll() {
         // Account for accelerometer offset, divide by maximum magnitude, and 
         // multiply by 4 to get values in range [-4g, 4g].
         switch (i) {
-            case 0: aVal[i] = -tmp / 0x2000 * 4; break;   // Negated.
-            case 1: aVal[i] =  tmp / 0x2000 * 4; break;
-            case 2: aVal[i] =  tmp / 0x2000 * 4; break;
+            case 0: aVec[i] = -tmp / 0x2000 * 4; break;   // Negated.
+            case 1: aVec[i] =  tmp / 0x2000 * 4; break;
+            case 2: aVec[i] =  tmp / 0x2000 * 4; break;
             default: break;
         }
     }
@@ -80,8 +80,8 @@ void BMA180::poll() {
     // Runge-Kutta smoothing.
     #ifdef ENABLE_ACC_RK_SMOOTH
     for (int i=0; i<3; i++) {
-        rkVal[i][rkIndex] = aVal[i];
-        aVal[i] = (1*rkVal[i][rkIndex] +
+        rkVal[i][rkIndex] = aVec[i];
+        aVec[i] = (1*rkVal[i][rkIndex] +
                 2*rkVal[i][(rkIndex+1)%4] +
                 2*rkVal[i][(rkIndex+2)%4] +
                 1*rkVal[i][(rkIndex+3)%4])/6;
@@ -91,10 +91,10 @@ void BMA180::poll() {
 }
 
 float* BMA180::get() {
-    return aVal;   // In g's.
+    return aVec;   // In g's.
 }
 
 float BMA180::get(int axis) {
-    return aVal[axis];
+    return aVec[axis];
 }
 

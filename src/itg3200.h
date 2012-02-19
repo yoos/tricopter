@@ -47,6 +47,7 @@ class ITG3200 {
     char gStr[512];
 
     uint16_t gRaw[3];   // Raw bits received from ITG-3200
+    float gVec[3];   // [-2000, 2000] deg/s mapped to [-1, 1].
     bool calibrated;   // Disable integration until calibration finishes.
     float tempData[3];   // Temporary storage of calibration data
     float gZero[3];   // Zero values
@@ -59,7 +60,7 @@ class ITG3200 {
 public:
     ITG3200();
     void calibrate(int);
-    void poll();   // Get bits from ITG-3200 and update gVal[].
+    void poll();   // Get bits from ITG-3200 and update gVec[].
     float* get();
     float get(int);
 };

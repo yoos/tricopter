@@ -40,7 +40,7 @@ ITG3200::ITG3200() {
     for (int i=0; i<3; i++) {
         tempData[i] = 0;
         gZero[i] = 0;
-        gVal[i] = 0;
+        gVec[i] = 0;
         angle[i] = 0;
     }
     calibrated = false;
@@ -50,7 +50,7 @@ void ITG3200::calibrate(int sampleNum) {
     for (int i=0; i<sampleNum; i++) {
         ITG3200::poll();
         for (int j=0; j<3; j++) {
-            tempData[j] = tempData[j] + gVal[j];
+            tempData[j] = tempData[j] + gVec[j];
         }
     }
 
@@ -89,14 +89,14 @@ void ITG3200::poll() {
         else
             tmp = gRaw[i];   // Otherwise, leave it alone.
         switch (i) {
-            case 0: gVal[0] = -tmp / 14.375 * PI/180; break;
-            case 1: gVal[1] =  tmp / 14.375 * PI/180; break;
-            case 2: gVal[2] =  tmp / 14.375 * PI/180; break;
+            case 0: gVec[0] = -tmp / 14.375 * PI/180; break;
+            case 1: gVec[1] =  tmp / 14.375 * PI/180; break;
+            case 2: gVec[2] =  tmp / 14.375 * PI/180; break;
             default: break;
         }
-        gVal[i] = (gVal[i] - gZero[i]);
-        //if (abs(gVal[i]*1000) < 7) gVal[i] = 0;
-        //sp(gVal[i]);
+        gVec[i] = (gVec[i] - gZero[i]);
+        //if (abs(gVec[i]*1000) < 7) gVec[i] = 0;
+        //sp(gVec[i]);
         //sp(" ");
     }
 
@@ -104,8 +104,8 @@ void ITG3200::poll() {
     #ifdef ENABLE_GYRO_RK_SMOOTH
     if (calibrated) {
         for (int i=0; i<3; i++) {
-            rkVal[i][rkIndex] = gVal[i];
-            gVal[i] = (1*rkVal[i][rkIndex] + 
+            rkVal[i][rkIndex] = gVec[i];
+            gVec[i] = (1*rkVal[i][rkIndex] + 
                        2*rkVal[i][(rkIndex+1)%4] +
                        2*rkVal[i][(rkIndex+2)%4] +
                        1*rkVal[i][(rkIndex+3)%4])/6;
@@ -116,10 +116,10 @@ void ITG3200::poll() {
 }
 
 float* ITG3200::get() {
-    return gVal;
+    return gVec;
 }
 
 float ITG3200::get(int axis) {
-    return gVal[axis];
+    return gVec[axis];
 }
 
