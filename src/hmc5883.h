@@ -15,7 +15,8 @@
 #define MAG_ADDRESS 0x1e
 
 class HMC5883 {
-    float mRaw[3];
+    uint8_t buffer[6];
+    uint16_t mRaw[3];
     float mVec[3];
 
 public:

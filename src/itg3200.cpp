@@ -8,27 +8,27 @@
 #include "itg3200.h"
 
 ITG3200::ITG3200() {
-    readI2C(GYRADDR, 0x00, 1, gBuffer);   // Who am I?
+    readI2C(GYRADDR, 0x00, 1, buffer);   // Who am I?
 
     sp("ITG-3200 ID = ");
-    spln((int) gBuffer[0]);
+    spln((int) buffer[0]);
 
     // Configure ITG-3200
     // Refer to DS Section 8: Register Description.
     sendI2C(GYRADDR, 0x15, 0x18);   // 00011000 -- Sample rate divider is 24(+1), so 40 Hz
 
     // Set FS_SEL (operation range) to 3 as recommended on DS p. 24.
-    readI2C(GYRADDR, 0x16, 1, gBuffer);
-    gBuffer[1] = 3;
-    gBuffer[1] = (gBuffer[1] << 3);   // FS_SEL is on bits 4 and 3.
-    gBuffer[0] |= gBuffer[1];
-    sendI2C(GYRADDR, 0x16, gBuffer[0]);
+    readI2C(GYRADDR, 0x16, 1, buffer);
+    buffer[1] = 3;
+    buffer[1] = (buffer[1] << 3);   // FS_SEL is on bits 4 and 3.
+    buffer[0] |= buffer[1];
+    sendI2C(GYRADDR, 0x16, buffer[0]);
 
     spln("ITG-3200 configured!");
 
     // Zero buffer.
-    for (int i=0; i<READ_SIZE; i++) {
-        gBuffer[i] = 0;
+    for (int i=0; i<6; i++) {
+        buffer[i] = 0;
     }
 
     // For Runge-Kutta integration.
@@ -64,16 +64,16 @@ void ITG3200::calibrate(int sampleNum) {
 }
 
 void ITG3200::poll() {
-    readI2C(GYRADDR, REGADDR, READ_SIZE, gBuffer);
+    readI2C(GYRADDR, 0x1d, 6, buffer);
 
     // Shift high byte to be high 8 bits and append with low byte.
-    gRaw[1] = ((gBuffer[0] << 8) | gBuffer[1]);   // Tricopter Y axis is chip X axis.
-    gRaw[0] = ((gBuffer[2] << 8) | gBuffer[3]);   // Tricopter X axis is chip Y axis. Must be negated later!
-    gRaw[2] = ((gBuffer[4] << 8) | gBuffer[5]);   // Z axis is same.
+    gRaw[1] = ((buffer[0] << 8) | buffer[1]);   // Tricopter Y axis is chip X axis.
+    gRaw[0] = ((buffer[2] << 8) | buffer[3]);   // Tricopter X axis is chip Y axis. Must be negated later!
+    gRaw[2] = ((buffer[4] << 8) | buffer[5]);   // Z axis is same.
 
     // Read gyro temperature.
-    //readI2C(GYRADDR, TEMP_OUT, 2, gBuffer);
-    //temp = 35 + (((gBuffer[0] << 8) | gBuffer[1]) + 13200)/280.0;
+    //readI2C(GYRADDR, TEMP_OUT, 2, buffer);
+    //temp = 35 + (((buffer[0] << 8) | buffer[1]) + 13200)/280.0;
 
     // Convert raw gyro output values to rad/s.
     //

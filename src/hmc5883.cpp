@@ -13,8 +13,6 @@ HMC5883::HMC5883() {
 }
 
 void HMC5883::poll() {
-    uint8_t buffer[6];
-
     // Read data.
     readI2C(MAG_ADDRESS, 0x03, 6, buffer);
 

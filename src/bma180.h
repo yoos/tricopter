@@ -14,7 +14,6 @@
 //#define ENABLE_ACC_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
 
 #define ACCADDR 0x40   // BMA180 device address.
-#define READ_SIZE 6   // Number of bytes to read at a time.
 #define REGADDR ACCXLSB   // Location of accelerometer data register.
 #define RANGEMASK 0x0E   // TODO: Figure out what this is (forgot).
 #define BWMASK 0xF0      // TODO: Figure out what this is (forgot).
@@ -45,7 +44,7 @@
 
 
 class BMA180 {
-    byte aBuffer[READ_SIZE];   // Buffer to which we save data read from device
+    uint8_t buffer[6];   // Buffer to which we save data read from device
     char aStr[512];   // String buffer to organize data before sending to serial line
     uint16_t aRaw[3];   // Raw digital values.
     float aVec[3];   // In g's
@@ -54,7 +53,7 @@ class BMA180 {
     float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
 
 public:
-    BMA180(byte, byte);
+    BMA180(uint8_t, uint8_t);
     void poll();
     float* get();
     float get(int);
