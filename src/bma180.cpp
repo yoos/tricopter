@@ -22,34 +22,41 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
     readI2C(ACCADDR, OLSB1, 1, buffer);
     buffer[1] = range;
     buffer[1] = (buffer[1] << 1);   // Need to shift left one bit; refer to DS p. 21.
-    buffer[0] &= (~RANGEMASK);
+    buffer[0] &= (~0x0e);   // Clear old range bits.
     buffer[0] |= buffer[1];
     sendI2C(ACCADDR, OLSB1, buffer[0]);   // Write new range data, keep other bits the same.
 
-    if      (range == 0x000) res = 0.13;   // [   -1,   1] g
-    else if (range == 0x001) res = 0.19;   // [ -1.5, 1.5] g
-    else if (range == 0x010) res = 0.25;   // [   -2,   2] g
-    else if (range == 0x011) res = 0.38;   // [   -3,   3] g
-    else if (range == 0x100) res = 0.50;   // [   -4,   4] g
-    else if (range == 0x101) res = 0.99;   // [   -8,   8] g
-    else if (range == 0x110) res = 1.98;   // [  -16,  16] g
+    // Set ADC resolution (DS p. 8).
+    res = 0.125;                           // [   -1,   1] g
+    if      (range == 1) res *= 1.5;   // [ -1.5, 1.5] g
+    else if (range == 2) res *= 2;     // [   -2,   2] g
+    else if (range == 3) res *= 3;     // [   -3,   3] g
+    else if (range == 4) res *= 4;     // [   -4,   4] g
+    else if (range == 5) res *= 8;     // [   -8,   8] g
+    else if (range == 6) res *= 16;    // [  -16,  16] g
 
     // Set bandwidth.
-    //         bw  bandwidth (Hz)
-    //     0x0000              10
-    //     0x0001              20
-    //     0x0010              40
-    //     0x0011              75
-    //     0x0100             150
-    //     0x0101             300
-    //     0x0110             600
-    //     0x0111            1200
+    //     bw  bandwidth (Hz)
+    //      0              10
+    //      1              20
+    //      2              40
+    //      3              75
+    //      4             150
+    //      5             300
+    //      6             600
+    //      7            1200
     readI2C(ACCADDR, BWTCS, 1, buffer);
     buffer[1] = bw;
     buffer[1] = (buffer[1] << 4);   // Need to shift left four bits; refer to DS p. 21.
-    buffer[0] &= (~BWMASK);
+    buffer[0] &= (~0xf0);   // Clear bandwidth bits <7:4>.
     buffer[0] |= buffer[1];
     sendI2C(ACCADDR, BWTCS, buffer[0]);   // Keep tcs<3:0> in BWTCS, but write new BW.
+
+    // Set mode_config to 0x01 (ultra low noise mode, DS p. 28).
+    readI2C(ACCADDR, 0x30, 1, buffer);
+    buffer[0] &= (~0x03);   // Clear mode_config bits <1:0>.
+    buffer[0] |= 0x01;
+    sendI2C(ACCADDR, 0x30, buffer[0]);
 
     spln("BMA180 configured!");
 
@@ -76,6 +83,10 @@ void BMA180::poll() {
     aRaw[1] = ((buffer[1] << 6) | (buffer[0] >> 2));   // Tricopter Y axis is chip X axis.
     aRaw[0] = ((buffer[3] << 6) | (buffer[2] >> 2));   // Tricopter X axis is chip Y axis. Must be negated later!
     aRaw[2] = ((buffer[5] << 6) | (buffer[4] >> 2));   // Z axis is same.
+
+    // Read accelerometer temperature.
+    //readI2C(ACCADDR, 0x08, 1, buffer);
+    //temp = -40 + 0.5 * buffer[0];   // 0.5 K/LSB
 
     // Convert raw values to multiples of gravitational acceleration.
     // Output: [0x1fff -- 0x0000] = [-8191 --    0]

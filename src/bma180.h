@@ -14,8 +14,6 @@
 //#define ENABLE_ACC_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
 
 #define ACCADDR 0x40   // BMA180 device address.
-#define RANGEMASK 0x0E   // TODO: Figure out what this is (forgot).
-#define BWMASK 0xF0      // TODO: Figure out what this is (forgot).
 
 // BMA180 address defines
 #define ID 0x00
@@ -49,6 +47,7 @@ class BMA180 {
     char aStr[512];   // String buffer to organize data before sending to serial line
     uint16_t aRaw[3];   // Raw digital values.
     float aVec[3];   // In g's
+    float temp;   // Temperature.
 
     int rkIndex;
     float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
