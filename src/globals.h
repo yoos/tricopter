@@ -43,9 +43,9 @@ struct PIDdata {
 #define PID_ROT_Y 1
 #define PID_ROT_Z 2
 
-#define XY_P_GAIN 17.0 // 30  35  42
-#define XY_I_GAIN 10.0 // 20  50  24
-#define XY_D_GAIN -6.0 // 10   9  10
+#define XY_P_GAIN 32.0 // 17  30  35  42
+#define XY_I_GAIN 10.0 // 10  20  50  24
+#define XY_D_GAIN -8.0 //  6  10   9  10
 
 #define Z_P_GAIN 100.0
 #define Z_I_GAIN 0.0
@@ -75,9 +75,9 @@ struct PIDdata {
 // ============================================================================
 #define SEND_ARM_STATUS
 //#define SEND_TARGET_ROTATION
-//#define SEND_MOTOR_VALUES
+#define SEND_MOTOR_VALUES
 #define SEND_DCM
-//#define SEND_PID
+#define SEND_PID
 
 #define DCM_SER_TAG 0xfb
 #define ROT_SER_TAG 0xfc
