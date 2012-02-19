@@ -115,19 +115,11 @@ void ITG3200::poll() {
     #endif // ENABLE_GYRO_RK_SMOOTH
 }
 
-float* ITG3200::getRate() {
+float* ITG3200::get() {
     return gVal;
 }
 
-float ITG3200::getRate(int axis) {
+float ITG3200::get(int axis) {
     return gVal[axis];
-}
-
-float* ITG3200::getAngle() {
-    return angle;
-}
-
-float ITG3200::getAngle(int axis) {
-    return angle[axis];
 }
 

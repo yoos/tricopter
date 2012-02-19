@@ -60,10 +60,8 @@ public:
     ITG3200();
     void calibrate(int);
     void poll();   // Get bits from ITG-3200 and update gVal[].
-    float* getRate();
-    float getRate(int);
-    float* getAngle();
-    float getAngle(int);
+    float* get();
+    float get(int);
 };
 
 #endif // ITG3200_H
