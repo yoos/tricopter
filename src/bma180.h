@@ -43,6 +43,8 @@
 
 
 class BMA180 {
+    float res;   // ADC resolution (mg/LSB) based on construction inputs.
+
     uint8_t buffer[6];   // Buffer to which we save data read from device
     char aStr[512];   // String buffer to organize data before sending to serial line
     uint16_t aRaw[3];   // Raw digital values.
