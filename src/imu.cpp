@@ -120,9 +120,9 @@ void IMU::update() {
     // could just create a transpose of gyroDCM, but since we don't (yet) have
     // a magnetometer, we don't need the first two rows of the transpose. This
     // saves a few clock cycles.
-    kgb[0] = gyroDCM[0][2];
-    kgb[1] = gyroDCM[1][2];
-    kgb[2] = gyroDCM[2][2];
+    for (int i=0; i<3; i++) {
+        kgb[i] = gyroDCM[i][2];
+    }
 
     // Calculate gyro drift correction rotation vector wA, which will be used
     // later to bring KB closer to the gravity vector (i.e., the negative of
