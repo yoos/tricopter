@@ -21,8 +21,9 @@ void HMC5883::poll() {
     mRaw[1] = ((buffer[2] << 8) | buffer[3]);   // Y
     mRaw[2] = ((buffer[4] << 8) | buffer[5]);   // Z
 
-    // Convert raw outputs to vector values. Output range [0xf800 -- 0x07ff]
-    // corresponds to [-2048 -- 2047].
+    // Convert raw outputs to vector values.
+    // Output: [0xf800 -- 0xffff] = [-2048 --   -1]
+    //         [0x0000 -- 0x07ff] = [    0 -- 2047]
     for (int i=0; i<3; i++) {
         float tmp;
 

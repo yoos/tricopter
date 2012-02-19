@@ -76,12 +76,10 @@ void ITG3200::poll() {
     //temp = 35 + (((buffer[0] << 8) | buffer[1]) + 13200)/280.0;
 
     // Convert raw gyro output values to rad/s.
-    //
-    // The constructor to this class should configure the gyro to a range of +/- 2000 deg/s over its 16-bit range:
-    //     Scale factor: 14.375 LSB / (deg/s)
-    //     0 to 2000 deg/s: 0x0000 to 0x7fff
-    //     -2000 deg/s to -0: 0x8000 to 0xffff (then wrap to 0x0000)
-    // We need this to be in rad/s for the DCM.
+    // Output: [0x0000 -- 0x7fff] = [     0 -- 32767]
+    //         [0x8000 -- 0xffff] = [-32768 --    -1]
+    // Range: [-2000, 2000] deg/s
+    // Scale factor: 14.375 LSB / (deg/s)
     for (int i=0; i<3; i++) {
         float tmp;
         if (gRaw[i] >= 0x8000)   // If zero to negative rot. vel.: 2^16-1 to 2^15...

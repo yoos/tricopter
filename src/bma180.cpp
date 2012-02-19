@@ -53,22 +53,25 @@ BMA180::BMA180(byte range, byte bw) {
 }
 
 void BMA180::poll() {
-    readI2C(ACCADDR, 0x02, 6, buffer);   // Read acceleration data
+    // Read data.
+    readI2C(ACCADDR, 0x02, 6, buffer);
 
     aRaw[1] = ((buffer[1] << 6) | (buffer[0] >> 2));   // Tricopter Y axis is chip X axis.
     aRaw[0] = ((buffer[3] << 6) | (buffer[2] >> 2));   // Tricopter X axis is chip Y axis. Must be negated later!
     aRaw[2] = ((buffer[5] << 6) | (buffer[4] >> 2));   // Z axis is same.
 
-    for (int i=0; i<3; i++) {   // Convert raw values to a nice -1 to 1 range.
+    // Convert raw values to multiples of gravitational acceleration.
+    // Output: [0x1fff -- 0x0000] = [-8191 --    0]
+    //         [0x3fff -- 0x2000] = [    1 -- 8192]
+    // Range: [-4, 4] g
+    for (int i=0; i<3; i++) {
         float tmp;
 
-        if (aRaw[i] < 0x2000)   // If zero to negative accel.: 0 to 2^13-1...
-            tmp = -((signed) aRaw[i]);   // ...negate after casting as signed int.
-        else   // If zero to positive accel.: 2^14-1 to 2^13...
-            tmp = 0x3FFF - aRaw[i];   // ...subtract from 2^14-1.
+        if (aRaw[i] < 0x2000)
+            tmp = -((signed) aRaw[i]);
+        else
+            tmp = 0x4000 - aRaw[i];
 
-        // Account for accelerometer offset, divide by maximum magnitude, and 
-        // multiply by 4 to get values in range [-4g, 4g].
         switch (i) {
             case 0: aVec[i] = -tmp / 0x2000 * 4; break;   // Negated.
             case 1: aVec[i] =  tmp / 0x2000 * 4; break;
