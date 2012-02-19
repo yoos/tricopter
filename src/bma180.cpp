@@ -42,7 +42,7 @@ BMA180::BMA180(byte range, byte bw) {
     }
 
     // Zero buffer.
-    for (int i=0; i<READ_SIZE; i++) {
+    for (int i=0; i<6; i++) {
         buffer[i] = 0;
     }
 
@@ -53,7 +53,7 @@ BMA180::BMA180(byte range, byte bw) {
 }
 
 void BMA180::poll() {
-    readI2C(ACCADDR, REGADDR, READ_SIZE, buffer);   // Read acceleration data
+    readI2C(ACCADDR, 0x02, 6, buffer);   // Read acceleration data
 
     aRaw[1] = ((buffer[1] << 6) | (buffer[0] >> 2));   // Tricopter Y axis is chip X axis.
     aRaw[0] = ((buffer[3] << 6) | (buffer[2] >> 2));   // Tricopter X axis is chip Y axis. Must be negated later!
