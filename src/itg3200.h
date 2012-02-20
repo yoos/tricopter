@@ -14,7 +14,7 @@
 //#define ENABLE_GYRO_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
 
 // ITG-3200 address defines
-#define GYRADDR 0x69 // gyro address, binary = 11101001
+#define GYRADDR 0x69 // gyro address, binary = 01101001
 #define SMPLRT_DIV 0x15
 #define DLPF_FS 0x16
 #define INT_CFG 0x17
