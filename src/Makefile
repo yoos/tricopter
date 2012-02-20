@@ -36,7 +36,7 @@
 
 #TARGET = $(notdir $(CURDIR))
 TARGET = flight_controller
-INSTALL_DIR = $(HOME)/apps/arduino-0022
+INSTALL_DIR = $(HOME)/apps/arduino-0023
 PORT = /dev/ttyUSB*
 UPLOAD_RATE = 57600
 #AVRDUDE_PROGRAMMER = stk500v1
@@ -45,7 +45,7 @@ AVRDUDE_PROGRAMMER = arduino
 MCU = atmega1280
 F_CPU = 16000000
 
-VERSION=22
+VERSION=23
 ARDUINO = $(INSTALL_DIR)/hardware/arduino/cores/arduino
 ARDUINO_LIBS = $(INSTALL_DIR)/libraries/{ArduinoTestSuite,EEPROM,Ethernet,Firmata,LiquidCrystal,Matrix,SD,Servo,SoftwareSerial,SPI,Sprite,Stepper,Wire}
 
