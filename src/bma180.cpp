@@ -80,8 +80,8 @@ void BMA180::poll() {
     // Read data.
     readI2C(ACCADDR, 0x02, 6, buffer);
 
+    aRaw[0] = ((buffer[3] << 6) | (buffer[2] >> 2));   // Tricopter X axis is chip Y axis.
     aRaw[1] = ((buffer[1] << 6) | (buffer[0] >> 2));   // Tricopter Y axis is chip X axis.
-    aRaw[0] = ((buffer[3] << 6) | (buffer[2] >> 2));   // Tricopter X axis is chip Y axis. Must be negated later!
     aRaw[2] = ((buffer[5] << 6) | (buffer[4] >> 2));   // Z axis is same.
 
     // Read accelerometer temperature.
@@ -93,17 +93,22 @@ void BMA180::poll() {
     //         [0x3fff -- 0x2000] = [    1 -- 8192]
     // ADC resolution varies depending on setup. See DS p. 27 or the
     // constructor of this class.
-    for (int i=0; i<3; i++) {
-        float tmp;
+    aVec[0] = (float) -((int) aRaw[0]) * res;
+    aVec[1] = (float)  ((int) aRaw[1]) * res;
+    aVec[2] = (float)  ((int) aRaw[2]) * res;
 
-        if (aRaw[i] < 0x2000)
-            tmp = -((signed) aRaw[i]);
-        else
-            tmp = 0x4000 - aRaw[i];
+    // DEPRECATED ADC CONVERSION CODE
+    //for (int i=0; i<3; i++) {
+    //    float tmp;
 
-        aVec[i] = tmp * res;
-    }
-    aVec[0] *= -1;   // Negated.
+    //    if (aRaw[i] < 0x2000)
+    //        tmp = -((signed) aRaw[i]);
+    //    else
+    //        tmp = 0x4000 - aRaw[i];
+
+    //    aVec[i] = tmp * res;
+    //}
+    //aVec[0] *= -1;   // Negated.
 
     // Runge-Kutta smoothing.
     #ifdef ENABLE_ACC_RK_SMOOTH

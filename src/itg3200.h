@@ -14,7 +14,7 @@
 //#define ENABLE_GYRO_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
 
 // ITG-3200 address defines
-#define GYRADDR 0x69 // gyro address, binary = 01101001
+#define GYRADDR 0x69
 #define SMPLRT_DIV 0x15
 #define DLPF_FS 0x16
 #define INT_CFG 0x17
@@ -36,8 +36,6 @@
 
 class ITG3200 {
     uint8_t buffer[6];   // Buffer for general use. Increase size as needed.
-    char gStr[512];
-
     uint16_t gRaw[3];   // Raw bits received from ITG-3200
     float gVec[3];   // [-2000, 2000] deg/s mapped to [-1, 1].
     bool calibrated;   // Disable integration until calibration finishes.

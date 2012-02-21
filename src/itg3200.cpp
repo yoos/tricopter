@@ -67,36 +67,59 @@ void ITG3200::poll() {
     readI2C(GYRADDR, 0x1d, 6, buffer);
 
     // Shift high byte to be high 8 bits and append with low byte.
+    gRaw[0] = ((buffer[2] << 8) | buffer[3]);   // Tricopter X axis is chip Y axis.
     gRaw[1] = ((buffer[0] << 8) | buffer[1]);   // Tricopter Y axis is chip X axis.
-    gRaw[0] = ((buffer[2] << 8) | buffer[3]);   // Tricopter X axis is chip Y axis. Must be negated later!
     gRaw[2] = ((buffer[4] << 8) | buffer[5]);   // Z axis is same.
+
+    //sp("G( ");
+    //for (int i=0; i<3; i++) {
+    //    sp(gRaw[i]);
+    //    sp(" ");
+    //}
+    //spln(")");
+
 
     // Read gyro temperature.
     //readI2C(GYRADDR, TEMP_OUT, 2, buffer);
     //temp = 35 + (((buffer[0] << 8) | buffer[1]) + 13200)/280.0;
+
 
     // Convert raw gyro output values to rad/s.
     // Output: [0x0000 -- 0x7fff] = [     0 -- 32767]
     //         [0x8000 -- 0xffff] = [-32768 --    -1]
     // Range: [-2000, 2000] deg/s
     // Scale factor: 14.375 LSB / (deg/s)
+    gVec[0] = (float) -((int) gRaw[0]) / 14.375 * PI/180;
+    gVec[1] = (float)  ((int) gRaw[1]) / 14.375 * PI/180;
+    gVec[2] = (float)  ((int) gRaw[2]) / 14.375 * PI/180;
+
+    // Apply calibration values.
     for (int i=0; i<3; i++) {
-        float tmp;
-        if (gRaw[i] >= 0x8000)   // If zero to negative rot. vel.: 2^16-1 to 2^15...
-            tmp = -((signed) (0x10000 - gRaw[i]));   // ...subtract from 2^16.
-        else
-            tmp = gRaw[i];   // Otherwise, leave it alone.
-        switch (i) {
-            case 0: gVec[0] = -tmp / 14.375 * PI/180; break;
-            case 1: gVec[1] =  tmp / 14.375 * PI/180; break;
-            case 2: gVec[2] =  tmp / 14.375 * PI/180; break;
-            default: break;
-        }
-        gVec[i] = (gVec[i] - gZero[i]);
-        //if (abs(gVec[i]*1000) < 7) gVec[i] = 0;
-        //sp(gVec[i]);
-        //sp(" ");
+        gVec[i] -= gZero[i];
     }
+
+    //sp("G( ");
+    //for (int i=0; i<3; i++) {
+    //    sp(gVec[i]);
+    //    sp(" ");
+    //}
+    //spln(")");
+
+    // DEPRECATED ADC CONVERSION CODE
+    //for (int i=0; i<3; i++) {
+    //    float tmp;
+    //    if (gRaw[i] >= 0x8000)   // If zero to negative rot. vel.: 2^16-1 to 2^15...
+    //        tmp = -((signed) (0x10000 - gRaw[i]));   // ...subtract from 2^16.
+    //    else
+    //        tmp = gRaw[i];   // Otherwise, leave it alone.
+    //    switch (i) {
+    //        case 0: gVec[0] = -tmp / 14.375 * PI/180; break;
+    //        case 1: gVec[1] =  tmp / 14.375 * PI/180; break;
+    //        case 2: gVec[2] =  tmp / 14.375 * PI/180; break;
+    //        default: break;
+    //    }
+    //    gVec[i] = (gVec[i] - gZero[i]);
+    //}
 
     // Runge-Kutta smoothing.
     #ifdef ENABLE_GYRO_RK_SMOOTH
