@@ -36,8 +36,6 @@ def joy2byte (joyVal, axisIndex):
 def joyCallback (myJoy):
     global axisValues, buttonValues
 
-    print "arstarst"
-
     axisValues[cfg.axisX] = joy2byte(myJoy.axes[0], cfg.axisX)   # X
     axisValues[cfg.axisY] = joy2byte(myJoy.axes[1], cfg.axisY)   # Y
 
