@@ -93,22 +93,22 @@ void BMA180::poll() {
     //         [0x3fff -- 0x2000] = [    1 -- 8192]
     // ADC resolution varies depending on setup. See DS p. 27 or the
     // constructor of this class.
-    aVec[0] = (float) -((int) aRaw[0]) * res;
-    aVec[1] = (float)  ((int) aRaw[1]) * res;
-    aVec[2] = (float)  ((int) aRaw[2]) * res;
+    //aVec[0] = (float) -((int) aRaw[0]) * res;
+    //aVec[1] = (float)  ((int) aRaw[1]) * res;
+    //aVec[2] = (float)  ((int) aRaw[2]) * res;
 
     // DEPRECATED ADC CONVERSION CODE
-    //for (int i=0; i<3; i++) {
-    //    float tmp;
+    for (int i=0; i<3; i++) {
+        float tmp;
 
-    //    if (aRaw[i] < 0x2000)
-    //        tmp = -((signed) aRaw[i]);
-    //    else
-    //        tmp = 0x4000 - aRaw[i];
+        if (aRaw[i] < 0x2000)
+            tmp = -((signed) aRaw[i]);
+        else
+            tmp = 0x4000 - aRaw[i];
 
-    //    aVec[i] = tmp * res;
-    //}
-    //aVec[0] *= -1;   // Negated.
+        aVec[i] = tmp * res;
+    }
+    aVec[0] *= -1;   // Negated.
 
     // Runge-Kutta smoothing.
     #ifdef ENABLE_ACC_RK_SMOOTH
