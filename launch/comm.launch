@@ -1,13 +1,15 @@
 <!-- %Tag(FULL)%-->
 <launch>
 
- <!-- joy node -->
-  <node respawn="true" pkg="joy" type="joy_node" name="triJoy" >
-    <param name="dev" type="string" value="/dev/input/js1" />
-    <param name="deadzone" value="0" />
-  </node>
+    <!-- joy node -->
+    <node name="tri_joy" pkg="joy" type="joy_node" respawn="true" >
+        <param name="dev" type="string" value="/dev/input/js1" />
+        <param name="deadzone" value="0" />
+    </node>
 
-  <node pkg="tricopter" type="comm.py" name="triComm" output="screen" />
+    <node name="tri_tx"  pkg="tricopter" type="groundstation.py"                 />
+    <node name="tri_rx"  pkg="tricopter" type="serialmon.py"     output="screen" />
+    <node name="tri_vis" pkg="tricopter" type="visualization.py" output="screen" />
 
 </launch>
 <!-- %EndTag(FULL)%-->
