@@ -67,6 +67,7 @@ void IMU::init() {
      *  built (or poorly designed) that small-angle approximations become
      *  insufficient, we can't expect software to fix everything.
      */
+    #ifdef ACC_WEIGHT
     // k body unit vector in body coordinates.
     kbb[0] = 0.0;
     kbb[1] = 0.0;
@@ -86,6 +87,7 @@ void IMU::init() {
     offsetDCM[2][0] =  wAOffset[1];
     offsetDCM[2][1] = -wAOffset[0];
     offsetDCM[2][2] =            1;
+    #endif // ACC_WEIGHT
 }
 
 void IMU::update() {
@@ -248,9 +250,17 @@ void IMU::update() {
     mProduct(dDCM, gyroDCM, gyroDCM);
     orthonormalize(gyroDCM);
 
+    #ifdef ACC_WEIGHT
     // Rotate gyroDCM with offsetDCM.
     mProduct(offsetDCM, gyroDCM, bodyDCM);
     //orthonormalize(bodyDCM);   // TODO: This shouldn't be necessary.
+    #else
+    for (int i=0; i<3; i++) {
+        for (int j=0; j<3; j++) {
+            bodyDCM[i][j] = gyroDCM[i][j];
+        }
+    }
+    #endif // ACC_WEIGHT
 }
 
 void IMU::orthonormalize(float inputDCM[3][3]) {

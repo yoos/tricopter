@@ -14,7 +14,7 @@
 #include "triMath.h"
 #include "globals.h"
 
-#define ACC_WEIGHT 0.012   // Accelerometer data weight relative to gyro's weight of 1
+//#define ACC_WEIGHT 0.012   // Accelerometer data weight relative to gyro's weight of 1
 //#define MAG_WEIGHT 0.05
 
 class IMU {
