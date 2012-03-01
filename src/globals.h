@@ -103,7 +103,8 @@ struct PIDdata {
 #define THOVER 1200   // Hover throttle signal in ms.
 #define TMAX   1600   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
 
-#define SERVO_ZERO 1430   // Servo "zero" position.
+#define SERVO_US_ZERO 1430   // Servo "zero" position (i.e., level to chassis).
+#define SERVO_US_NEUTRAL 1185   // Servo neutral position (i.e., net Z torque = 0).
 #define SERVO_US_PER_RAD 500   // Microseconds per radian of servo rotation.
 
 #define TIME_TO_ARM 2000000   // This divided by MASTER_DT determines how long it takes to arm the system.
@@ -138,10 +139,9 @@ struct PIDdata {
 #define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define MOTOR_T_SCALE  1.02   // Scale speed of tail motor.
+#define MOTOR_T_SCALE  1   // Scale speed of tail motor.
 #define MOTOR_R_SCALE  1   // Scale speed of right motor.
 #define MOTOR_L_SCALE  1   // Scale speed of left motor.
-#define TAIL_SERVO_DEFAULT_POSITION 1185
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
 #define Z_ROT_SPEED 1   // Scale how much joystick twist input affects target Z rotation. A value of 1 here means a maximum Z rotation speed is 1 rad/s.
 

@@ -34,9 +34,9 @@ void calculate_pwm_output(float inputThrottle, float* inputRot) {
     pwmOut[MOTOR_T] = TMIN + inputThrottle + MOTOR_T_OFFSET + -inputRot[PID_ROT_X];
     pwmOut[MOTOR_R] = TMIN + inputThrottle + MOTOR_R_OFFSET +  inputRot[PID_ROT_X] - inputRot[PID_ROT_Y]*sqrt(3);
     pwmOut[MOTOR_L] = TMIN + inputThrottle + MOTOR_L_OFFSET +  inputRot[PID_ROT_X] + inputRot[PID_ROT_Y]*sqrt(3);
-    pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + inputRot[PID_ROT_Z];
+    pwmOut[SERVO_T] = SERVO_US_NEUTRAL + inputRot[PID_ROT_Z];
 
-    pwmOut[MOTOR_T] = MOTOR_T_SCALE * pwmOut[MOTOR_T];
+    pwmOut[MOTOR_T] = MOTOR_T_SCALE * pwmOut[MOTOR_T] / cos(((float) pwmOut[SERVO_T]-SERVO_US_ZERO)/SERVO_US_PER_RAD);
     pwmOut[MOTOR_R] = MOTOR_R_SCALE * pwmOut[MOTOR_R];
     pwmOut[MOTOR_L] = MOTOR_L_SCALE * pwmOut[MOTOR_L];
 
