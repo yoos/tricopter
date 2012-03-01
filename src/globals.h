@@ -16,7 +16,7 @@
 
 int armCount;   // Arm status counter.
 int loopCount;   // Count system loops.
-float pwmOut[4];
+uint16_t pwmOut[4];
 char commStr[250];   // String to be sent out to base.
 float bodyDCM[3][3];   // Current body orientation calculated by IMU.
 float targetRot[3], currentRot[3], pidRot[3];

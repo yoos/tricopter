@@ -23,23 +23,15 @@ void calculate_pwm_output(float inputThrottle, float* inputRot) {
     // corresponding arm is heavier.
     // TODO: The last term for each pwmOut is INACCURATE. Fix this.
     // ====================================================================
-
-    // MOTORVAL SCHEME 5 (pidRot to motorVal conversion)
-    //pwmOut[MOTOR_T] = MOTOR_T_OFFSET + (TMIN + joy.axes[SZ]*(TMAX-TMIN)/250) + -pidRot[0]*2;
-    //pwmOut[MOTOR_R] = MOTOR_R_OFFSET + (TMIN + joy.axes[SZ]*(TMAX-TMIN)/250) +  pidRot[0] - pidRot[1]*sqrt(3);
-    //pwmOut[MOTOR_L] = MOTOR_L_OFFSET + (TMIN + joy.axes[SZ]*(TMAX-TMIN)/250) +  pidRot[0] + pidRot[1]*sqrt(3);
-    //pwmOut[SERVO_T] = TAIL_SERVO_DEFAULT_POSITION + pidRot[2];
-
-    // MOTORVAL SCHEME 6
-    pwmOut[MOTOR_T] = TMIN + inputThrottle + MOTOR_T_OFFSET + -inputRot[PID_ROT_X];
-    pwmOut[MOTOR_R] = TMIN + inputThrottle + MOTOR_R_OFFSET +  inputRot[PID_ROT_X] - inputRot[PID_ROT_Y]*sqrt(3);
-    pwmOut[MOTOR_L] = TMIN + inputThrottle + MOTOR_L_OFFSET +  inputRot[PID_ROT_X] + inputRot[PID_ROT_Y]*sqrt(3);
     pwmOut[SERVO_T] = SERVO_US_NEUTRAL + inputRot[PID_ROT_Z];
 
-    pwmOut[MOTOR_T] = MOTOR_T_SCALE * pwmOut[MOTOR_T] / cos(((float) pwmOut[SERVO_T]-SERVO_US_ZERO)/SERVO_US_PER_RAD);
-    pwmOut[MOTOR_R] = MOTOR_R_SCALE * pwmOut[MOTOR_R];
-    pwmOut[MOTOR_L] = MOTOR_L_SCALE * pwmOut[MOTOR_L];
+    pwmOut[MOTOR_T] = (inputThrottle + -inputRot[PID_ROT_X]) / cos(((float) pwmOut[SERVO_T]-SERVO_US_ZERO)/SERVO_US_PER_RAD);
+    pwmOut[MOTOR_R] =  inputThrottle +  inputRot[PID_ROT_X] - inputRot[PID_ROT_Y]*sqrt(3);
+    pwmOut[MOTOR_L] =  inputThrottle +  inputRot[PID_ROT_X] + inputRot[PID_ROT_Y]*sqrt(3);
 
+    pwmOut[MOTOR_T] = TMIN + MOTOR_T_OFFSET + MOTOR_T_SCALE * pwmOut[MOTOR_T];
+    pwmOut[MOTOR_R] = TMIN + MOTOR_R_OFFSET + MOTOR_R_SCALE * pwmOut[MOTOR_R];
+    pwmOut[MOTOR_L] = TMIN + MOTOR_L_OFFSET + MOTOR_L_SCALE * pwmOut[MOTOR_L];
 
     // ====================================================================
     // After finding the maximum and minimum motor values, limit, but NOT
@@ -64,10 +56,6 @@ void calculate_pwm_output(float inputThrottle, float* inputRot) {
     // If map bounds are reasonable, remap range to [mapLower, mapUpper].
     // Otherwise, kill motors. Note that map(), an Arduino function, does
     // integer math and truncates fractions.
-    //
-    // TODO: pwmOut (and other quantities the Pilot calculates) should be
-    // an integer representing the number of milliseconds of PWM duty
-    // cycle.
     // ====================================================================
     for (int i=0; i<3; i++) {
         if (mapUpper > mapLower) {
