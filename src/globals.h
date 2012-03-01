@@ -103,6 +103,9 @@ struct PIDdata {
 #define THOVER 1200   // Hover throttle signal in ms.
 #define TMAX   1600   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
 
+#define SERVO_ZERO 1430   // Servo "zero" position.
+#define SERVO_US_PER_RAD 500   // Microseconds per radian of servo rotation.
+
 #define TIME_TO_ARM 2000000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 30   // This is added to TMIN to determine whether or not to arm the system.
 

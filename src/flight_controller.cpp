@@ -81,7 +81,7 @@ int main(void) {
                     pwmDevice[MOTOR_T].writeMicroseconds(TMIN);
                     pwmDevice[MOTOR_R].writeMicroseconds(TMIN);
                     pwmDevice[MOTOR_L].writeMicroseconds(TMIN);
-                    pwmDevice[SERVO_T].writeMicroseconds(1900);
+                    pwmDevice[SERVO_T].writeMicroseconds(SERVO_ZERO);
 
                     // Check that motor values set by Pilot are within the
                     // arming threshold.
@@ -105,8 +105,7 @@ int main(void) {
                         if (pwmOut[i] < TMIN) pwmOut[i] = TMIN;
                         pwmDevice[i].writeMicroseconds(pwmOut[i]);
                     }
-                    pwmOut[SERVO_T] = 1900;
-                    pwmDevice[SERVO_T].writeMicroseconds(pwmOut[SERVO_T]);
+                    pwmDevice[SERVO_T].writeMicroseconds(SERVO_ZERO);
                 }
             }
 
