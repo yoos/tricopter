@@ -45,7 +45,7 @@ struct PIDdata {
 #define XY_I_GAIN 10.0 // 10  20  50  24
 #define XY_D_GAIN -8.0 //  6  10   9  10
 
-#define Z_P_GAIN 100.0
+#define Z_P_GAIN 50.0
 #define Z_I_GAIN 0.0
 #define Z_D_GAIN 0.0
 
@@ -104,7 +104,7 @@ struct PIDdata {
 #define TMAX   1600   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
 
 #define SERVO_US_ZERO 1430   // Servo "zero" position (i.e., level to chassis).
-#define SERVO_US_NEUTRAL 1185   // Servo neutral position (i.e., net Z torque = 0).
+#define SERVO_US_NEUTRAL 1370   // Servo neutral position (i.e., net Z torque = 0).
 #define SERVO_US_PER_RAD 500   // Microseconds per radian of servo rotation.
 
 #define TIME_TO_ARM 2000000   // This divided by MASTER_DT determines how long it takes to arm the system.
