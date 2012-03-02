@@ -50,7 +50,8 @@ struct PIDdata {
 #define Z_I_GAIN 0.0
 #define Z_D_GAIN 0.0
 
-#define ROTATION_CAP PI/18   // Cap difference between target and current rotation vectors.
+#define ROTATION_CAP PI/36   // Cap difference between target and current rotation vectors.
+#define ROT_RATE_CAT 1000000   // Cap derivative term for X and Y rotation vectors.
 
 /*****************************************************************************
  * Serial: everything that has to do with TX/RX.
@@ -78,7 +79,7 @@ struct PIDdata {
 //#define SEND_TARGET_ROTATION
 #define SEND_MOTOR_VALUES
 #define SEND_DCM
-#define SEND_PID
+#define SEND_PID_DATA
 
 #define DCM_SER_TAG 0xfb
 #define ROT_SER_TAG 0xfc
@@ -92,8 +93,9 @@ struct PIDdata {
  *****************************************************************************/
 
 #define MASTER_DT           10000   // 10000 us interval = 100 Hz master loop.
-#define CONTROL_LOOP_INTERVAL   2   // 1/2 master = 50 Hz. NOTE: This frequency should be HIGHER than comm.py's dataSend frequency!
-#define TELEMETRY_LOOP_INTERVAL 2   // 1/5 master = 20 Hz.
+#define CONTROL_LOOP_INTERVAL   1   // 1x master = 100 Hz.
+#define RX_LOOP_INTERVAL 2   // 1/2 master = 50 Hz. This frequency should be HIGHER than groundstation.py's dataSend frequency!
+#define TX_LOOP_INTERVAL 5   // 1/5 master = 20 Hz.
 #define DOGLIFE 300   // Watchdog life in milliseconds.
 
 //#define DCM_COEFF 90   // Scale current-to-target DCM difference.

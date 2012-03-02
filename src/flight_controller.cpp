@@ -51,17 +51,13 @@ int main(void) {
             // ================================================================
             // System loop
             // ================================================================
-
             myIMU.update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
             nextRuntime += MASTER_DT;   // Update next loop start time.
-
 
             // ================================================================
             // Control loop
             // ================================================================
-
             if (loopCount % CONTROL_LOOP_INTERVAL == 0) {
-                triPilot.listen();
                 /* The pilot communicates with base and updates pwmOut
                  * according to the joystick axis values it receives. */
                 triPilot.fly();
@@ -109,13 +105,44 @@ int main(void) {
                 }
             }
 
+            // ================================================================
+            // RX loop
+            // ================================================================
+            if (loopCount % RX_LOOP_INTERVAL == 0) {
+                triPilot.listen();
+            }
 
             // ================================================================
-            // Telemetry loop
+            // TX loop
             // ================================================================
+            if (loopCount % TX_LOOP_INTERVAL == 0) {
+                #ifdef SEND_ARM_STATUS
+                sendArmStatus();
+                #endif
 
-            if (loopCount % TELEMETRY_LOOP_INTERVAL == 0) {
-                sendTelemetry(nextRuntime);
+                #ifdef SEND_TARGET_ROTATION
+                sendTargetRotation();
+                #endif
+
+                #ifdef SEND_MOTOR_VALUES
+                sendMotorValues();
+                #endif
+            }
+
+            if (loopCount % TX_LOOP_INTERVAL == 1) {
+                #ifdef SEND_DCM
+                sendDCM();
+                #endif
+            }
+
+            if (loopCount % TX_LOOP_INTERVAL == 2) {
+                #ifdef SEND_PID_DATA
+                sendPIDData();
+                #endif
+            }
+
+            if (loopCount % TX_LOOP_INTERVAL == 3) {
+                sendTelemetryEnd(nextRuntime);
             }
 
             loopCount++;

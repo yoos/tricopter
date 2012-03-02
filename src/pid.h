@@ -34,6 +34,17 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
     derivative = (currentValue - PIDparameters.lastValue) / deltaPIDTime;
     PIDparameters.lastValue = currentValue;
 
+    // Cap derivative term if dealing with X or Y rotation vectors.
+    //if (PIDparameters.id == PID_ROT_X ||
+    //    PIDparameters.id == PID_ROT_Y) {
+    //    if (derivative > ROT_RATE_CAP) {
+    //        derivative = ROT_RATE_CAP;
+    //    }
+    //    else if (derivative < -ROT_RATE_CAP) {
+    //        derivative = -ROT_RATE_CAP;
+    //    }
+    //}
+
     // Zero integral once overshoot is detected.
     //if ((proportional < 0 && derivative > 0) ||
     //    (proportional > 0 && derivative < 0)) {
