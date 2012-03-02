@@ -100,7 +100,7 @@ void IMU::update() {
     //              gravitational vector is the negative of the K vector.
     // ========================================================================
     #ifdef ACC_WEIGHT
-    acc.poll();   // 1800 us
+    acc.poll();   // 1400 us
     for (int i=0; i<3; i++) {
         aVec[i] = acc.get(i);
     }
@@ -164,7 +164,7 @@ void IMU::update() {
     //     Purpose: Measure the rotation rate of the body about the body's i,
     //              j, and k axes.
     // ========================================================================
-    gyro.poll();   // 2200 us
+    gyro.poll();   // 1600 us
     for (int i=0; i<3; i++) {
         gVec[i] = gyro.get(i);
     }
@@ -264,7 +264,7 @@ void IMU::update() {
 }
 
 void IMU::orthonormalize(float inputDCM[3][3]) {
-    // Takes 700 ns.
+    // Takes 700 us.
     // Orthogonalize the i and j unit vectors (DCMDraft2 Eqn. 19).
     errDCM = vDotP(inputDCM[0], inputDCM[1]);
     vScale(inputDCM[1], -errDCM/2, dDCM[0]);   // i vector correction
