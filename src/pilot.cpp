@@ -125,6 +125,18 @@ void Pilot::fly() {
         }
 
         // ====================================================================
+        // Cap target rotation vector.
+        // ====================================================================
+        for (int i=0; i<3; i++) {
+            if (targetRot[i] - currentRot[i] > ROTATION_CAP) {
+                targetRot[i] = currentRot[i] + ROTATION_CAP;
+            }
+            else if (currentRot[i] - targetRot[i] > ROTATION_CAP) {
+                targetRot[i] = currentRot[i] - ROTATION_CAP;
+            }
+        }
+
+        // ====================================================================
         // Calculate the PID outputs that update motor values.
         //
         // TODO: rename pidRot because it is not necessary a rotation value.
