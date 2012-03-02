@@ -31,6 +31,12 @@ Pilot::Pilot() {
     // Initialize trim to 0.
     throttleTrim = 0;
 
+    // Set PID data ID so the PID function can apply appropriate caps, etc.
+    PID[PID_ROT_X].id = PID_ROT_X;
+    PID[PID_ROT_Y].id = PID_ROT_Y;
+    PID[PID_ROT_Z].id = PID_ROT_Z;
+
+    // Set initial PID gains.
     PID[PID_ROT_X].P = PID[PID_ROT_Y].P = XY_P_GAIN;
     PID[PID_ROT_X].I = PID[PID_ROT_Y].I = XY_I_GAIN;
     PID[PID_ROT_X].D = PID[PID_ROT_Y].D = XY_D_GAIN;
@@ -121,18 +127,6 @@ void Pilot::fly() {
             }
             else if (targetRot[i] - currentRot[i] < -PI) {
                 currentRot[i] -= 2*PI;
-            }
-        }
-
-        // ====================================================================
-        // Cap target rotation vector.
-        // ====================================================================
-        for (int i=0; i<3; i++) {
-            if (targetRot[i] - currentRot[i] > ROTATION_CAP) {
-                targetRot[i] = currentRot[i] + ROTATION_CAP;
-            }
-            else if (currentRot[i] - targetRot[i] > ROTATION_CAP) {
-                targetRot[i] = currentRot[i] - ROTATION_CAP;
             }
         }
 

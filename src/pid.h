@@ -17,12 +17,22 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
 
     proportional = targetValue - currentValue;
 
+    // Cap proportional term if dealing with X or Y rotation vectors.
+    if (PIDparameters.id == PID_ROT_X ||
+        PIDparameters.id == PID_ROT_Y) {
+        if (proportional > ROTATION_CAP) {
+            proportional = ROTATION_CAP;
+        }
+        else if (proportional < -ROTATION_CAP) {
+            proportional = -ROTATION_CAP;
+        }
+    }
+
     PIDparameters.integral += proportional * deltaPIDTime;
     //PIDparameters.integral *= 0.98;
 
     derivative = (currentValue - PIDparameters.lastValue) / deltaPIDTime;
     PIDparameters.lastValue = currentValue;
-    // TODO: D squared control?
 
     // Zero integral once overshoot is detected.
     //if ((proportional < 0 && derivative > 0) ||

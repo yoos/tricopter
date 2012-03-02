@@ -27,6 +27,7 @@ float targetRot[3], currentRot[3], pidRot[3];
 //     Match the number of structs to the number of PID value defines.
 // ============================================================================
 struct PIDdata {
+    uint8_t id;
     float P, I, D;
     float lastValue;
     float integral;
