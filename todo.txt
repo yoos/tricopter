@@ -3,3 +3,7 @@
 101228 06:42 How do I change PWM resolution?
 101228 06:52 SERHEAD should eventually be changed to HOVHEADER as opposed to ACROHEADER so the tricopter will automatically change flight modes and interpret commands according to header type.
 
+
+Faster loop time? (>200 Hz?)
+Use external ADC? (Another uC?)
+
