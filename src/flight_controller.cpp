@@ -106,16 +106,13 @@ int main(void) {
             }
 
             // ================================================================
-            // RX loop
+            // Communications loop
             // ================================================================
-            if (loopCount % RX_LOOP_INTERVAL == 0) {
+            if (loopCount % COMM_LOOP_INTERVAL == 0) {
                 triPilot.listen();
             }
 
-            // ================================================================
-            // TX loop
-            // ================================================================
-            if (loopCount % TX_LOOP_INTERVAL == 0) {
+            if (loopCount % COMM_LOOP_INTERVAL == 1) {
                 #ifdef SEND_ARM_STATUS
                 sendArmStatus();
                 #endif
@@ -129,19 +126,19 @@ int main(void) {
                 #endif
             }
 
-            if (loopCount % TX_LOOP_INTERVAL == 1) {
+            if (loopCount % COMM_LOOP_INTERVAL == 2) {
                 #ifdef SEND_DCM
                 sendDCM();
                 #endif
             }
 
-            if (loopCount % TX_LOOP_INTERVAL == 2) {
+            if (loopCount % COMM_LOOP_INTERVAL == 3) {
                 #ifdef SEND_PID_DATA
                 sendPIDData();
                 #endif
             }
 
-            if (loopCount % TX_LOOP_INTERVAL == 3) {
+            if (loopCount % COMM_LOOP_INTERVAL == 4) {
                 sendTelemetryEnd(nextRuntime);
             }
 
