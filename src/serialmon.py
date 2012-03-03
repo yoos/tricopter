@@ -34,13 +34,16 @@ motorVal = [0.0, 0.0, 0.0, 0.0]
 # PID data
 pidData = [0.0, 0.0, 0.0]
 
+# Loop time
+loopTime = 0
+
 
 class telemetryThread(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.running = True
     def run(self):
-        global dcm, targetRot, motorVal, pidData
+        global dcm, targetRot, motorVal, pidData, loopTime
         dcmDataIndex = 0       # Do I see IMU data?
         rotationDataIndex = 0       # Do I see rotation data?
         motorDataIndex = 0     # Do I see motor data?
@@ -136,17 +139,21 @@ class telemetryThread(threading.Thread):
                         except Exception, e:
                             print "PID:", str(e)
 
+                    # Record loop time.
+                    loopTime = int(fields[-1])
+
                     # =========================================================
                     # Printout
                     # =========================================================
                     #print fields
                     #print [dcm, fields[-1]]
-                    print [int(fields[0].encode('hex'), 16), motorVal, pidData, fields[-1]]
+                    print [int(fields[0].encode('hex'), 16), motorVal, pidData, loopTime]
                     pub.publish(Telemetry(dcm[0][0], dcm[0][1], dcm[0][2],
                                           dcm[1][0], dcm[1][1], dcm[1][2],
                                           dcm[2][0], dcm[2][1], dcm[2][2],
                                           motorVal[0], motorVal[1], motorVal[2], motorVal[3],
-                                          pidData[0], pidData[1], pidData[2]))
+                                          pidData[0], pidData[1], pidData[2],
+                                          loopTime))
 
             except:
                 pass
