@@ -13,16 +13,15 @@ ITG3200::ITG3200() {
     sp("ITG-3200 ID = ");
     spln((int) buffer[0]);
 
-    // Configure ITG-3200
-    // Refer to DS Section 8: Register Description.
-    sendI2C(GYRADDR, 0x15, 0x18);   // 00011000 -- Sample rate divider is 24(+1), so 40 Hz
-
-    // Set FS_SEL (operation range) to 3 as recommended on DS p. 24.
-    readI2C(GYRADDR, 0x16, 1, buffer);
-    buffer[1] = 3;
-    buffer[1] = (buffer[1] << 3);   // FS_SEL is on bits 4 and 3.
-    buffer[0] |= buffer[1];
+    // Set FS_SEL = 3 as recommended on DS p. 24.
+    // Set DLPF_CFG = 0. (8 kHz internal sample rate.)
+    //readI2C(GYRADDR, 0x16, 1, buffer);
+    buffer[0] = (3 << 3);   // FS_SEL is on bits 4 and 3.
     sendI2C(GYRADDR, 0x16, buffer[0]);
+
+    // Sample rate divider is 15 + 1 = 16, so 8000 Hz / 16 = 500 Hz
+    sendI2C(GYRADDR, 0x15, 15);
+
 
     spln("ITG-3200 configured!");
 
