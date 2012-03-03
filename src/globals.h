@@ -92,10 +92,9 @@ struct PIDdata {
  * relatively frequently changed.
  *****************************************************************************/
 
-#define MASTER_DT            8000   // 8000 us interval = 125 Hz master loop.
-#define CONTROL_LOOP_INTERVAL   1   // 1x master = 125 Hz.
-#define RX_LOOP_INTERVAL        2   // 1/2 master = 62.5 Hz. This frequency should be HIGHER than groundstation.py's dataSend frequency!
-#define TX_LOOP_INTERVAL        5   // 1/5 master = 25 Hz.
+#define MASTER_DT            5000   // 5000 us interval = 200 Hz master loop.
+#define CONTROL_LOOP_INTERVAL   1   // 1x master = 200 Hz.
+#define COMM_LOOP_INTERVAL      5   // 1/5 master = 40 Hz. This frequency should be HIGHER than groundstation.py's dataSend frequency!
 #define DOGLIFE 300   // Watchdog life in milliseconds.
 
 //#define DCM_COEFF 90   // Scale current-to-target DCM difference.
