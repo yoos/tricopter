@@ -13,6 +13,9 @@
 
 #define ENABLE_ACC_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
 
+#define ACC_RANGE 4
+#define ACC_BW 5
+
 #define ACCADDR 0x40   // BMA180 device address.
 
 // BMA180 address defines
@@ -52,7 +55,7 @@ class BMA180 {
     float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
 
 public:
-    BMA180(uint8_t, uint8_t);
+    BMA180();
     void poll();
     float* get();
     float get(int);

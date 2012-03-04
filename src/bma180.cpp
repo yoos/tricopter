@@ -7,7 +7,7 @@
 
 #include "bma180.h"
 
-BMA180::BMA180(uint8_t range, uint8_t bw) {
+BMA180::BMA180() {
     readI2C(ACCADDR, 0x00, 1, buffer);
 
     sp("BMA180 ID = ");
@@ -20,37 +20,33 @@ BMA180::BMA180(uint8_t range, uint8_t bw) {
 
     // Set range.
     readI2C(ACCADDR, OLSB1, 1, buffer);
-    buffer[1] = range;
-    buffer[1] = (buffer[1] << 1);   // Need to shift left one bit; refer to DS p. 21.
-    buffer[0] &= (~0x0e);   // Clear old range bits.
-    buffer[0] |= buffer[1];
-    sendI2C(ACCADDR, OLSB1, buffer[0]);   // Write new range data, keep other bits the same.
+    buffer[0] &= (~0x0e);   // Clear old ACC_RANGE bits.
+    buffer[0] |= (ACC_RANGE << 1);   // Need to shift left one bit; refer to DS p. 21.
+    sendI2C(ACCADDR, OLSB1, buffer[0]);   // Write new ACC_RANGE data, keep other bits the same.
 
     // Set ADC resolution (DS p. 8).
     res = 0.125;                           // [   -1,   1] g
-    if      (range == 1) res *= 1.5;   // [ -1.5, 1.5] g
-    else if (range == 2) res *= 2;     // [   -2,   2] g
-    else if (range == 3) res *= 3;     // [   -3,   3] g
-    else if (range == 4) res *= 4;     // [   -4,   4] g
-    else if (range == 5) res *= 8;     // [   -8,   8] g
-    else if (range == 6) res *= 16;    // [  -16,  16] g
+    if      (ACC_RANGE == 1) res *= 1.5;   // [ -1.5, 1.5] g
+    else if (ACC_RANGE == 2) res *= 2;     // [   -2,   2] g
+    else if (ACC_RANGE == 3) res *= 3;     // [   -3,   3] g
+    else if (ACC_RANGE == 4) res *= 4;     // [   -4,   4] g
+    else if (ACC_RANGE == 5) res *= 8;     // [   -8,   8] g
+    else if (ACC_RANGE == 6) res *= 16;    // [  -16,  16] g
 
     // Set bandwidth.
-    //     bw  bandwidth (Hz)
-    //      0              10
-    //      1              20
-    //      2              40
-    //      3              75
-    //      4             150
-    //      5             300
-    //      6             600
-    //      7            1200
+    //     ACC_BW  bandwidth (Hz)
+    //          0              10
+    //          1              20
+    //          2              40
+    //          3              75
+    //          4             150
+    //          5             300
+    //          6             600
+    //          7            1200
     readI2C(ACCADDR, BWTCS, 1, buffer);
-    buffer[1] = bw;
-    buffer[1] = (buffer[1] << 4);   // Need to shift left four bits; refer to DS p. 21.
     buffer[0] &= (~0xf0);   // Clear bandwidth bits <7:4>.
-    buffer[0] |= buffer[1];
-    sendI2C(ACCADDR, BWTCS, buffer[0]);   // Keep tcs<3:0> in BWTCS, but write new BW.
+    buffer[0] |= (ACC_BW << 4);   // Need to shift left four bits; refer to DS p. 21.
+    sendI2C(ACCADDR, BWTCS, buffer[0]);   // Keep tcs<3:0> in BWTCS, but write new ACC_BW.
 
     // Set mode_config to 0x01 (ultra low noise mode, DS p. 28).
     //readI2C(ACCADDR, 0x30, 1, buffer);

@@ -22,16 +22,13 @@
 
 #include "imu.h"
 
-IMU::IMU() : acc(4, 5),   // range, bandwidth: DS p. 27
-             gyro()
-{}
+IMU::IMU() {
+}
 
 void IMU::init() {
     IMU::reset();
     spln("IMU here!");
 
-    // Calibrate sensors. TODO: use accelerometer to find initial tricopter
-    // orientation.
     gyro.calibrate(500);
 
     // Set initial DCM as the identity matrix.
