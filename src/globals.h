@@ -44,14 +44,14 @@ struct PIDdata {
 
 #define XY_P_GAIN 60.0 // 17  30  35  42
 #define XY_I_GAIN 10.0 // 10  20  50  24
-#define XY_D_GAIN -8.0 //  6  10   9  10
+#define XY_D_GAIN -1.0 //  6  10   9  10
 
 #define Z_P_GAIN 50.0
 #define Z_I_GAIN 0.0
 #define Z_D_GAIN 0.0
 
-#define ROTATION_CAP PI/36   // Cap difference between target and current rotation vectors.
-#define ROT_RATE_CAT 1000000   // Cap derivative term for X and Y rotation vectors.
+#define TARGET_ANGLE_CAP PI/36   // Cap difference between target and current rotation vectors.
+#define TARGET_RATE_CAP 2*PI   // Cap maximum rotation rate.
 
 /*****************************************************************************
  * Serial: everything that has to do with TX/RX.
@@ -103,9 +103,9 @@ struct PIDdata {
 
 // Throttle stuff. Minimum signal is 750 ms. Maximum signal is 2200 ms. Hover
 // is around 1200 ms.
-#define TMIN   750   // Minimum throttle signal in ms. (Absolute minimum is 750.)
-#define THOVER 1200   // Hover throttle signal in ms.
-#define TMAX   1600   // Maximum throttle signal in ms. (Absolute maximum is 2200.)
+#define TMIN   450   // Minimum throttle PWM duty cycle (450/1023, or 1100 ms at 400 kHz)
+#define THOVER 500   // Hover throttle PWM duty cycle
+#define TMAX   600   // Maximum throttle PWM duty cycle (826/1023, or 2020 ms at 400 kHz)
 
 #define SERVO_US_ZERO 1430   // Servo "zero" position (i.e., level to chassis).
 #define SERVO_US_NEUTRAL 1370   // Servo neutral position (i.e., net Z torque = 0).
