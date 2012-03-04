@@ -5,8 +5,6 @@
  *  Details.
  */
 
-#include <Servo.h>
-#include <Wire.h>
 #include "globals.h"
 #include "pilot.cpp"
 #include "watchdog.cpp"
@@ -28,23 +26,15 @@ int main(void) {
     myIMU.init();
 
     Servo pwmDevice[4];
-    pwmDevice[MOTOR_T].attach(PMT);
-    pwmDevice[MOTOR_R].attach(PMR);
-    pwmDevice[MOTOR_L].attach(PML);
     pwmDevice[SERVO_T].attach(PST);
+
+    Timer3.initialize(2500);
 
     // Variables
 
     armCount = TIME_TO_ARM/(MASTER_DT*CONTROL_LOOP_INTERVAL);   // We will subtract 1 from the armed value every time we receive the arming numbers from comm. Arming numbers will have to be sent for a total of TIME_TO_ARM (in ms) before this variable reaches 0.
     unsigned long nextRuntime = micros();
     loopCount = 0;
-
-    // Write 0 to motors to prevent them from spinning up upon Seeeduino reset!
-    for (int i=0; i<3; i++) {
-        pwmDevice[i].writeMicroseconds(0);
-        pwmOut[i] = 0;
-    }
-
 
     for (;;) {
         if (micros() >= nextRuntime) {
@@ -74,9 +64,9 @@ int main(void) {
                     // sp("System: Motors not armed.\n");
 
                     // Disregard what Pilot says and write TMIN.
-                    pwmDevice[MOTOR_T].writeMicroseconds(TMIN);
-                    pwmDevice[MOTOR_R].writeMicroseconds(TMIN);
-                    pwmDevice[MOTOR_L].writeMicroseconds(TMIN);
+                    Timer3.pwm(PMT, TMIN);
+                    Timer3.pwm(PMR, TMIN);
+                    Timer3.pwm(PML, TMIN);
                     pwmDevice[SERVO_T].writeMicroseconds(SERVO_US_ZERO);
 
                     // Check that motor values set by Pilot are within the
@@ -88,19 +78,21 @@ int main(void) {
                     }
                 }
                 else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
-                    for (int i=0; i<4; i++) {
-                        pwmDevice[i].writeMicroseconds(pwmOut[i]);   // Write motor values to motors.
-                    }
+                    Timer3.pwm(PMT, pwmOut[MOTOR_T]);
+                    Timer3.pwm(PMR, pwmOut[MOTOR_R]);
+                    Timer3.pwm(PML, pwmOut[MOTOR_L]);
+                    pwmDevice[SERVO_T].writeMicroseconds(pwmOut[SERVO_T]);
                 }
                 else {   // ..otherwise, die.
                     // triPilot.Abort();   // TODO: Do I even need this anymore?
                     if (armCount <= 0)
                         armCount = (int) TIME_TO_ARM/(MASTER_DT*CONTROL_LOOP_INTERVAL);   // Set armed status back off.
                     for (int i=0; i<3; i++) {
-                        pwmOut[i] -= 5;   // Slowly turn off.
-                        if (pwmOut[i] < TMIN) pwmOut[i] = TMIN;
-                        pwmDevice[i].writeMicroseconds(pwmOut[i]);
+                        pwmOut[i] = TMIN;
                     }
+                    Timer3.pwm(PMT, TMIN);
+                    Timer3.pwm(PMR, TMIN);
+                    Timer3.pwm(PML, TMIN);
                     pwmDevice[SERVO_T].writeMicroseconds(SERVO_US_ZERO);
                 }
             }
