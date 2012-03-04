@@ -11,7 +11,7 @@
 #include "i2c.h"
 #include "globals.h"
 
-//#define ENABLE_ACC_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
+#define ENABLE_ACC_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
 
 #define ACC_RANGE 4
 #define ACC_BW 5

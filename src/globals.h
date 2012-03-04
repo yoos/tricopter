@@ -32,6 +32,7 @@ struct PIDdata {
     float P, I, D;
     float lastValue;
     float integral;
+    float lastDerivative;
 } PID[4];
 
 //#define PID_MOTOR_T 0
@@ -52,7 +53,8 @@ struct PIDdata {
 #define Z_D_GAIN 0.0
 
 #define TARGET_ANGLE_CAP PI/36   // Cap difference between target and current rotation vectors.
-#define TARGET_RATE_CAP 2*PI   // Cap maximum rotation rate.
+#define TARGET_RATE_CAP 2*PI   // Cap maximum angular velocity rate.
+#define XY_D_TERM_CAP 0.6   // Cap maximum angular acceleration rate.
 
 /*****************************************************************************
  * Serial: everything that has to do with TX/RX.

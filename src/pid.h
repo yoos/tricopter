@@ -11,28 +11,38 @@
 #include "globals.h"
 
 float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparameters) {
-    float proportional;
-    float derivative;
-    float deltaPIDTime = (float) MASTER_DT * CONTROL_LOOP_INTERVAL / 1000000;
+    float proportional = targetValue - currentValue;
 
-    proportional = targetValue - currentValue;
-
-    // Cap proportional term if dealing with X or Y rotation vectors.
-    if (PIDparameters.id == PID_ROT_X ||
-        PIDparameters.id == PID_ROT_Y) {
-        if (proportional > ROTATION_CAP) {
-            proportional = ROTATION_CAP;
-        }
-        else if (proportional < -ROTATION_CAP) {
-            proportional = -ROTATION_CAP;
-        }
-    }
-
-    PIDparameters.integral += proportional * deltaPIDTime;
+    PIDparameters.integral += proportional * PIDparameters.deltaPIDTime;
     //PIDparameters.integral *= 0.98;
 
-    derivative = (currentValue - PIDparameters.lastValue) / deltaPIDTime;
+    float derivative = (currentValue - PIDparameters.lastValue) / PIDparameters.deltaPIDTime;   // Per second.
     PIDparameters.lastValue = currentValue;
+
+    // Process X and Y rotation vectors differently.
+    if (PIDparameters.id == PID_ROT_X ||
+        PIDparameters.id == PID_ROT_Y) {
+        // Cap proportional term.
+        if (proportional > TARGET_ANGLE_CAP) {
+            proportional = TARGET_ANGLE_CAP;
+        }
+        else if (proportional < -TARGET_ANGLE_CAP) {
+            proportional = -TARGET_ANGLE_CAP;
+        }
+
+        // Set target rate (rad/s).
+        float targetRate = proportional * TARGET_RATE_CAP / TARGET_ANGLE_CAP;
+        derivative = derivative - targetRate;
+
+        // Cap acceleration.
+        if (derivative - PIDparameters.lastDerivative > XY_D_TERM_CAP) {
+            derivative = XY_D_TERM_CAP;
+        }
+        else if (derivative - PIDparameters.lastDerivative < -XY_D_TERM_CAP) {
+            derivative = -XY_D_TERM_CAP;
+        }
+        PIDparameters.lastDerivative = derivative;
+    }
 
     // Cap derivative term if dealing with X or Y rotation vectors.
     //if (PIDparameters.id == PID_ROT_X ||
@@ -54,6 +64,9 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
 
     // NOTE: The P, I, and D gains should end up being no more than a single
     // degree of magnitude away from each other... maybe.
+    //
+    // TODO: Try returning just the D term so the PID loop is just a rate
+    // calculator.
     return PIDparameters.P * proportional +
            PIDparameters.I * PIDparameters.integral +
            PIDparameters.D * derivative;
