@@ -139,6 +139,7 @@ int main(void) {
             }
 
             if (loopCount % COMM_LOOP_INTERVAL == 4) {
+                triPilot.listen();
                 sendTelemetryEnd(nextRuntime);
             }
 
