@@ -154,10 +154,10 @@ struct PIDdata {
 #define ACCEL_Y_OFFSET -0.022
 #define ACCEL_Z_OFFSET -0.998
 
-#define PMT 4   // Tail motor pin.
+#define PMT 5   // Tail motor pin.
 #define PMR 2   // Right motor pin.
 #define PML 3   // Left motor pin.
-#define PST 5   // Tail servo pin.
+#define PST 4   // Tail servo pin.
 
 
 /*****************************************************************************
