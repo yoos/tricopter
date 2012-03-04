@@ -34,7 +34,7 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
         float targetRate = proportional * TARGET_RATE_CAP / TARGET_ANGLE_CAP;
         derivative = derivative - targetRate;
 
-        // Cap acceleration.
+        // Cap change in derivative to help reduce jerkiness.
         if (derivative - PIDparameters.lastDerivative > XY_D_TERM_CAP) {
             derivative = XY_D_TERM_CAP;
         }
@@ -43,17 +43,6 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
         }
         PIDparameters.lastDerivative = derivative;
     }
-
-    // Cap derivative term if dealing with X or Y rotation vectors.
-    //if (PIDparameters.id == PID_ROT_X ||
-    //    PIDparameters.id == PID_ROT_Y) {
-    //    if (derivative > ROT_RATE_CAP) {
-    //        derivative = ROT_RATE_CAP;
-    //    }
-    //    else if (derivative < -ROT_RATE_CAP) {
-    //        derivative = -ROT_RATE_CAP;
-    //    }
-    //}
 
     // Zero integral once overshoot is detected.
     //if ((proportional < 0 && derivative > 0) ||
