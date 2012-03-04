@@ -10,6 +10,7 @@ from time import sleep
 import threading
 from threading import Timer, Thread
 from signal import signal, SIGINT
+from math import pi
 
 # ROS stuff
 import roslib; roslib.load_manifest("tricopter")
@@ -112,7 +113,7 @@ class telemetryThread(threading.Thread):
                     if rotationDataIndex:
                         try:
                             for i in range(3):
-                                targetRot[i] = float(int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16)-1)/250*2*pi-pi
+                                targetRot[i] = float(int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16))/250*2*pi-pi
                                 #targetRot[i] = struct.unpack('f', fields[rotationDataIndex][3+i*4:3+i*4+4])[0]
                         except Exception, e:
                             print "ROT:", str(e)
@@ -127,7 +128,6 @@ class telemetryThread(threading.Thread):
                                 #motorVal[i] = struct.unpack('f', fields[motorDataIndex][3+i*4:3+(i+1)*4])[0]
                         except Exception, e:
                             print "MTR:", str(e)
-
 
                     # =========================================================
                     # Check if we're receiving PID gains and values.
@@ -147,10 +147,17 @@ class telemetryThread(threading.Thread):
                     # =========================================================
                     #print fields
                     #print [dcm, fields[-1]]
-                    print [int(fields[0].encode('hex'), 16), motorVal, pidData, loopTime]
+                    print "Arm:", int(fields[0].encode('hex'), 16)
+                    print "Rot:", targetRot
+                    print "Mot:", motorVal
+                    print "PID:", pidData
+                    print "Loop:", loopTime
+                    print "\n--\n"
+
                     pub.publish(Telemetry(dcm[0][0], dcm[0][1], dcm[0][2],
                                           dcm[1][0], dcm[1][1], dcm[1][2],
                                           dcm[2][0], dcm[2][1], dcm[2][2],
+                                          targetRot[0], targetRot[1], targetRot[2],
                                           motorVal[0], motorVal[1], motorVal[2], motorVal[3],
                                           pidData[0], pidData[1], pidData[2],
                                           loopTime))

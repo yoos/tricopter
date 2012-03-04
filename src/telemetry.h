@@ -25,7 +25,7 @@ void sendArmStatus() {
 void sendTargetRotation() {
     sw(ROT_SER_TAG);
     for (int i=0; i<3; i++) {
-        sw((250*(targetRot[i]+PI)/(2*PI)+1));
+        sw((byte) ((int) ((targetRot[i]+PI)/(2*PI)*250.0)));
     }
     sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
 }

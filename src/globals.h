@@ -76,7 +76,7 @@ struct PIDdata {
 // SERIAL OUT
 // ============================================================================
 #define SEND_ARM_STATUS
-//#define SEND_TARGET_ROTATION
+#define SEND_TARGET_ROTATION
 #define SEND_MOTOR_VALUES
 #define SEND_DCM
 #define SEND_PID_DATA
