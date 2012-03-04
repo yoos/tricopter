@@ -123,7 +123,7 @@ class telemetryThread(threading.Thread):
                     if motorDataIndex:
                         try:
                             for i in range(4):
-                                motorVal[i] = int(fields[motorDataIndex][i+1:i+2].encode('hex'), 16)
+                                motorVal[i] = int(fields[motorDataIndex][i+1:i+2].encode('hex'), 16) * 376 / 250
                                 #motorVal[i] = struct.unpack('f', fields[motorDataIndex][3+i*4:3+(i+1)*4])[0]
                         except Exception, e:
                             print "MTR:", str(e)
