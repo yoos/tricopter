@@ -36,6 +36,12 @@ Pilot::Pilot() {
     PID[PID_ROT_Y].id = PID_ROT_Y;
     PID[PID_ROT_Z].id = PID_ROT_Z;
 
+    // Set dt.
+    float deltaPIDTime = (float) MASTER_DT * CONTROL_LOOP_INTERVAL / 1000000;   // Time difference in seconds.
+    PID[PID_ROT_X].deltaPIDTime = deltaPIDTime;
+    PID[PID_ROT_Y].deltaPIDTime = deltaPIDTime;
+    PID[PID_ROT_Z].deltaPIDTime = deltaPIDTime;
+
     // Set initial PID gains.
     PID[PID_ROT_X].P = PID[PID_ROT_Y].P = XY_P_GAIN;
     PID[PID_ROT_X].I = PID[PID_ROT_Y].I = XY_I_GAIN;

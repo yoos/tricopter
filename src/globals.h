@@ -28,6 +28,7 @@ float targetRot[3], currentRot[3], pidRot[3];
 // ============================================================================
 struct PIDdata {
     uint8_t id;
+    float deltaPIDTime;
     float P, I, D;
     float lastValue;
     float integral;
