@@ -109,7 +109,7 @@ void IMU::update() {
     // TODO: Magnitude of acceleration should be reported over telemetry so the
     // "cutoff" value (the constant before the ABS() below) for disregaring
     // acceleration input can be more accurately determined.
-    accScale = (1 - MIN(1, 50*ABS(accScale - 1)));
+    accScale = (1 - MIN(1, 40*ABS(accScale - 1)));
     accWeight = ACC_WEIGHT * accScale;
 
     // Uncomment the loop below to get accelerometer readings in order to
