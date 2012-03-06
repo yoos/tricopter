@@ -97,7 +97,7 @@ void IMU::update() {
     //              gravitational vector is the negative of the K vector.
     // ========================================================================
     #ifdef ACC_WEIGHT
-    acc.poll();   // 1400 us
+    acc.poll();
     for (int i=0; i<3; i++) {
         aVec[i] = acc.get(i);
     }
@@ -161,7 +161,7 @@ void IMU::update() {
     //     Purpose: Measure the rotation rate of the body about the body's i,
     //              j, and k axes.
     // ========================================================================
-    gyro.poll();   // 1600 us
+    gyro.poll();
     for (int i=0; i<3; i++) {
         gVec[i] = gyro.get(i);
     }
