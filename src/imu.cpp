@@ -101,7 +101,16 @@ void IMU::update() {
     for (int i=0; i<3; i++) {
         aVec[i] = acc.get(i);
     }
-    vNorm(aVec);
+    accScale = vNorm(aVec);
+
+    // Reduce accelerometer weight if the magnitude of the measured
+    // acceleration is significantly greater than or less than 1 g.
+    //
+    // TODO: Magnitude of acceleration should be reported over telemetry so the
+    // "cutoff" value (the constant before the ABS() below) for disregaring
+    // acceleration input can be more accurately determined.
+    accScale = (1 - MIN(1, 50*ABS(accScale - 1)));
+    accWeight = ACC_WEIGHT * accScale;
 
     // Uncomment the loop below to get accelerometer readings in order to
     // obtain wAOffset.
@@ -174,8 +183,8 @@ void IMU::update() {
         float denominator = 1.0;
 
         #ifdef ACC_WEIGHT
-        numerator   += ACC_WEIGHT * wA[i];
-        denominator += ACC_WEIGHT;
+        numerator   += accWeight * wA[i];
+        denominator += accWeight;
         #endif // ACC_WEIGHT
 
         #ifdef MAG_WEIGHT

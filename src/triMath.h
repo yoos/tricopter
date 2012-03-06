@@ -11,6 +11,11 @@
 #ifndef TRIMATH_H
 #define TRIMATH_H
 
+#define ABS(x) (((x) < 0) ? -(x) : (x))
+#define CLAMP(x, min, max) (((x) < min) ? (min):(((x) > max) ? (max):(x)))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+
 // Dot product
 float vDotP (float v1[3], float v2[3]) {
     float output = 0;
@@ -55,13 +60,14 @@ float vMod (float v[3]) {
     return output;
 }
 
-// Normalize vector to a vector with same direction, mod 1
-void vNorm (float v[3]) {
-    float tmp;
-    tmp = vMod(v);
-    v[0] /= tmp;
-    v[1] /= tmp;
-    v[2] /= tmp;
+// Normalize vector to a vector with same direction, mod 1, and return old modulus.
+float vNorm (float v[3]) {
+    float mod;
+    mod = vMod(v);
+    v[0] /= mod;
+    v[1] /= mod;
+    v[2] /= mod;
+    return mod;
 }
 
 // 3x3 matrix transpose -- receive matrix mIn as input and output its transpose mOut.

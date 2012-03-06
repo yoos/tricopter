@@ -14,13 +14,16 @@
 #include "triMath.h"
 #include "globals.h"
 
-#define ACC_WEIGHT 0.012   // Accelerometer data weight relative to gyro's weight of 1
+#define ACC_WEIGHT 0.030   // Accelerometer data weight relative to gyro's weight of 1
 //#define MAG_WEIGHT 0.05
 
 class IMU {
     BMA180 acc;
     ITG3200 gyro;
     HMC5883 mag;
+
+    float accScale;
+    float accWeight;   // Variable accelerometer weight.
 
     float aVec[3];   // Accelerometer output.
     float gVec[3];   // Gyro output.
