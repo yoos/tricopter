@@ -102,7 +102,7 @@ void BMA180::poll() {
         else
             tmp = 0x4000 - aRaw[i];
 
-        aVec[i] = tmp * res;
+        aVec[i] = tmp * res / 1000.;
     }
     aVec[0] *= -1;   // Negated.
 
