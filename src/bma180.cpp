@@ -25,7 +25,7 @@ BMA180::BMA180() {
     sendI2C(ACCADDR, OLSB1, buffer[0]);   // Write new ACC_RANGE data, keep other bits the same.
 
     // Set ADC resolution (DS p. 8).
-    res = 0.125;                           // [   -1,   1] g
+    res = 0.000125;                        // [   -1,   1] g
     if      (ACC_RANGE == 1) res *= 1.5;   // [ -1.5, 1.5] g
     else if (ACC_RANGE == 2) res *= 2;     // [   -2,   2] g
     else if (ACC_RANGE == 3) res *= 3;     // [   -3,   3] g
@@ -102,7 +102,7 @@ void BMA180::poll() {
         else
             tmp = 0x4000 - aRaw[i];
 
-        aVec[i] = tmp * res / 1000.;
+        aVec[i] = tmp * res;
     }
     aVec[0] *= -1;   // Negated.
 
