@@ -54,6 +54,7 @@ class telemetryThread(threading.Thread):
 
         while self.running and not rospy.is_shutdown():
             try:
+                dataIsGood = True
                 if ser.inWaiting() > 0:
                     # =========================================================
                     # Update buffer, adding onto incomplete line if necessary.
@@ -105,7 +106,9 @@ class telemetryThread(threading.Thread):
                                     #dcm[i][j] = struct.unpack('f', fields[dcmDataIndex][3+(i*3+j)*4:3+(i*3+j)*4+4])[0]
                                     #dcmT[j][i] = dcm[i][j]
                         except Exception, e:
-                            print "DCM:", str(e)
+                            dataIsGood = False
+                            if cfg.debug:
+                                print "DCM:", str(e)
 
                     # =========================================================
                     # Check if we're receiving target rotation data.
@@ -116,7 +119,9 @@ class telemetryThread(threading.Thread):
                                 targetRot[i] = float(int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16))/250*2*pi-pi
                                 #targetRot[i] = struct.unpack('f', fields[rotationDataIndex][3+i*4:3+i*4+4])[0]
                         except Exception, e:
-                            print "ROT:", str(e)
+                            dataIsGood = False
+                            if cfg.debug:
+                                print "ROT:", str(e)
 
                     # =========================================================
                     # Check if we're receiving motor/servo output data.
@@ -127,7 +132,9 @@ class telemetryThread(threading.Thread):
                                 motorVal[i] = int(fields[motorDataIndex][i+1:i+2].encode('hex'), 16) * 376 / 250
                                 #motorVal[i] = struct.unpack('f', fields[motorDataIndex][3+i*4:3+(i+1)*4])[0]
                         except Exception, e:
-                            print "MTR:", str(e)
+                            dataIsGood = False
+                            if cfg.debug:
+                                print "MTR:", str(e)
 
                     # =========================================================
                     # Check if we're receiving PID gains and values.
@@ -137,7 +144,9 @@ class telemetryThread(threading.Thread):
                             for i in range(3):
                                 pidData[i] = int(fields[pidDataIndex][i+1:i+2].encode('hex'), 16)
                         except Exception, e:
-                            print "PID:", str(e)
+                            dataIsGood = False
+                            if cfg.debug:
+                                print "PID:", str(e)
 
                     # Record loop time.
                     loopTime = int(fields[-1])
@@ -147,20 +156,25 @@ class telemetryThread(threading.Thread):
                     # =========================================================
                     #print fields
                     #print [dcm, fields[-1]]
-                    print "Arm:", int(fields[0].encode('hex'), 16)
-                    print "Rot:", targetRot
-                    print "Mot:", motorVal
-                    print "PID:", pidData
-                    print "Loop:", loopTime
-                    print "\n--\n"
+                    if dataIsGood:
+                        print "Arm:", int(fields[0].encode('hex'), 16)
+                        print "Rot:", targetRot
+                        print "Mot:", motorVal
+                        print "PID:", pidData
+                        print "Loop:", loopTime
 
-                    pub.publish(Telemetry(dcm[0][0], dcm[0][1], dcm[0][2],
-                                          dcm[1][0], dcm[1][1], dcm[1][2],
-                                          dcm[2][0], dcm[2][1], dcm[2][2],
-                                          targetRot[0], targetRot[1], targetRot[2],
-                                          motorVal[0], motorVal[1], motorVal[2], motorVal[3],
-                                          pidData[0], pidData[1], pidData[2],
-                                          loopTime))
+                        pub.publish(Telemetry(dcm[0][0], dcm[0][1], dcm[0][2],
+                                              dcm[1][0], dcm[1][1], dcm[1][2],
+                                              dcm[2][0], dcm[2][1], dcm[2][2],
+                                              targetRot[0], targetRot[1], targetRot[2],
+                                              motorVal[0], motorVal[1], motorVal[2], motorVal[3],
+                                              pidData[0], pidData[1], pidData[2],
+                                              loopTime))
+                    else:
+                        if cfg.debug:
+                            print"Bad data!"
+
+                    print "\n--\n"
 
             except:
                 pass

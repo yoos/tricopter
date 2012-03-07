@@ -8,6 +8,7 @@
 # General
 #serialPort = "/dev/ttyUSB0"   # Uncomment to specify serial port. Otherwise, will connect to first available port.
 baudRate = 57600
+debug = False
 
 # TX
 dataSendInterval = 0.030   # 30 ms interval = 33.3 hz. NOTE: This frequency should be LOWER than the microcontroller's control loop frequency!
