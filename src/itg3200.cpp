@@ -22,6 +22,9 @@ ITG3200::ITG3200() {
     // Sample rate divider is 15 + 1 = 16, so 8000 Hz / 16 = 500 Hz
     sendI2C(GYRADDR, 0x15, 15);
 
+    // Set to use X gyro as clock reference as recommended on DS p. 27.
+    sendI2C(GYRADDR, 0x3e, 1);
+
 
     spln("ITG-3200 configured!");
 
