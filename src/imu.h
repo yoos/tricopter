@@ -14,8 +14,11 @@
 #include "triMath.h"
 #include "globals.h"
 
-#define ACC_SELF_WEIGHT 0.2   // The weight of the newest measurement in the weighted average of accumulated and newest measurements.
-#define ACC_WEIGHT 0.006   // Accelerometer data weight relative to gyro's weight of 1
+#define ACC_SELF_WEIGHT 0.02   // The weight of the newest measurement in the weighted average of accumulated and newest measurements.
+#define ACC_WEIGHT 0.016   // Accelerometer data weight relative to gyro's weight of 1
+//#define ACC_UPDATE_SIG 50.0   // Update sigma for Kalman filter
+//#define ACC_PREDICT_SIG 10.2   // Prediction sigma for Kalman filter
+
 //#define MAG_WEIGHT 0.05
 
 class IMU {
@@ -25,6 +28,7 @@ class IMU {
 
     float accScale;
     float accWeight;   // Variable accelerometer weight.
+    //float accVar;   // Accelerometer variance for Kalman filter.
 
     float aVec[3];   // Accelerometer output.
     float aVecLast[3];   // Last accelerometer output.

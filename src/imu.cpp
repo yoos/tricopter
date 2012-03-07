@@ -84,6 +84,12 @@ void IMU::init() {
     offsetDCM[2][0] =  wAOffset[1];
     offsetDCM[2][1] = -wAOffset[0];
     offsetDCM[2][2] =            1;
+
+    for (int i=0; i<3; i++) {
+        aVec[i] = 1.;
+        aVecLast[i] = 1.;
+    }
+    //accVar = 100.;
     #endif // ACC_WEIGHT
 }
 
@@ -98,9 +104,16 @@ void IMU::update() {
     // ========================================================================
     #ifdef ACC_WEIGHT
     acc.poll();
+
+    // Take weighted average.
     for (int i=0; i<3; i++) {
         aVec[i] = ACC_SELF_WEIGHT * acc.get(i) + (1-ACC_SELF_WEIGHT) * aVecLast[i];
         aVecLast[i] = aVec[i];
+
+        // Kalman filtering?
+        //aVecLast[i] = acc.get(i);
+        //kalmanUpdate(aVec[i], accVar, aVecLast[i], ACC_UPDATE_SIG);
+        //kalmanPredict(aVec[i], accVar, 0.0, ACC_PREDICT_SIG);
     }
     accScale = vNorm(aVec);
 
