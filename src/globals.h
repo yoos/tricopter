@@ -21,6 +21,8 @@ char commStr[250];   // String to be sent out to base.
 float bodyDCM[3][3];   // Current body orientation calculated by IMU.
 float targetRot[3], currentRot[3], pidRot[3];
 
+float rateX, rateY;
+
 
 // ============================================================================
 // PID
@@ -44,9 +46,9 @@ struct PIDdata {
 #define PID_ROT_Y 1
 #define PID_ROT_Z 2
 
-#define XY_P_GAIN 60.0 // 17  30  35  42
-#define XY_I_GAIN 10.0 // 10  20  50  24
-#define XY_D_GAIN -1.0 //  6  10   9  10
+#define XY_P_GAIN 20.0 // 17  30  35  42
+#define XY_I_GAIN  0.0 // 10  20  50  24
+#define XY_D_GAIN -8.0 //  6  10   9  10
 
 #define Z_P_GAIN 50.0
 #define Z_I_GAIN 0.0
@@ -98,7 +100,7 @@ struct PIDdata {
 #define MASTER_DT            5400   // 5400 us interval = 185 Hz master loop.
 #define CONTROL_LOOP_INTERVAL   1   // 1x master = 185 Hz.
 #define COMM_LOOP_INTERVAL      5   // 1/5 master = 37 Hz. This frequency should be HIGHER than groundstation.py's dataSend frequency!
-#define DOGLIFE 300   // Watchdog life in milliseconds.
+#define DOGLIFE 600   // Watchdog life in milliseconds.
 
 //#define DCM_COEFF 90   // Scale current-to-target DCM difference.
 //#define GYRO_COEFF 15   // Try to stabilize craft.
