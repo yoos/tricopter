@@ -177,5 +177,15 @@ int mInverse(int n, float mat[3][3]) {
     return 1;
 }
 
+void kalmanUpdate(float& mean1, float& var1, float mean2, float var2) {
+    mean1 = (var2 * mean1 + var1 * mean2) / (var1 + var2);
+    var1  = 1/(1/var1 + 1/var2);
+}
+
+void kalmanPredict(float& mean1, float& var1, float mean2, float var2) {
+    mean1 = mean1 + mean2;
+    var1  = var1 + var2;
+}
+
 #endif // TRIMATH_H
 
