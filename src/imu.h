@@ -14,7 +14,8 @@
 #include "triMath.h"
 #include "globals.h"
 
-#define ACC_WEIGHT 0.0080   // Accelerometer data weight relative to gyro's weight of 1
+#define ACC_SELF_WEIGHT 0.2   // The weight of the newest measurement in the weighted average of accumulated and newest measurements.
+#define ACC_WEIGHT 0.006   // Accelerometer data weight relative to gyro's weight of 1
 //#define MAG_WEIGHT 0.05
 
 class IMU {
@@ -26,6 +27,7 @@ class IMU {
     float accWeight;   // Variable accelerometer weight.
 
     float aVec[3];   // Accelerometer output.
+    float aVecLast[3];   // Last accelerometer output.
     float gVec[3];   // Gyro output.
     float mVec[3];   // Magnetometer output.
 

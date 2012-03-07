@@ -99,7 +99,8 @@ void IMU::update() {
     #ifdef ACC_WEIGHT
     acc.poll();
     for (int i=0; i<3; i++) {
-        aVec[i] = acc.get(i);
+        aVec[i] = ACC_SELF_WEIGHT * acc.get(i) + (1-ACC_SELF_WEIGHT) * aVecLast[i];
+        aVecLast[i] = aVec[i];
     }
     accScale = vNorm(aVec);
 
@@ -174,6 +175,9 @@ void IMU::update() {
     for (int i=0; i<3; i++) {
         gVec[i] = gyro.get(i);
     }
+
+    rateX = gVec[0];
+    rateY = gVec[1];
 
     // Scale gVec by elapsed time (in seconds) to get angle w*dt in radians,
     // then compute weighted average with the accelerometer and magnetometer
