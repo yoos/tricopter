@@ -81,7 +81,7 @@ struct PIDdata {
 // SERIAL OUT
 // ============================================================================
 #define SEND_ARM_STATUS
-#define SEND_TARGET_ROTATION
+//#define SEND_TARGET_ROTATION
 #define SEND_MOTOR_VALUES
 #define SEND_DCM
 #define SEND_PID_DATA
@@ -155,8 +155,8 @@ struct PIDdata {
 #define Z_ROT_SPEED 1   // Scale how much joystick twist input affects target Z rotation. A value of 1 here means a maximum Z rotation speed is 1 rad/s.
 
 // "Offset" values for accelerometer.
-#define ACCEL_X_OFFSET -0.047
-#define ACCEL_Y_OFFSET -0.022
+#define ACCEL_X_OFFSET -0.052
+#define ACCEL_Y_OFFSET -0.020
 #define ACCEL_Z_OFFSET -0.998
 
 #define PMT 5   // Tail motor pin.
