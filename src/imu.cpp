@@ -128,12 +128,12 @@ void IMU::update() {
 
     // Uncomment the loop below to get accelerometer readings in order to
     // obtain wAOffset.
-    //if (loopCount % TELEMETRY_LOOP_INTERVAL == 0) {
+    //if (loopCount % COMM_LOOP_INTERVAL == 0) {
     //    sp("(");
     //    sp(aVec[0]*1000); sp(", ");
     //    sp(aVec[1]*1000); sp(", ");
     //    sp(aVec[2]*1000);
-    //    sp(")");
+    //    spln(")");
     //}
 
     // Express K global unit vector in BODY frame as kgb for use in drift
