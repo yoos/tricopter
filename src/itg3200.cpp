@@ -33,11 +33,11 @@ ITG3200::ITG3200() {
         buffer[i] = 0;
     }
 
-    // For Runge-Kutta integration.
-    rkIndex = 0;
+    // Low-pass filter.
+    lpfIndex = 0;
     for (int i=0; i<3; i++)
-        for (int j=0; j<4; j++)
-            rkVal[i][j] = 0;
+        for (int j=0; j<GYRO_LPF_DEPTH; j++)
+            lpfVal[i][j] = 0;
 
     for (int i=0; i<3; i++) {
         tempData[i] = 0;
@@ -123,19 +123,26 @@ void ITG3200::poll() {
     //    gVec[i] = (gVec[i] - gZero[i]);
     //}
 
-    // Runge-Kutta smoothing.
-    #ifdef ENABLE_GYRO_RK_SMOOTH
+    // Low-pass filter.
+    #ifdef GYRO_LPF_DEPTH
     if (calibrated) {
         for (int i=0; i<3; i++) {
-            rkVal[i][rkIndex] = gVec[i];
-            gVec[i] = (1*rkVal[i][rkIndex] + 
-                       2*rkVal[i][(rkIndex+1)%4] +
-                       2*rkVal[i][(rkIndex+2)%4] +
-                       1*rkVal[i][(rkIndex+3)%4])/6;
+            lpfVal[i][lpfIndex] = gVec[i] / GYRO_LPF_DEPTH;
+
+            gVec[i] = 0;
+            for (int j=0; j<GYRO_LPF_DEPTH; j++) {
+                gVec[i] += lpfVal[i][(lpfIndex + j) % GYRO_LPF_DEPTH];
+            }
+
+            // DEPRECATED
+            //gVec[i] = (1*lpfVal[i][lpfIndex] + 
+            //           2*lpfVal[i][(lpfIndex+1)%GYRO_LPF_DEPTH] +
+            //           2*lpfVal[i][(lpfIndex+2)%GYRO_LPF_DEPTH] +
+            //           1*lpfVal[i][(lpfIndex+3)%GYRO_LPF_DEPTH])/6;
         }
-        rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
+        lpfIndex = (lpfIndex + 1) % GYRO_LPF_DEPTH;   // Increment index by 1 and loop back from GYRO_LPF_DEPTH.
     }
-    #endif // ENABLE_GYRO_RK_SMOOTH
+    #endif // GYRO_LPF_DEPTH
 }
 
 float* ITG3200::get() {

@@ -11,7 +11,7 @@
 #include "i2c.h"
 #include "globals.h"
 
-#define ENABLE_GYRO_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
+#define GYRO_LPF_DEPTH 8  // Enable low-pass filter.
 
 // ITG-3200 address defines
 #define GYRADDR 0x69
@@ -44,8 +44,11 @@ class ITG3200 {
     float angle[3];   // Calculated angles of rotation
     float temp;
 
-    int rkIndex;
-    float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
+    #ifdef GYRO_LPF_DEPTH
+    int lpfIndex;
+    float lpfVal[3][GYRO_LPF_DEPTH];   // Low-pass filter values for each of three axes
+    #endif // GYRO_LPF_DEPTH
+
 
 public:
     ITG3200();
