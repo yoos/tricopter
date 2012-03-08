@@ -30,13 +30,11 @@ class IMU {
     float accWeight;   // Variable accelerometer weight.
     //float accVar;   // Accelerometer variance for Kalman filter.
 
-    float aVec[3];   // Accelerometer output.
-    float aVecLast[3];   // Last accelerometer output.
-    float gVec[3];   // Gyro output.
-    float mVec[3];   // Magnetometer output.
+    float aVec[3];   // Accelerometer read.
+    float aVecLast[3];   // Last accelerometer read.
+    float gVec[3];   // Gyro read.
+    float mVec[3];   // Magnetometer read.
 
-    // TODO: Implement variable weight coefficient for accelerometer based on
-    // total observed acceleration.
     float kbb[3];   // K body unit vector expressed in body coordinates.
     float kgb[3];   // K global unit vector expressed in body coordinates.
     float jgb[3];   // J global unit vector expressed in body coordinates.
