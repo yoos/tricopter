@@ -11,7 +11,7 @@
 #include "i2c.h"
 #include "globals.h"
 
-#define ENABLE_ACC_RK_SMOOTH   // Enable Runge-Kutta smoothing (low-pass filter)
+#define ACC_LPF_DEPTH 8   // Enable low-pass filter.
 
 #define ACC_RANGE 4
 #define ACC_BW 5
@@ -51,8 +51,10 @@ class BMA180 {
     float aVec[3];   // In g's
     float temp;   // Temperature.
 
-    int rkIndex;
-    float rkVal[3][4];   // Four Runge-Kutta integrator values for each of three axes
+    #ifdef ACC_LPF_DEPTH
+    int lpfIndex;
+    float lpfVal[3][ACC_LPF_DEPTH];   // Low-pass filter values for each of three axes
+    #endif // ACC_LPF_DEPTH
 
 public:
     BMA180();

@@ -66,10 +66,11 @@ BMA180::BMA180() {
         buffer[i] = 0;
     }
 
-    rkIndex = 0;
+    // Low-pass filter.
+    lpfIndex = 0;
     for (int i=0; i<3; i++)
-        for (int j=0; j<4; j++)
-            rkVal[i][j] = 0;
+        for (int j=0; j<ACC_LPF_DEPTH; j++)
+            lpfVal[i][j] = 0;
 }
 
 void BMA180::poll() {
@@ -107,16 +108,23 @@ void BMA180::poll() {
     aVec[0] *= -1;   // Negated.
 
     // Runge-Kutta smoothing.
-    #ifdef ENABLE_ACC_RK_SMOOTH
+    #ifdef ACC_LPF_DEPTH
     for (int i=0; i<3; i++) {
-        rkVal[i][rkIndex] = aVec[i];
-        aVec[i] = (1*rkVal[i][rkIndex] +
-                2*rkVal[i][(rkIndex+1)%4] +
-                2*rkVal[i][(rkIndex+2)%4] +
-                1*rkVal[i][(rkIndex+3)%4])/6;
+        lpfVal[i][lpfIndex] = aVec[i] / ACC_LPF_DEPTH;
+
+        aVec[i] = 0;
+        for (int j=0; j<ACC_LPF_DEPTH; j++) {
+            aVec[i] += lpfVal[i][(lpfIndex + j) % ACC_LPF_DEPTH];
+        }
+
+        // DEPRECATED
+        //aVec[i] = (1*lpfVal[i][lpfIndex] +
+        //        2*lpfVal[i][(lpfIndex+1)%4] +
+        //        2*lpfVal[i][(lpfIndex+2)%4] +
+        //        1*lpfVal[i][(lpfIndex+3)%4])/6;
     }
-    rkIndex = (rkIndex + 1) % 4;   // Increment index by 1 but loop back from 3 back to 0.
-    #endif // ENABLE_ACC_RK_SMOOTH
+    lpfIndex = (lpfIndex + 1) % ACC_LPF_DEPTH;   // Increment index by 1 and loop back from ACC_LPF_DEPTH.
+    #endif // ACC_LPF_DEPTH
 }
 
 float* BMA180::get() {
