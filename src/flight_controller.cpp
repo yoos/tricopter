@@ -102,12 +102,14 @@ int main(void) {
             // ================================================================
             if (loopCount % COMM_LOOP_INTERVAL == 0) {
                 triPilot.listen();
-            }
 
-            if (loopCount % COMM_LOOP_INTERVAL == 1) {
                 #ifdef SEND_ARM_STATUS
                 sendArmStatus();
                 #endif
+            }
+
+            if (loopCount % COMM_LOOP_INTERVAL == 1) {
+                triPilot.listen();
 
                 #ifdef SEND_TARGET_ROTATION
                 sendTargetRotation();
