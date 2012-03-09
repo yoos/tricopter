@@ -14,8 +14,10 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
     float proportional = targetValue - currentValue;
 
     PIDparameters.integral += proportional * PIDparameters.deltaPIDTime;
-    //PIDparameters.integral *= 0.98;
+    //PIDparameters.integral *= 0.98;   // Integral decay
 
+    // Derivative term from difference between last two measured values divided
+    // by time interval.
     float derivative = (currentValue - PIDparameters.lastValue) / PIDparameters.deltaPIDTime;   // Per second.
     PIDparameters.lastValue = currentValue;
 
