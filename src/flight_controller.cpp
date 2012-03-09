@@ -109,6 +109,12 @@ int main(void) {
             }
 
             if (loopCount % COMM_LOOP_INTERVAL == 1) {
+                #ifdef SEND_DCM
+                sendDCM();
+                #endif
+            }
+
+            if (loopCount % COMM_LOOP_INTERVAL == 2) {
                 triPilot.listen();
 
                 #ifdef SEND_TARGET_ROTATION
@@ -117,12 +123,6 @@ int main(void) {
 
                 #ifdef SEND_MOTOR_VALUES
                 sendMotorValues();
-                #endif
-            }
-
-            if (loopCount % COMM_LOOP_INTERVAL == 2) {
-                #ifdef SEND_DCM
-                sendDCM();
                 #endif
             }
 
