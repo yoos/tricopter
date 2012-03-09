@@ -11,11 +11,13 @@
 #include "globals.h"
 #include "motors.h"
 #include "pid.h"
+#include "triMath.h"
 
 class Pilot {
     byte serRead;
     uint8_t serInput[PACKETSIZE];
     float throttle;
+    float throttleLock;   // Follow throttle within some range +/- THROTTLE_LOCK so if throttle suddenly increases past THROTTLE LOCK, throttle does not change.
     int throttleTrim;
     float mapLower, mapUpper;
 //  double dir;   // Direction in radians

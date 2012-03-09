@@ -46,9 +46,9 @@ struct PIDdata {
 #define PID_ROT_Y 1
 #define PID_ROT_Z 2
 
-#define XY_P_GAIN 20.0 // 17  30  35  42
+#define XY_P_GAIN 25.0 // 17  30  35  42
 #define XY_I_GAIN  0.0 // 10  20  50  24
-#define XY_D_GAIN -8.0 //  6  10   9  10
+#define XY_D_GAIN -7.0 //  6  10   9  10
 
 #define Z_P_GAIN 50.0
 #define Z_I_GAIN 0.0
@@ -57,6 +57,9 @@ struct PIDdata {
 #define TARGET_ANGLE_CAP PI/36   // Cap difference between target and current rotation vectors.
 #define TARGET_RATE_CAP 2*PI   // Cap maximum angular velocity rate.
 #define XY_D_TERM_CAP 0.6   // Cap maximum angular acceleration rate.
+
+#define THROTTLE_LOCK_DIFF_UP   70   // "Lock" throttle input. See pilot.h.
+#define THROTTLE_LOCK_DIFF_DOWN 120   // "Lock" throttle input. See pilot.h.
 
 /*****************************************************************************
  * Serial: everything that has to do with TX/RX.
@@ -97,9 +100,9 @@ struct PIDdata {
  * relatively frequently changed.
  *****************************************************************************/
 
-#define MASTER_DT            6000   // 6000 us interval = 167 Hz master loop.
-#define CONTROL_LOOP_INTERVAL   1   // 1x master = 167 Hz.
-#define COMM_LOOP_INTERVAL      5   // 1/5 master = 33 Hz. This frequency should be HIGHER than groundstation.py's dataSend frequency!
+#define MASTER_DT            8000   // 8000 us interval = 125 Hz master loop.
+#define CONTROL_LOOP_INTERVAL   1   // 1x master = 125 Hz.
+#define COMM_LOOP_INTERVAL      5   // 1/5 master = 25 Hz. This frequency should be HIGHER than groundstation.py's dataSend frequency!
 #define DOGLIFE 600   // Watchdog life in milliseconds.
 
 //#define DCM_COEFF 90   // Scale current-to-target DCM difference.
@@ -155,9 +158,9 @@ struct PIDdata {
 #define Z_ROT_SPEED 1   // Scale how much joystick twist input affects target Z rotation. A value of 1 here means a maximum Z rotation speed is 1 rad/s.
 
 // "Offset" values for accelerometer.
-#define ACCEL_X_OFFSET -0.052
-#define ACCEL_Y_OFFSET -0.020
-#define ACCEL_Z_OFFSET -0.998
+#define ACCEL_X_OFFSET -0.033
+#define ACCEL_Y_OFFSET -0.011
+#define ACCEL_Z_OFFSET -0.999
 
 #define PMT 5   // Tail motor pin.
 #define PMR 2   // Right motor pin.
