@@ -11,7 +11,7 @@ baudRate = 57600
 debug = False
 
 # TX
-dataSendInterval = 0.030   # 30 ms interval = 33.3 hz. NOTE: This frequency should be LOWER than the microcontroller's control loop frequency!
+dataSendInterval = 0.025   # 25 ms interval = 40 Hz. NOTE: This frequency should be LOWER than the microcontroller's control loop frequency!
 dogFeedInterval = 0.1
 serHeader = chr(255)
 dogBone = chr(254)
