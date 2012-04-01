@@ -106,6 +106,8 @@ void BMA180::poll() {
         aVec[i] = tmp * res;
     }
     aVec[0] *= -1;   // Negated.
+    aVec[1] *= -1;   // Negated.
+    aVec[2] *= -1;   // Negated.
 
     // Runge-Kutta smoothing.
     #ifdef ACC_LPF_DEPTH

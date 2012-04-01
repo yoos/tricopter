@@ -92,8 +92,8 @@ void ITG3200::poll() {
     // Range: [-2000, 2000] deg/s
     // Scale factor: 14.375 LSB / (deg/s)
     gVec[0] = (float) -((int) gRaw[0]) / 14.375 * PI/180;
-    gVec[1] = (float)  ((int) gRaw[1]) / 14.375 * PI/180;
-    gVec[2] = (float)  ((int) gRaw[2]) / 14.375 * PI/180;
+    gVec[1] = (float) -((int) gRaw[1]) / 14.375 * PI/180;
+    gVec[2] = (float) -((int) gRaw[2]) / 14.375 * PI/180;
 
     // Apply calibration values.
     for (int i=0; i<3; i++) {
