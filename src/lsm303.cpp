@@ -18,6 +18,12 @@ LSM303::LSM303() {
     buffer[0] |= 6<<2;
     sendI2C(MAG_ADDRESS, 0x00, buffer[0]);
 
+    // Set magnetometer gain to 450 LSB/gauss
+    readI2C(MAG_ADDRESS, 0x01, 1, buffer);
+    buffer[0] &= ~(7<<5);
+    buffer[0] |= 4<<5;
+    sendI2C(MAG_ADDRESS, 0x01, buffer[0]);
+
     // Set magnetometer operation mode to continuous-conversion (DS p. 34).
     readI2C(MAG_ADDRESS, 0x02, 1, buffer);
     buffer[0] &= ~(3);   // Clear out relevant register.
@@ -37,16 +43,19 @@ void LSM303::poll() {
     // Convert raw outputs to vector values.
     // Output: [0xf800 -- 0xffff] = [-2048 --   -1]
     //         [0x0000 -- 0x07ff] = [    0 -- 2047]
-    for (int i=0; i<3; i++) {
-        float tmp;
+    //for (int i=0; i<3; i++) {
+    //    float tmp;
 
-        if (mRaw[i] >= 0xf800)
-            tmp = -((signed) (0x10000 - mRaw[i]));
-        else
-            tmp = mRaw[i];
+    //    if (mRaw[i] >= 0xf800)
+    //        tmp = -((signed) (0x10000 - mRaw[i]));
+    //    else
+    //        tmp = mRaw[i];
+    //}
 
-        mVec[i] = (int16_t) mRaw[i];
-    }
+    // Account for offset.
+    mVec[0] = (int16_t) mRaw[0] - MAG_X_ZERO;
+    mVec[1] = (int16_t) mRaw[1] - MAG_Y_ZERO;
+    mVec[2] = (int16_t) mRaw[2] - MAG_Z_ZERO;
     //vNorm(mVec);   // Normalize.
 }
 
