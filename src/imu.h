@@ -10,7 +10,7 @@
 
 #include "itg3200.cpp"
 #include "bma180.cpp"
-#include "hmc5883.cpp"
+#include "lsm303.cpp"
 #include "triMath.h"
 #include "globals.h"
 
@@ -19,12 +19,12 @@
 //#define ACC_UPDATE_SIG 50.0   // Update sigma for Kalman filter
 //#define ACC_PREDICT_SIG 10.2   // Prediction sigma for Kalman filter
 
-//#define MAG_WEIGHT 0.05
+#define MAG_WEIGHT 0.05
 
 class IMU {
     BMA180 acc;
     ITG3200 gyro;
-    HMC5883 mag;
+    LSM303 mag;
 
     float accScale;
     float accWeight;   // Variable accelerometer weight.
