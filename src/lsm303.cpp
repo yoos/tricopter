@@ -12,23 +12,21 @@ LSM303::LSM303() {
     sp("LSM303 ID: ");
     spln((int) buffer[0]);
 
-    // Set magnetometer data rate to 75 Hz (DS p. 33).
-    readI2C(MAG_ADDRESS, 0x00, 1, buffer);
-    buffer[0] &= ~(7<<2);   // Clear out relevant register.
+    // Configure magnetometer.
+    readI2C(MAG_ADDRESS, 0x00, 3, buffer);
+
+    // Data rate 75 Hz (DS p. 33).
+    buffer[0] &= ~(7<<2);
     buffer[0] |= 6<<2;
-    sendI2C(MAG_ADDRESS, 0x00, buffer[0]);
 
-    // Set magnetometer gain to 670 LSB/gauss (DS p. 34).
-    readI2C(MAG_ADDRESS, 0x01, 1, buffer);
-    buffer[0] &= ~(7<<5);
-    buffer[0] |= 3<<5;
-    sendI2C(MAG_ADDRESS, 0x01, buffer[0]);
+    // Gain 670 LSB/gauss (DS p. 34).
+    buffer[1] &= ~(7<<5);
+    buffer[1] |= 3<<5;
 
-    // Set magnetometer operation mode to continuous-conversion (DS p. 34).
-    readI2C(MAG_ADDRESS, 0x02, 1, buffer);
-    buffer[0] &= ~(3);   // Clear out relevant register.
-    buffer[0] |= 0;
-    sendI2C(MAG_ADDRESS, 0x02, buffer[0]);
+    // Continuous-conversion mode (DS p. 34).
+    buffer[2] &= ~(3);
+    buffer[2] |= 0;
+    writeI2C(MAG_ADDRESS, 0x00, 3, buffer);
 }
 
 void LSM303::poll() {
