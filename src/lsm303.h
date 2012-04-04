@@ -17,7 +17,7 @@
 
 class LSM303 {
     uint8_t buffer[6];
-    uint16_t mRaw[3];
+    int16_t mRaw[3];   // 2's complement.
     float mVec[3];
 
 public:
