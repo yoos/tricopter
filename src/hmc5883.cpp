@@ -9,7 +9,8 @@
 
 HMC5883::HMC5883() {
     // Put into continuous measurement mode (DS p. 12).
-    sendI2C(MAG_ADDRESS, 0x02, 0x00);
+    buffer[0] = 0;
+    writeI2C(MAG_ADDRESS, 0x02, 1, buffer);
 }
 
 void HMC5883::poll() {

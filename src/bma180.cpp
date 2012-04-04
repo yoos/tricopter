@@ -16,13 +16,13 @@ BMA180::BMA180() {
     // Set ee_w bit
     readI2C(ACCADDR, CTRLREG0, 1, buffer);
     buffer[0] |= 0x10;   // Bitwise OR operator to set ee_w bit.
-    sendI2C(ACCADDR, CTRLREG0, buffer[0]);   // Have to set ee_w to write any other registers.
+    writeI2C(ACCADDR, CTRLREG0, 1, buffer);   // Have to set ee_w to write any other registers.
 
     // Set range.
     readI2C(ACCADDR, OLSB1, 1, buffer);
     buffer[0] &= (~0x0e);   // Clear old ACC_RANGE bits.
     buffer[0] |= (ACC_RANGE << 1);   // Need to shift left one bit; refer to DS p. 21.
-    sendI2C(ACCADDR, OLSB1, buffer[0]);   // Write new ACC_RANGE data, keep other bits the same.
+    writeI2C(ACCADDR, OLSB1, 1, buffer);   // Write new ACC_RANGE data, keep other bits the same.
 
     // Set ADC resolution (DS p. 8).
     res = 0.000125;                        // [   -1,   1] g
@@ -46,13 +46,13 @@ BMA180::BMA180() {
     readI2C(ACCADDR, BWTCS, 1, buffer);
     buffer[0] &= (~0xf0);   // Clear bandwidth bits <7:4>.
     buffer[0] |= (ACC_BW << 4);   // Need to shift left four bits; refer to DS p. 21.
-    sendI2C(ACCADDR, BWTCS, buffer[0]);   // Keep tcs<3:0> in BWTCS, but write new ACC_BW.
+    writeI2C(ACCADDR, BWTCS, 1, buffer);   // Keep tcs<3:0> in BWTCS, but write new ACC_BW.
 
     // Set mode_config to 0x01 (ultra low noise mode, DS p. 28).
     //readI2C(ACCADDR, 0x30, 1, buffer);
     //buffer[0] &= (~0x03);   // Clear mode_config bits <1:0>.
     //buffer[0] |= 0x01;
-    //sendI2C(ACCADDR, 0x30, buffer[0]);
+    //writeI2C(ACCADDR, 0x30, 1, buffer);
 
     spln("BMA180 configured!");
 

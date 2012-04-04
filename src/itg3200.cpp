@@ -13,17 +13,20 @@ ITG3200::ITG3200() {
     sp("ITG-3200 ID = ");
     spln((int) buffer[0]);
 
-    // Set FS_SEL = 3 as recommended on DS p. 24.
-    // Set DLPF_CFG = 0. (8 kHz internal sample rate.)
-    //readI2C(GYRADDR, 0x16, 1, buffer);
-    buffer[0] = (3 << 3);   // FS_SEL is on bits 4 and 3.
-    sendI2C(GYRADDR, 0x16, buffer[0]);
+    readI2C(GYRADDR, 0x15, 2, buffer);
 
     // Sample rate divider is 15 + 1 = 16, so 8000 Hz / 16 = 500 Hz
-    sendI2C(GYRADDR, 0x15, 15);
+    buffer[0] = 15;
+
+    // Set FS_SEL = 3 as recommended on DS p. 24.
+    // Set DLPF_CFG = 0. (8 kHz internal sample rate.)
+    buffer[1] = (3 << 3);   // FS_SEL is on bits 4 and 3.
+
+    writeI2C(GYRADDR, 0x15, 2, buffer);
 
     // Set to use X gyro as clock reference as recommended on DS p. 27.
-    sendI2C(GYRADDR, 0x3e, 1);
+    buffer[0] = 1;
+    writeI2C(GYRADDR, 0x3e, 1, buffer);
 
 
     spln("ITG-3200 configured!");
