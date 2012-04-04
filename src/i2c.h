@@ -10,11 +10,15 @@
 
 #include <Wire.h>
 
-int sendI2C(int device, byte address, byte val) {
-   Wire.beginTransmission(device);
-   Wire.send(address);
-   Wire.send(val);
-   return Wire.endTransmission();
+int writeI2C(int device, byte address, int num, byte buff[]) {
+    int eCode;
+
+    for (int i=0; i<num; i++) {
+        Wire.beginTransmission(device);
+        Wire.send(address + i);
+        Wire.send(buff[i]);
+        eCode |= Wire.endTransmission();
+    }
 }
 
 int readI2C(int device, byte address, int num, byte buff[]) {
@@ -28,7 +32,7 @@ int readI2C(int device, byte address, int num, byte buff[]) {
     Wire.requestFrom(device, num);
     int i = 0;
     while(Wire.available())   //device may send less than requested (abnormal)
-    {   
+    {
         buff[i] = Wire.receive();   // receive a uint8_t
         i++;
     }
