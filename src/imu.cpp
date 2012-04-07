@@ -128,13 +128,13 @@ void IMU::update() {
 
     // Uncomment the loop below to get accelerometer readings in order to
     // obtain wAOffset.
-    //if (loopCount % COMM_LOOP_INTERVAL == 0) {
-    //    sp("(");
-    //    sp(aVec[0]*1000); sp(", ");
-    //    sp(aVec[1]*1000); sp(", ");
-    //    sp(aVec[2]*1000);
-    //    spln(")");
-    //}
+    if (loopCount % COMM_LOOP_INTERVAL == 0) {
+        sp("A(");
+        sp(aVec[0]*1000); sp(", ");
+        sp(aVec[1]*1000); sp(", ");
+        sp(aVec[2]*1000);
+        sp(")  ");
+    }
 
     // Express K global unit vector in BODY frame as kgb for use in drift
     // correction (we need K to be described in the BODY frame because gravity
@@ -167,6 +167,15 @@ void IMU::update() {
     for (int i=0; i<3; i++) {
         mVec[i] = mag.get(i);
     }
+    if (loopCount % COMM_LOOP_INTERVAL == 0) {
+        sp("M(");
+        sp(mVec[0]); sp(", ");
+        sp(mVec[1]); sp(", ");
+        sp(mVec[2]);
+        spln(")");
+    }
+
+
 
     // Express J global unit vectory in BODY frame as jgb.
     for (int i=0; i<3; i++) {
@@ -188,9 +197,6 @@ void IMU::update() {
     for (int i=0; i<3; i++) {
         gVec[i] = gyro.get(i);
     }
-
-    rateX = gVec[0];
-    rateY = gVec[1];
 
     // Scale gVec by elapsed time (in seconds) to get angle w*dt in radians,
     // then compute weighted average with the accelerometer and magnetometer

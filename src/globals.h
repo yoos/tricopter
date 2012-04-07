@@ -10,18 +10,14 @@
 
 // #define DEBUG
 
-/*****************************************************************************
- * Variables
- *****************************************************************************/
-
+// ============================================================================
+// Variables
+// ============================================================================
 int armCount;   // Arm status counter.
 int loopCount;   // Count system loops.
-uint16_t pwmOut[4];
-char commStr[250];   // String to be sent out to base.
+uint16_t pwmOut[4];   // 10 bit PWM output duty cycle.
 float bodyDCM[3][3];   // Current body orientation calculated by IMU.
 float targetRot[3], currentRot[3], pidRot[3];
-
-float rateX, rateY;
 
 
 // ============================================================================
@@ -35,12 +31,7 @@ struct PIDdata {
     float lastValue;
     float integral;
     float lastDerivative;
-} PID[4];
-
-//#define PID_MOTOR_T 0
-//#define PID_MOTOR_R 1
-//#define PID_MOTOR_L 2
-//#define PID_SERVO_T 3
+} PID[3];
 
 #define PID_ROT_X 0
 #define PID_ROT_Y 1
@@ -61,9 +52,6 @@ struct PIDdata {
 #define THROTTLE_LOCK_DIFF_UP   70   // "Lock" throttle input. See pilot.h.
 #define THROTTLE_LOCK_DIFF_DOWN 120   // "Lock" throttle input. See pilot.h.
 
-/*****************************************************************************
- * Serial: everything that has to do with TX/RX.
- *****************************************************************************/
 
 // ============================================================================
 // SERIAL IN
@@ -83,11 +71,11 @@ struct PIDdata {
 // ============================================================================
 // SERIAL OUT
 // ============================================================================
-#define SEND_ARM_STATUS
-//#define SEND_TARGET_ROTATION
-#define SEND_MOTOR_VALUES
-#define SEND_DCM
-#define SEND_PID_DATA
+//#define SEND_ARM_STATUS
+////#define SEND_TARGET_ROTATION
+//#define SEND_MOTOR_VALUES
+//#define SEND_DCM
+//#define SEND_PID_DATA
 
 #define DCM_SER_TAG 0xfb
 #define ROT_SER_TAG 0xfc
@@ -95,19 +83,15 @@ struct PIDdata {
 #define PID_SER_TAG 0xfe
 #define FIELD_SER_TAG 0xff
 
-/*****************************************************************************
- * Software configuration: any parameter that is purely code-related or is
- * relatively frequently changed.
- *****************************************************************************/
 
+// ============================================================================
+// Software configuration: any parameter that is purely code-related or is
+// relatively frequently changed.
+// ============================================================================
 #define MASTER_DT            8000   // 8000 us interval = 125 Hz master loop.
 #define CONTROL_LOOP_INTERVAL   1   // 1x master = 125 Hz.
 #define COMM_LOOP_INTERVAL      5   // 1/5 master = 25 Hz. This frequency should be HIGHER than groundstation.py's dataSend frequency!
 #define DOGLIFE 600   // Watchdog life in milliseconds.
-
-//#define DCM_COEFF 90   // Scale current-to-target DCM difference.
-//#define GYRO_COEFF 15   // Try to stabilize craft.
-//#define ACCEL_COEFF 90   // TEST: Try to stabilize craft.
 
 // Throttle stuff. Minimum signal is 750 ms. Maximum signal is 2200 ms. Hover
 // is around 1200 ms.
@@ -127,6 +111,7 @@ struct PIDdata {
 #define MOTOR_L 2   // Left motor array index.
 #define SERVO_T 3   // Tail servo array index.
 
+
 // ============================================================================
 // Buttons
 // ============================================================================
@@ -143,10 +128,10 @@ struct PIDdata {
 #define BUTTON_DECREASE_XY_D_GAIN   10
 #define BUTTON_INCREASE_XY_D_GAIN   11
 
-/*****************************************************************************
- * Hardware configuration: any parameter that is changed so infrequently that
- * it may as well be hard-coded.
- *****************************************************************************/
+// ============================================================================
+// Hardware configuration: any parameter that is changed so infrequently that
+// it may as well be hard-coded.
+// ============================================================================
 
 #define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
@@ -157,10 +142,20 @@ struct PIDdata {
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
 #define Z_ROT_SPEED 1   // Scale how much joystick twist input affects target Z rotation. A value of 1 here means a maximum Z rotation speed is 1 rad/s.
 
-// "Offset" values for accelerometer.
+// Calibration values for accelerometer.
 #define ACCEL_X_OFFSET -0.033
 #define ACCEL_Y_OFFSET -0.011
 #define ACCEL_Z_OFFSET -0.999
+
+// Calibration values for magnetometer. These are what the magnetometer axes
+// see as "zero".   TODO: This is not entirely accurate. Need to figure out how
+// magnetometers actually work!
+#define MAG_X_MIN -314
+#define MAG_X_MAX 320
+#define MAG_Y_MIN -316
+#define MAG_Y_MAX 317
+#define MAG_Z_MIN -427
+#define MAG_Z_MAX 165
 
 #define PMT 5   // Tail motor pin.
 #define PMR 2   // Right motor pin.
@@ -168,9 +163,9 @@ struct PIDdata {
 #define PST 4   // Tail servo pin.
 
 
-/*****************************************************************************
- * Flight modes: not yet implemented.
- *****************************************************************************/
+// ============================================================================
+// Flight modes: not yet implemented.
+// ============================================================================
 
 //#define OFF 0
 //#define IDLE 1
@@ -180,16 +175,16 @@ struct PIDdata {
 //#define AUTO_HOVER 5
 
 
-/*****************************************************************************
- * Constants
- *****************************************************************************/
+// ============================================================================
+// Constants
+// ============================================================================
 
 #define PI 3.141592653589793238462643383279502884197f
 
 
-/*****************************************************************************
- * Functions
- *****************************************************************************/
+// ============================================================================
+// Functions
+// ============================================================================
 
 void zeroStr(char *sStr) {
     for (int i=0; i<sizeof(sStr); i++) {
