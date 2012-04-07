@@ -10,7 +10,7 @@
 
 #include "globals.h"
 
-void calculate_pwm_output(float inputThrottle, float* inputRot) {
+void calculate_pwm_outputs(float inputThrottle, float* inputRot) {
     // ====================================================================
     // Calculate motor/servo values.
     //     MOTOR_X_OFFSET: Offset starting motor values to account for

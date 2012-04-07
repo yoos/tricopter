@@ -159,7 +159,7 @@ void Pilot::fly() {
             throttleLock = throttle;
         }
 
-        calculate_pwm_output(throttle, pidRot);
+        calculate_pwm_outputs(throttle, pidRot);
 
         okayToFly = false;
     }
