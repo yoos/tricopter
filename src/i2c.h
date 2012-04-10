@@ -19,6 +19,8 @@ int writeI2C(int device, byte address, int num, byte buff[]) {
         Wire.send(buff[i]);
         eCode |= Wire.endTransmission();
     }
+
+    return eCode;
 }
 
 int readI2C(int device, byte address, int num, byte buff[]) {
