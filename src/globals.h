@@ -93,11 +93,11 @@ struct PIDdata {
 #define COMM_LOOP_INTERVAL      5   // 1/5 master = 25 Hz. This frequency should be HIGHER than groundstation.py's dataSend frequency!
 #define DOGLIFE 600   // Watchdog life in milliseconds.
 
-// Throttle stuff. Minimum signal is 750 ms. Maximum signal is 2200 ms. Hover
-// is around 1200 ms.
-#define TMIN   450   // Minimum throttle PWM duty cycle (450/1023, or 1100 ms at 400 kHz)
+// Throttle stuff. Minimum signal is 750 us. Maximum signal is 2200 us. Hover
+// is around 1200 us.
+#define TMIN   450   // Minimum throttle PWM duty cycle (450/1023, or 1100 us at 400 kHz)
 #define THOVER 500   // Hover throttle PWM duty cycle
-#define TMAX   600   // Maximum throttle PWM duty cycle (826/1023, or 2020 ms at 400 kHz)
+#define TMAX   600   // Maximum throttle PWM duty cycle (826/1023, or 2020 us at 400 kHz)
 
 #define SERVO_US_ZERO 1430   // Servo "zero" position (i.e., level to chassis).
 #define SERVO_US_NEUTRAL 1370   // Servo neutral position (i.e., net Z torque = 0).
