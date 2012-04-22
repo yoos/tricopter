@@ -128,13 +128,13 @@ void IMU::update() {
 
     // Uncomment the loop below to get accelerometer readings in order to
     // obtain wAOffset.
-    if (loopCount % COMM_LOOP_INTERVAL == 0) {
-        sp("A(");
-        sp(aVec[0]*1000); sp(", ");
-        sp(aVec[1]*1000); sp(", ");
-        sp(aVec[2]*1000);
-        sp(")  ");
-    }
+    //if (loopCount % COMM_LOOP_INTERVAL == 0) {
+    //    sp("A(");
+    //    sp(aVec[0]*1000); sp(", ");
+    //    sp(aVec[1]*1000); sp(", ");
+    //    sp(aVec[2]*1000);
+    //    sp(")  ");
+    //}
 
     // Express K global unit vector in BODY frame as kgb for use in drift
     // correction (we need K to be described in the BODY frame because gravity
@@ -167,13 +167,13 @@ void IMU::update() {
     for (int i=0; i<3; i++) {
         mVec[i] = mag.get(i);
     }
-    if (loopCount % COMM_LOOP_INTERVAL == 0) {
-        sp("M(");
-        sp(mVec[0]); sp(", ");
-        sp(mVec[1]); sp(", ");
-        sp(mVec[2]);
-        spln(")");
-    }
+    //if (loopCount % COMM_LOOP_INTERVAL == 0) {
+    //    sp("M(");
+    //    sp(mVec[0]); sp(", ");
+    //    sp(mVec[1]); sp(", ");
+    //    sp(mVec[2]);
+    //    spln(")");
+    //}
 
 
 

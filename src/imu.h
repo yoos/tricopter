@@ -19,7 +19,7 @@
 //#define ACC_UPDATE_SIG 50.0   // Update sigma for Kalman filter
 //#define ACC_PREDICT_SIG 10.2   // Prediction sigma for Kalman filter
 
-#define MAG_WEIGHT 0.05
+//#define MAG_WEIGHT 0.05
 
 class IMU {
     BMA180 acc;
