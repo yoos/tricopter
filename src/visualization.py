@@ -221,7 +221,7 @@ def drawScene():
             cylAngle[i] = 180.0/pi * acos(vDot(cylDef, cylVec[i]) / ((motorVal[i]+0.001)/125))
         except ValueError:
             # TODO: This is a hack!
-            cylAngle[i] = 180.0
+            cylAngle[i] = 0.0
 
     # =========================================================================
     # Draw the cylinders. For each cylinder, we:
@@ -237,8 +237,9 @@ def drawScene():
         glRotatef(cylAngle[i], cylT[i][0], cylT[i][1], cylT[i][2]);
 
         # Rotate tail motor based on yaw motorVal[3]
-        if i == 0:
-            glRotatef(motorVal[3]-74, 0.0, 1.0, 0.0)
+        # TODO: rotation is messed up!
+        #if i == 0:
+        #    glRotatef(motorVal[3]-74, 0.0, 1.0, 0.0)
 
         #gluQuadricOrientation(quadratic, GLU_OUTSIDE);
         gluCylinder(quadratic, 0.3, 0.3, (motorVal[i]-0.001)/400, 32, 32);
