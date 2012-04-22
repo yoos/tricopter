@@ -47,13 +47,13 @@ class BMA180 {
     float res;   // ADC resolution (mg/LSB) based on construction inputs.
 
     uint8_t buffer[6];   // Buffer to which we save data read from device
-    uint16_t aRaw[3];   // Raw digital values.
+    int16_t aRaw[3];   // Raw digital values.
     float aVec[3];   // In g's
     float temp;   // Temperature.
 
     #ifdef ACC_LPF_DEPTH
     int lpfIndex;
-    float lpfVal[3][ACC_LPF_DEPTH];   // Low-pass filter values for each of three axes
+    int16_t lpfVal[3][ACC_LPF_DEPTH];   // Low-pass filter values for each of three axes
     #endif // ACC_LPF_DEPTH
 
 public:

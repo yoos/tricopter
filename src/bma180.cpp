@@ -81,6 +81,25 @@ void BMA180::poll() {
     aRaw[1] = ((buffer[1] << 6) | (buffer[0] >> 2));   // Tricopter Y axis is chip X axis.
     aRaw[2] = ((buffer[5] << 6) | (buffer[4] >> 2));   // Z axis is same.
 
+    // Low-pass filter.
+    #ifdef ACC_LPF_DEPTH
+    for (int i=0; i<3; i++) {
+        lpfVal[i][lpfIndex] = aRaw[i] / ACC_LPF_DEPTH;
+
+        aRaw[i] = 0;
+        for (int j=0; j<ACC_LPF_DEPTH; j++) {
+            aRaw[i] += lpfVal[i][(lpfIndex + j) % ACC_LPF_DEPTH];
+        }
+
+        // DEPRECATED
+        //aVec[i] = (1*lpfVal[i][lpfIndex] +
+        //        2*lpfVal[i][(lpfIndex+1)%4] +
+        //        2*lpfVal[i][(lpfIndex+2)%4] +
+        //        1*lpfVal[i][(lpfIndex+3)%4])/6;
+    }
+    lpfIndex = (lpfIndex + 1) % ACC_LPF_DEPTH;   // Increment index by 1 and loop back from ACC_LPF_DEPTH.
+    #endif // ACC_LPF_DEPTH
+
     // Read accelerometer temperature.
     //readI2C(ACCADDR, 0x08, 1, buffer);
     //temp = -40 + 0.5 * buffer[0];   // 0.5 K/LSB
@@ -108,25 +127,6 @@ void BMA180::poll() {
     aVec[0] *= -1;   // Negated.
     aVec[1] *= -1;   // Negated.
     aVec[2] *= -1;   // Negated.
-
-    // Runge-Kutta smoothing.
-    #ifdef ACC_LPF_DEPTH
-    for (int i=0; i<3; i++) {
-        lpfVal[i][lpfIndex] = aVec[i] / ACC_LPF_DEPTH;
-
-        aVec[i] = 0;
-        for (int j=0; j<ACC_LPF_DEPTH; j++) {
-            aVec[i] += lpfVal[i][(lpfIndex + j) % ACC_LPF_DEPTH];
-        }
-
-        // DEPRECATED
-        //aVec[i] = (1*lpfVal[i][lpfIndex] +
-        //        2*lpfVal[i][(lpfIndex+1)%4] +
-        //        2*lpfVal[i][(lpfIndex+2)%4] +
-        //        1*lpfVal[i][(lpfIndex+3)%4])/6;
-    }
-    lpfIndex = (lpfIndex + 1) % ACC_LPF_DEPTH;   // Increment index by 1 and loop back from ACC_LPF_DEPTH.
-    #endif // ACC_LPF_DEPTH
 }
 
 float* BMA180::get() {

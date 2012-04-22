@@ -76,6 +76,27 @@ void ITG3200::poll() {
     gRaw[1] = ((buffer[0] << 8) | buffer[1]);   // Tricopter Y axis is chip X axis.
     gRaw[2] = ((buffer[4] << 8) | buffer[5]);   // Z axis is same.
 
+    // Low-pass filter.
+    #ifdef GYRO_LPF_DEPTH
+    if (calibrated) {
+        for (int i=0; i<3; i++) {
+            lpfVal[i][lpfIndex] = gRaw[i] / GYRO_LPF_DEPTH;
+
+            gRaw[i] = 0;
+            for (int j=0; j<GYRO_LPF_DEPTH; j++) {
+                gRaw[i] += lpfVal[i][(lpfIndex + j) % GYRO_LPF_DEPTH];
+            }
+
+            // DEPRECATED
+            //gVec[i] = (1*lpfVal[i][lpfIndex] + 
+            //           2*lpfVal[i][(lpfIndex+1)%GYRO_LPF_DEPTH] +
+            //           2*lpfVal[i][(lpfIndex+2)%GYRO_LPF_DEPTH] +
+            //           1*lpfVal[i][(lpfIndex+3)%GYRO_LPF_DEPTH])/6;
+        }
+        lpfIndex = (lpfIndex + 1) % GYRO_LPF_DEPTH;   // Increment index by 1 and loop back from GYRO_LPF_DEPTH.
+    }
+    #endif // GYRO_LPF_DEPTH
+
     //sp("G( ");
     //for (int i=0; i<3; i++) {
     //    sp(gRaw[i]);
@@ -94,9 +115,9 @@ void ITG3200::poll() {
     //         [0x8000 -- 0xffff] = [-32768 --    -1]
     // Range: [-2000, 2000] deg/s
     // Scale factor: 14.375 LSB / (deg/s)
-    gVec[0] = (float) -((int) gRaw[0]) / 14.375 * PI/180;
-    gVec[1] = (float) -((int) gRaw[1]) / 14.375 * PI/180;
-    gVec[2] = (float) -((int) gRaw[2]) / 14.375 * PI/180;
+    gVec[0] = (float) -gRaw[0] / 14.375 * PI/180;
+    gVec[1] = (float) -gRaw[1] / 14.375 * PI/180;
+    gVec[2] = (float) -gRaw[2] / 14.375 * PI/180;
 
     // Apply calibration values.
     for (int i=0; i<3; i++) {
@@ -125,27 +146,6 @@ void ITG3200::poll() {
     //    }
     //    gVec[i] = (gVec[i] - gZero[i]);
     //}
-
-    // Low-pass filter.
-    #ifdef GYRO_LPF_DEPTH
-    if (calibrated) {
-        for (int i=0; i<3; i++) {
-            lpfVal[i][lpfIndex] = gVec[i] / GYRO_LPF_DEPTH;
-
-            gVec[i] = 0;
-            for (int j=0; j<GYRO_LPF_DEPTH; j++) {
-                gVec[i] += lpfVal[i][(lpfIndex + j) % GYRO_LPF_DEPTH];
-            }
-
-            // DEPRECATED
-            //gVec[i] = (1*lpfVal[i][lpfIndex] + 
-            //           2*lpfVal[i][(lpfIndex+1)%GYRO_LPF_DEPTH] +
-            //           2*lpfVal[i][(lpfIndex+2)%GYRO_LPF_DEPTH] +
-            //           1*lpfVal[i][(lpfIndex+3)%GYRO_LPF_DEPTH])/6;
-        }
-        lpfIndex = (lpfIndex + 1) % GYRO_LPF_DEPTH;   // Increment index by 1 and loop back from GYRO_LPF_DEPTH.
-    }
-    #endif // GYRO_LPF_DEPTH
 }
 
 float* ITG3200::get() {
