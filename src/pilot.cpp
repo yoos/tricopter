@@ -151,13 +151,13 @@ void Pilot::fly() {
         // past THROTTLE_LOCK_DIFF_DOWN in one step, set throttle to
         // throttleLock and leave throttleLock alone. Otherwise, update
         // throttleLock to throttle.
-        if (throttle - throttleLock > THROTTLE_LOCK_DIFF_UP ||
-            throttleLock - throttle > THROTTLE_LOCK_DIFF_DOWN) {
-            throttle = throttleLock;
-        }
-        else {
-            throttleLock = throttle;
-        }
+        //if (throttle - throttleLock > THROTTLE_LOCK_DIFF_UP ||
+        //    throttleLock - throttle > THROTTLE_LOCK_DIFF_DOWN) {
+        //    throttle = throttleLock;
+        //}
+        //else {
+        //    throttleLock = throttle;
+        //}
 
         calculate_pwm_outputs(throttle, pidRot);
 
