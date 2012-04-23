@@ -25,13 +25,13 @@ BMA180::BMA180() {
     writeI2C(ACCADDR, OLSB1, 1, buffer);   // Write new ACC_RANGE data, keep other bits the same.
 
     // Set ADC resolution (DS p. 8).
-    res = 0.000125;                        // [   -1,   1] g
-    if      (ACC_RANGE == 1) res *= 1.5;   // [ -1.5, 1.5] g
-    else if (ACC_RANGE == 2) res *= 2;     // [   -2,   2] g
-    else if (ACC_RANGE == 3) res *= 3;     // [   -3,   3] g
-    else if (ACC_RANGE == 4) res *= 4;     // [   -4,   4] g
-    else if (ACC_RANGE == 5) res *= 8;     // [   -8,   8] g
-    else if (ACC_RANGE == 6) res *= 16;    // [  -16,  16] g
+    res = 8000;   // == 1/0.000125         // [   -1,   1] g
+    if      (ACC_RANGE == 1) res /= 1.5;   // [ -1.5, 1.5] g
+    else if (ACC_RANGE == 2) res /= 2;     // [   -2,   2] g
+    else if (ACC_RANGE == 3) res /= 3;     // [   -3,   3] g
+    else if (ACC_RANGE == 4) res /= 4;     // [   -4,   4] g
+    else if (ACC_RANGE == 5) res /= 8;     // [   -8,   8] g
+    else if (ACC_RANGE == 6) res /= 16;    // [  -16,  16] g
 
     // Set bandwidth.
     //     ACC_BW  bandwidth (Hz)
@@ -107,7 +107,7 @@ void BMA180::poll() {
     // ADC resolution varies depending on setup. See DS p. 27 or the
     // constructor of this class.
     for (int i=0; i<3; i++) {
-        aVec[i] = (float) aRaw[i] * res;
+        aVec[i] = (float) (aRaw[i] / res);
     }
 }
 
