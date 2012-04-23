@@ -53,16 +53,22 @@ ITG3200::ITG3200() {
 }
 
 void ITG3200::calibrate(int sampleNum) {
+    int32_t tmp[3];
+    for (int i=0; i<3; i++) {
+        tmp[i] = 0;
+    }
+
     for (int i=0; i<sampleNum; i++) {
         ITG3200::poll();
         for (int j=0; j<3; j++) {
-            gZero[j] = gZero[j] + gRaw[j];
+            tmp[j] = tmp[j] + gRaw[j];
         }
+        delayMicroseconds(20);
     }
 
-    gZero[0] = gZero[0]/sampleNum;
-    gZero[1] = gZero[1]/sampleNum;
-    gZero[2] = gZero[2]/sampleNum;
+    for (int i=0; i<3; i++) {
+        gZero[i] = tmp[i]/sampleNum;
+    }
 
     spln("Gyro calibration complete!");
     calibrated = true;
@@ -76,14 +82,14 @@ void ITG3200::poll() {
     gRaw[1] = -((buffer[0] << 8) | buffer[1]);   // Tricopter Y axis is chip X axis.
     gRaw[2] = -((buffer[4] << 8) | buffer[5]);   // Z axis is same.
 
-    // Apply calibration values.
-    for (int i=0; i<3; i++) {
-        gRaw[i] -= gZero[i];
-    }
-
-    // Low-pass filter (enabled only if calibration has finished!).
-    #ifdef GYRO_LPF_DEPTH
     if (calibrated) {
+        // Apply calibration values.
+        for (int i=0; i<3; i++) {
+            gRaw[i] -= gZero[i];
+        }
+
+        // Low-pass filter.
+        #ifdef GYRO_LPF_DEPTH
         for (int i=0; i<3; i++) {
             lpfVal[i][lpfIndex] = gRaw[i] / GYRO_LPF_DEPTH;
 
@@ -93,8 +99,8 @@ void ITG3200::poll() {
             }
         }
         lpfIndex = (lpfIndex + 1) % GYRO_LPF_DEPTH;   // Increment index by 1 and loop back from GYRO_LPF_DEPTH.
+        #endif // GYRO_LPF_DEPTH
     }
-    #endif // GYRO_LPF_DEPTH
 
     //sp("G( ");
     //for (int i=0; i<3; i++) {
