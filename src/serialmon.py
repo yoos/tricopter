@@ -50,7 +50,7 @@ class telemetryThread(threading.Thread):
         motorDataIndex = 0     # Do I see motor data?
         pidDataIndex = 0     # Do I see PID data?
         serBuffer = ''
-        serLines = ''
+        serLines = ['']
 
         while self.running and not rospy.is_shutdown():
             try:
@@ -59,19 +59,18 @@ class telemetryThread(threading.Thread):
                     # =========================================================
                     # Update buffer, adding onto incomplete line if necessary.
                     # =========================================================
-                    serBuffer = serBuffer + ser.read(ser.inWaiting())
-
+                    serBuffer = ser.read(ser.inWaiting())
+                    serLines = serLines[:-1] + (serLines[-1] + serBuffer).split(cfg.newlineSerTag)
                     # =========================================================
-                    # Check for separator tag and split one entry off buffer.
+                    # If there are two or more entries in serLines (i.e., at
+                    # least one entry is complete), pop off the earliest entry.
                     # =========================================================
-                    if cfg.newlineSerTag in serBuffer:
-                        serLines = serBuffer.split(cfg.newlineSerTag)
-
+                    if len(serLines) > 1:
                         # Parse fields separated by 0xf0f0.
-                        fields = serLines[-2].split(cfg.fieldSerTag)
+                        fields = serLines[0].split(cfg.fieldSerTag)
 
-                        # Save second to last line and discard rest.
-                        serBuffer = serLines[-1]
+                        # Discard one entry.
+                        serLines = serLines[1:]
 
                     # =========================================================
                     # Scan for data field headers.
