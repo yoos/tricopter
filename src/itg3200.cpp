@@ -45,7 +45,6 @@ ITG3200::ITG3200() {
     #endif // GYRO_LPF_DEPTH
 
     for (int i=0; i<3; i++) {
-        tempData[i] = 0;
         gZero[i] = 0;
         gVec[i] = 0;
         angle[i] = 0;
@@ -57,16 +56,15 @@ void ITG3200::calibrate(int sampleNum) {
     for (int i=0; i<sampleNum; i++) {
         ITG3200::poll();
         for (int j=0; j<3; j++) {
-            tempData[j] = tempData[j] + gVec[j];
+            gZero[j] = gZero[j] + gRaw[j];
         }
     }
 
-    gZero[0] = tempData[0]/sampleNum;
-    gZero[1] = tempData[1]/sampleNum;
-    gZero[2] = tempData[2]/sampleNum;
+    gZero[0] = gZero[0]/sampleNum;
+    gZero[1] = gZero[1]/sampleNum;
+    gZero[2] = gZero[2]/sampleNum;
 
     spln("Gyro calibration complete!");
-    sp(tempData[0]/sampleNum);
     calibrated = true;
 }
 
@@ -78,7 +76,12 @@ void ITG3200::poll() {
     gRaw[1] = -((buffer[0] << 8) | buffer[1]);   // Tricopter Y axis is chip X axis.
     gRaw[2] = -((buffer[4] << 8) | buffer[5]);   // Z axis is same.
 
-    // Low-pass filter.
+    // Apply calibration values.
+    for (int i=0; i<3; i++) {
+        gRaw[i] -= gZero[i];
+    }
+
+    // Low-pass filter (enabled only if calibration has finished!).
     #ifdef GYRO_LPF_DEPTH
     if (calibrated) {
         for (int i=0; i<3; i++) {
@@ -100,11 +103,9 @@ void ITG3200::poll() {
     //}
     //spln(")");
 
-
     // Read gyro temperature.
     //readI2C(GYRADDR, TEMP_OUT, 2, buffer);
     //temp = 35 + (((buffer[0] << 8) | buffer[1]) + 13200)/280.0;
-
 
     // Convert raw gyro output values to rad/s.
     // Output: [0x0000 -- 0x7fff] = [     0 -- 32767]
@@ -113,11 +114,6 @@ void ITG3200::poll() {
     // Scale factor: 14.375 LSB / (deg/s)
     for (int i=0; i<3; i++) {
         gVec[i] = (float) gRaw[i] / 14.375 * PI/180;
-    }
-
-    // Apply calibration values.
-    for (int i=0; i<3; i++) {
-        gVec[i] -= gZero[i];
     }
 
     //sp("G( ");

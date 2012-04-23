@@ -39,8 +39,7 @@ class ITG3200 {
     int16_t gRaw[3];   // Raw bits received from ITG-3200
     float gVec[3];   // [-2000, 2000] deg/s mapped to [-1, 1].
     bool calibrated;   // Disable integration until calibration finishes.
-    float tempData[3];   // Temporary storage of calibration data
-    float gZero[3];   // Zero values
+    int16_t gZero[3];   // Zero values
     float angle[3];   // Calculated angles of rotation
     float temp;
 
