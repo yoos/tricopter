@@ -85,9 +85,11 @@ void IMU::init() {
     offsetDCM[2][1] = -wAOffset[0];
     offsetDCM[2][2] =            1;
 
+    aVec[0] = 0;
+    aVec[1] = 0;
+    aVec[2] = -1;
     for (int i=0; i<3; i++) {
-        aVec[i] = 1.;
-        aVecLast[i] = 1.;
+        aVecLast[i] = aVec[i];
     }
     //accVar = 100.;
     #endif // ACC_WEIGHT
@@ -106,8 +108,10 @@ void IMU::update() {
     acc.poll();
 
     // Take weighted average.
+    #ifdef ACC_SELF_WEIGHT   // TODO: Currently, if this is undefined, aVec will not be updated. Fix this!
     for (int i=0; i<3; i++) {
-        aVec[i] = ACC_SELF_WEIGHT * acc.get(i) + (1-ACC_SELF_WEIGHT) * aVecLast[i];
+        //aVec[i] = ACC_SELF_WEIGHT * acc.get(i) + (1-ACC_SELF_WEIGHT) * aVecLast[i];
+        aVec[i] = acc.get(i);
         aVecLast[i] = aVec[i];
 
         // Kalman filtering?
@@ -115,6 +119,7 @@ void IMU::update() {
         //kalmanUpdate(aVec[i], accVar, aVecLast[i], ACC_UPDATE_SIG);
         //kalmanPredict(aVec[i], accVar, 0.0, ACC_PREDICT_SIG);
     }
+    #endif // ACC_SELF_WEIGHT
     accScale = vNorm(aVec);
 
     // Reduce accelerometer weight if the magnitude of the measured
@@ -123,7 +128,7 @@ void IMU::update() {
     // TODO: Magnitude of acceleration should be reported over telemetry so the
     // "cutoff" value (the constant before the ABS() below) for disregaring
     // acceleration input can be more accurately determined.
-    accScale = (1 - MIN(1, 40*ABS(accScale - 1)));
+    //accScale = (1 - MIN(1, 40*ABS(accScale - 1)));
     accWeight = ACC_WEIGHT * accScale;
 
     // Uncomment the loop below to get accelerometer readings in order to
@@ -197,6 +202,13 @@ void IMU::update() {
     for (int i=0; i<3; i++) {
         gVec[i] = gyro.get(i);
     }
+    //if (loopCount % COMM_LOOP_INTERVAL == 0) {
+    //    sp("G(");
+    //    sp(gVec[0]); sp(", ");
+    //    sp(gVec[1]); sp(", ");
+    //    sp(gVec[2]);
+    //    spln(")");
+    //}
 
     // Scale gVec by elapsed time (in seconds) to get angle w*dt in radians,
     // then compute weighted average with the accelerometer and magnetometer
