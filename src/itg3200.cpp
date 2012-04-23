@@ -37,10 +37,12 @@ ITG3200::ITG3200() {
     }
 
     // Low-pass filter.
+    #ifdef GYRO_LPF_DEPTH
     lpfIndex = 0;
     for (int i=0; i<3; i++)
         for (int j=0; j<GYRO_LPF_DEPTH; j++)
             lpfVal[i][j] = 0;
+    #endif // GYRO_LPF_DEPTH
 
     for (int i=0; i<3; i++) {
         tempData[i] = 0;
@@ -72,9 +74,9 @@ void ITG3200::poll() {
     readI2C(GYRADDR, 0x1d, 6, buffer);
 
     // Shift high byte to be high 8 bits and append with low byte.
-    gRaw[0] = ((buffer[2] << 8) | buffer[3]);   // Tricopter X axis is chip Y axis.
-    gRaw[1] = ((buffer[0] << 8) | buffer[1]);   // Tricopter Y axis is chip X axis.
-    gRaw[2] = ((buffer[4] << 8) | buffer[5]);   // Z axis is same.
+    gRaw[0] = -((buffer[2] << 8) | buffer[3]);   // Tricopter X axis is chip Y axis.
+    gRaw[1] = -((buffer[0] << 8) | buffer[1]);   // Tricopter Y axis is chip X axis.
+    gRaw[2] = -((buffer[4] << 8) | buffer[5]);   // Z axis is same.
 
     // Low-pass filter.
     #ifdef GYRO_LPF_DEPTH
@@ -86,12 +88,6 @@ void ITG3200::poll() {
             for (int j=0; j<GYRO_LPF_DEPTH; j++) {
                 gRaw[i] += lpfVal[i][(lpfIndex + j) % GYRO_LPF_DEPTH];
             }
-
-            // DEPRECATED
-            //gVec[i] = (1*lpfVal[i][lpfIndex] + 
-            //           2*lpfVal[i][(lpfIndex+1)%GYRO_LPF_DEPTH] +
-            //           2*lpfVal[i][(lpfIndex+2)%GYRO_LPF_DEPTH] +
-            //           1*lpfVal[i][(lpfIndex+3)%GYRO_LPF_DEPTH])/6;
         }
         lpfIndex = (lpfIndex + 1) % GYRO_LPF_DEPTH;   // Increment index by 1 and loop back from GYRO_LPF_DEPTH.
     }
@@ -115,9 +111,9 @@ void ITG3200::poll() {
     //         [0x8000 -- 0xffff] = [-32768 --    -1]
     // Range: [-2000, 2000] deg/s
     // Scale factor: 14.375 LSB / (deg/s)
-    gVec[0] = (float) -gRaw[0] / 14.375 * PI/180;
-    gVec[1] = (float) -gRaw[1] / 14.375 * PI/180;
-    gVec[2] = (float) -gRaw[2] / 14.375 * PI/180;
+    for (int i=0; i<3; i++) {
+        gVec[i] = (float) gRaw[i] / 14.375 * PI/180;
+    }
 
     // Apply calibration values.
     for (int i=0; i<3; i++) {
@@ -130,22 +126,6 @@ void ITG3200::poll() {
     //    sp(" ");
     //}
     //spln(")");
-
-    // DEPRECATED ADC CONVERSION CODE
-    //for (int i=0; i<3; i++) {
-    //    float tmp;
-    //    if (gRaw[i] >= 0x8000)   // If zero to negative rot. vel.: 2^16-1 to 2^15...
-    //        tmp = -((signed) (0x10000 - gRaw[i]));   // ...subtract from 2^16.
-    //    else
-    //        tmp = gRaw[i];   // Otherwise, leave it alone.
-    //    switch (i) {
-    //        case 0: gVec[0] = -tmp / 14.375 * PI/180; break;
-    //        case 1: gVec[1] =  tmp / 14.375 * PI/180; break;
-    //        case 2: gVec[2] =  tmp / 14.375 * PI/180; break;
-    //        default: break;
-    //    }
-    //    gVec[i] = (gVec[i] - gZero[i]);
-    //}
 }
 
 float* ITG3200::get() {

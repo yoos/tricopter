@@ -79,6 +79,7 @@ void BMA180::poll() {
     // Read data.
     readI2C(ACCADDR, 0x02, 6, buffer);
 
+    // Store 14 bits of data (thus the division by 4 at the end).
     aRaw[0] = ((buffer[3] << 8) | (buffer[2] & ~0x03)) / 4;   // Tricopter X axis is chip Y axis.
     aRaw[1] = ((buffer[1] << 8) | (buffer[0] & ~0x03)) / 4;   // Tricopter Y axis is chip X axis.
     aRaw[2] = ((buffer[5] << 8) | (buffer[4] & ~0x03)) / 4;   // Z axis is same.
@@ -92,12 +93,6 @@ void BMA180::poll() {
         for (int j=0; j<ACC_LPF_DEPTH; j++) {
             aRaw[i] += lpfVal[i][(lpfIndex + j) % ACC_LPF_DEPTH];
         }
-
-        // DEPRECATED
-        //aVec[i] = (1*lpfVal[i][lpfIndex] +
-        //        2*lpfVal[i][(lpfIndex+1)%4] +
-        //        2*lpfVal[i][(lpfIndex+2)%4] +
-        //        1*lpfVal[i][(lpfIndex+3)%4])/6;
     }
     lpfIndex = (lpfIndex + 1) % ACC_LPF_DEPTH;   // Increment index by 1 and loop back from ACC_LPF_DEPTH.
     #endif // ACC_LPF_DEPTH
@@ -111,25 +106,9 @@ void BMA180::poll() {
     //         [0x3fff -- 0x2000] = [    1 -- 8192]
     // ADC resolution varies depending on setup. See DS p. 27 or the
     // constructor of this class.
-    //aVec[0] = (float) -((int) aRaw[0]) * res;
-    //aVec[1] = (float)  ((int) aRaw[1]) * res;
-    //aVec[2] = (float)  ((int) aRaw[2]) * res;
-
-    // DEPRECATED ADC CONVERSION CODE
     for (int i=0; i<3; i++) {
-        //float tmp;
-
-        //if (aRaw[i] < 0x2000)
-        //    tmp = -((signed) aRaw[i]);
-        //else
-        //    tmp = 0x4000 - aRaw[i];
-
-        //aVec[i] = tmp * res;
         aVec[i] = (float) aRaw[i] * res;
     }
-    //aVec[0] *= -1;   // Negated.
-    //aVec[1] *= -1;   // Negated.
-    //aVec[2] *= -1;   // Negated.
 }
 
 float* BMA180::get() {
