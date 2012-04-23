@@ -89,7 +89,7 @@ void Pilot::fly() {
     //sp(numGoodComm);
     //sp("/");
     //sp(numBadComm);
-    //sp(") ");
+    //spln(") ");
 
     if (okayToFly) {
         update_joystick_input();
