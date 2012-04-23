@@ -106,12 +106,14 @@ void IMU::update() {
     // ========================================================================
     #ifdef ACC_WEIGHT
     acc.poll();
+    for (int i=0; i<3; i++) {
+        aVec[i] = acc.get(i);
+    }
 
     // Take weighted average.
-    #ifdef ACC_SELF_WEIGHT   // TODO: Currently, if this is undefined, aVec will not be updated. Fix this!
+    #ifdef ACC_SELF_WEIGHT
     for (int i=0; i<3; i++) {
-        //aVec[i] = ACC_SELF_WEIGHT * acc.get(i) + (1-ACC_SELF_WEIGHT) * aVecLast[i];
-        aVec[i] = acc.get(i);
+        aVec[i] = ACC_SELF_WEIGHT * acc.get(i) + (1-ACC_SELF_WEIGHT) * aVecLast[i];
         aVecLast[i] = aVec[i];
 
         // Kalman filtering?
