@@ -85,7 +85,7 @@ def serWrite(myStr):
     try:
         for i in range(len(myStr)):
             ser.write(myStr[i])
-            rospy.sleep(0.0001)   # Sometimes, a delay seems to help. Maybe?
+            rospy.sleep(0.00005)   # Sometimes, a delay seems to help. Maybe?
     except:
         rospy.logerr("[GS] Unable to send data. Check connection.")
         # TODO: Comm should do something to ensure safety when it loses connection.
