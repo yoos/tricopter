@@ -67,19 +67,21 @@ BMA180::BMA180() {
     }
 
     // Low-pass filter.
+    #ifdef ACC_LPF_DEPTH
     lpfIndex = 0;
     for (int i=0; i<3; i++)
         for (int j=0; j<ACC_LPF_DEPTH; j++)
             lpfVal[i][j] = 0;
+    #endif // ACC_LPF_DEPTH
 }
 
 void BMA180::poll() {
     // Read data.
     readI2C(ACCADDR, 0x02, 6, buffer);
 
-    aRaw[0] = ((buffer[3] << 6) | (buffer[2] >> 2));   // Tricopter X axis is chip Y axis.
-    aRaw[1] = ((buffer[1] << 6) | (buffer[0] >> 2));   // Tricopter Y axis is chip X axis.
-    aRaw[2] = ((buffer[5] << 6) | (buffer[4] >> 2));   // Z axis is same.
+    aRaw[0] = ((buffer[3] << 8) | (buffer[2] & ~0x03)) / 4;   // Tricopter X axis is chip Y axis.
+    aRaw[1] = ((buffer[1] << 8) | (buffer[0] & ~0x03)) / 4;   // Tricopter Y axis is chip X axis.
+    aRaw[2] = ((buffer[5] << 8) | (buffer[4] & ~0x03)) / 4;   // Z axis is same.
 
     // Low-pass filter.
     #ifdef ACC_LPF_DEPTH
@@ -115,18 +117,19 @@ void BMA180::poll() {
 
     // DEPRECATED ADC CONVERSION CODE
     for (int i=0; i<3; i++) {
-        float tmp;
+        //float tmp;
 
-        if (aRaw[i] < 0x2000)
-            tmp = -((signed) aRaw[i]);
-        else
-            tmp = 0x4000 - aRaw[i];
+        //if (aRaw[i] < 0x2000)
+        //    tmp = -((signed) aRaw[i]);
+        //else
+        //    tmp = 0x4000 - aRaw[i];
 
-        aVec[i] = tmp * res;
+        //aVec[i] = tmp * res;
+        aVec[i] = (float) aRaw[i] * res;
     }
-    aVec[0] *= -1;   // Negated.
-    aVec[1] *= -1;   // Negated.
-    aVec[2] *= -1;   // Negated.
+    //aVec[0] *= -1;   // Negated.
+    //aVec[1] *= -1;   // Negated.
+    //aVec[2] *= -1;   // Negated.
 }
 
 float* BMA180::get() {
