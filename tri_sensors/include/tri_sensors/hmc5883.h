@@ -8,9 +8,9 @@
 #ifndef HMC5883_H
 #define HMC5883_H
 
-#include "i2c.h"
-#include "triMath.h"
-#include "globals.h"
+#include <tri/globals.h>
+#include <tri/triMath.h>
+#include <tri_sensors/i2c.h>
 
 #define MAG_ADDRESS 0x1e
 

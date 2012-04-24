@@ -8,11 +8,11 @@
 #ifndef IMU_H
 #define IMU_H
 
-#include "itg3200.cpp"
-#include "bma180.cpp"
-#include "lsm303.cpp"
-#include "triMath.h"
-#include "globals.h"
+#include <tri_sensors/itg3200.cpp>
+#include <tri_sensors/bma180.cpp>
+#include <tri_sensors/lsm303.cpp>
+#include <tri/triMath.h>
+#include <tri/globals.h>
 
 #define ACC_WEIGHT 0.016   // Accelerometer data weight relative to gyro's weight of 1
 #define ACC_SCALE_WEIGHT 30   // Reduce accelerometer weight if measured magnitude of acceleration differs significantly from 1 g.

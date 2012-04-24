@@ -5,11 +5,11 @@
  *  Details.
  */
 
-#include "globals.h"
-#include "pilot.cpp"
-#include "watchdog.cpp"
-#include "imu.cpp"
-#include "telemetry.h"
+#include <tri/globals.h>
+#include <tri_flight_controller/pilot.h>
+#include <tri_flight_controller/watchdog.h>
+#include <tri_ahrs/imu.h>
+#include <tri_comm/telemetry.h>
 
 int main(void) {
     init();   // For Arduino.

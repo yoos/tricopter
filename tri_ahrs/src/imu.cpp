@@ -20,7 +20,7 @@
  *           [k.I k.J k.K]
  */
 
-#include "imu.h"
+#include <tri_ahrs/imu.h>
 
 IMU::IMU() {
 }

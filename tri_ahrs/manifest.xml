@@ -9,6 +9,9 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/tri_ahrs</url>
 
+  <depend package="tri" />
+  <depend package="tri_sensors" />
+
 </package>
 
 

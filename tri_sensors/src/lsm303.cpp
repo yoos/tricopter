@@ -5,7 +5,7 @@
  *  Details.
  */
 
-#include "lsm303.h"
+#include <tri_sensors/lsm303.h>
 
 LSM303::LSM303() {
     readI2C(MAG_ADDRESS, 0x0f, 1, buffer);

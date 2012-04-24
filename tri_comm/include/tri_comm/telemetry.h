@@ -8,7 +8,7 @@
 #ifndef TELEMETRY_H
 #define TELEMETRY_H
 
-#include "globals.h"
+#include <tri/globals.h>
 
 /*! Report arm status.
  */

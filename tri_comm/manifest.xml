@@ -9,6 +9,8 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/tri_comm</url>
 
+  <depend package="tri" />
+
 </package>
 
 

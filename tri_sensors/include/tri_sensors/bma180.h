@@ -8,10 +8,10 @@
 #ifndef BMA180_H
 #define BMA180_H
 
-#include "i2c.h"
-#include "globals.h"
+#include <tri/globals.h>
+#include <tri_sensors/i2c.h>
 
-#define ACC_LPF_DEPTH 8   // Enable low-pass filter.
+//#define ACC_LPF_DEPTH 8   // Enable low-pass filter.
 
 #define ACC_RANGE 4
 #define ACC_BW 5

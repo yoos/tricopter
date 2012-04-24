@@ -8,10 +8,10 @@
 #ifndef ITG3200_H
 #define ITG3200_H
 
-#include "i2c.h"
-#include "globals.h"
+#include <tri/globals.h>
+#include <tri_sensors/i2c.h>
 
-#define GYRO_LPF_DEPTH 8  // Enable low-pass filter.
+//#define GYRO_LPF_DEPTH 8  // Enable low-pass filter.
 
 // ITG-3200 address defines
 #define GYRADDR 0x69

@@ -5,7 +5,7 @@
  *  Details.
  */
 
-#include "bma180.h"
+#include <tri_sensors/bma180.h>
 
 BMA180::BMA180() {
     readI2C(ACCADDR, 0x00, 1, buffer);

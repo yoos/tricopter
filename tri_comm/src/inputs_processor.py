@@ -7,13 +7,11 @@ from threading import Timer, Thread
 from signal import signal, SIGINT
 
 # ROS
-import roslib; roslib.load_manifest("tricopter")
+import roslib; roslib.load_manifest("tri_comm")
 import rospy
 from sensor_msgs.msg import Joy
-from tricopter.msg import Inputs
-
-# Tricopter
-import triconfig as cfg   # Import config.
+from tri_msgs.msg import Inputs
+from tri import triconfig as cfg   # Import config.
 
 axisValues = [125, 125, 125, 3]   # [X, Y, T, Z] -- Initialize Z as some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 buttonValues = 0   # Bitfield.

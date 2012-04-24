@@ -5,7 +5,7 @@
  *  Details.
  */
 
-#include "pilot.h"
+#include <tri_flight_control/pilot.h>
 
 Pilot::Pilot() {
     Serial.begin(BAUDRATE);

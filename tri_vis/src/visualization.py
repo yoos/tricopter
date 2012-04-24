@@ -6,9 +6,9 @@ from threading import Timer, Thread
 from math import sqrt, pi, acos
 
 # ROS
-import roslib; roslib.load_manifest("tricopter")
+import roslib; roslib.load_manifest("tri_vis")
 import rospy
-from tricopter.msg import Telemetry
+from tri_msgs.msg import Telemetry
 
 # OpenGL
 try:

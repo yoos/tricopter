@@ -5,7 +5,7 @@
  *  Details.
  */
 
-#include "watchdog.h"
+#include <tri_flight_control/watchdog.h>
 
 Watchdog::Watchdog(int timeout) {
     dogLife = timeout;

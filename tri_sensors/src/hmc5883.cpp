@@ -5,7 +5,7 @@
  *  Details.
  */
 
-#include "hmc5883.h"
+#include <tri_sensors/hmc5883.h>
 
 HMC5883::HMC5883() {
     // Put into continuous measurement mode (DS p. 12).

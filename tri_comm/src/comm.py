@@ -9,11 +9,10 @@ from signal import signal, SIGINT
 from math import pi
 
 # ROS stuff
-import roslib; roslib.load_manifest("tricopter")
+import roslib; roslib.load_manifest("tri_comm")
 import rospy
-from tricopter.msg import Telemetry, Inputs
-
-import triconfig as cfg   # Import config.
+from tri_msgs.msg import Telemetry, Inputs
+from tri import triconfig as cfg   # Import config.
 
 # =============================================================================
 # TX data

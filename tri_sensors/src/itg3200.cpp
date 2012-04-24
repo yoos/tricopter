@@ -5,7 +5,7 @@
  *  Details.
  */
 
-#include "itg3200.h"
+#include <tri_sensors/itg3200.h>
 
 ITG3200::ITG3200() {
     readI2C(GYRADDR, 0x00, 1, buffer);   // Who am I?

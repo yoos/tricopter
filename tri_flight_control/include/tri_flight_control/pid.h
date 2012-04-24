@@ -8,7 +8,7 @@
 #ifndef PID_H
 #define PID_H
 
-#include "globals.h"
+#include <tri/globals.h>
 
 float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparameters) {
     float proportional = targetValue - currentValue;

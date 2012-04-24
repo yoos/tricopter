@@ -8,10 +8,10 @@
 #ifndef PILOT_H
 #define PILOT_H
 
-#include "globals.h"
-#include "motors.h"
-#include "pid.h"
-#include "triMath.h"
+#include <tri/globals.h>
+#include <tri/triMath.h>
+#include <tri_flight_control/motors.h>
+#include <tri_flight_control/pid.h>
 
 class Pilot {
     byte serRead;

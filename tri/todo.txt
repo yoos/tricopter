@@ -4,6 +4,9 @@
 101228 06:52 SERHEAD should eventually be changed to HOVHEADER as opposed to ACROHEADER so the tricopter will automatically change flight modes and interpret commands according to header type.
 
 
-Faster loop time? (>200 Hz?)
 Use external ADC? (Another uC?)
+Try setting sampling rates of accelerometer and gyro to their maxima and see if read time decreases significantly.
+
+Servo mount with arm on boom and motor on servo body? Reinforce servo at back.
+Metal servo arm that won't strip.
 

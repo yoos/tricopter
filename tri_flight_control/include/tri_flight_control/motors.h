@@ -8,7 +8,7 @@
 #ifndef MOTORS_H
 #define MOTORS_H
 
-#include "globals.h"
+#include <tri/globals.h>
 
 void calculate_pwm_outputs(float inputThrottle, float* inputRot) {
     // ====================================================================
