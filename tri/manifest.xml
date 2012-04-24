@@ -1,13 +1,13 @@
 <package>
-  <description brief="tri_common">
+  <description brief="tri">
 
-     tri_common
+     tri
 
   </description>
   <author></author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/tri_common</url>
+  <url>http://ros.org/wiki/tri</url>
 
 </package>
 
