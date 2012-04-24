@@ -1,0 +1,14 @@
+<package>
+  <description brief="tri_msgs">
+
+     tri_msgs
+
+  </description>
+  <author></author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/tri_msgs</url>
+
+</package>
+
+
