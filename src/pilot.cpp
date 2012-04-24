@@ -56,7 +56,7 @@ Pilot::Pilot() {
 }
 
 void Pilot::listen() {
-    if (Serial.available()) {
+    if (Serial.available() > 0) {
         serRead = Serial.read();
 
         if (serRead == SERHEAD) {   // Receive header.
