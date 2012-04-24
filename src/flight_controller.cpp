@@ -115,8 +115,6 @@ int main(void) {
             }
 
             if (loopCount % COMM_LOOP_INTERVAL == 2) {
-                triPilot.listen();
-
                 #ifdef SEND_TARGET_ROTATION
                 sendTargetRotation();
                 #endif
@@ -133,7 +131,6 @@ int main(void) {
             }
 
             if (loopCount % COMM_LOOP_INTERVAL == 4) {
-                triPilot.listen();
                 sendTelemetryEnd(nextRuntime);
             }
 

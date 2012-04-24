@@ -12,12 +12,12 @@ debug = False
 loopPeriod = 0.005   # 5 ms interval = 200 Hz.
 
 # TX
-txInterval = 5   # 200 Hz / 5 = 40 Hz.
+txInterval = 6   # 200 Hz / 6 = 33 Hz.
 serHeader = '\xff'
 #dogBone = '\xfe'
 
 # RX
-rxInterval = 1   # 200 Hz / 5 = 200 Hz.
+rxInterval = 1   # 200 Hz / 1 = 200 Hz.
 newlineSerTag  = '\xde\xad\xbe\xef'
 fieldSerTag    = '\xff\xff'
 dcmSerTag      = '\xfb'
