@@ -1,0 +1,14 @@
+<package>
+  <description brief="tri_sensors">
+
+     tri_sensors
+
+  </description>
+  <author></author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/tri_sensors</url>
+
+</package>
+
+
