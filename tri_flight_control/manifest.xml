@@ -1,0 +1,14 @@
+<package>
+  <description brief="tri_flight_control">
+
+     tri_flight_control
+
+  </description>
+  <author></author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/tri_flight_control</url>
+
+</package>
+
+
