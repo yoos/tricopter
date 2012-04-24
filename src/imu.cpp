@@ -131,7 +131,7 @@ void IMU::update() {
         // TODO: Magnitude of acceleration should be reported over telemetry so
         // the "cutoff" value (the constant before the ABS() below) for
         // disregaring acceleration input can be more accurately determined.
-        //accScale = (1 - MIN(1, 40*ABS(accScale - 1)));
+        accScale = (1 - MIN(1, ACC_SCALE_WEIGHT * ABS(accScale - 1)));
         accWeight = ACC_WEIGHT * accScale;
 
         // Uncomment the loop below to get accelerometer readings in order to
@@ -184,8 +184,6 @@ void IMU::update() {
     //    spln(")");
     //}
 
-
-
     // Express J global unit vectory in BODY frame as jgb.
     for (int i=0; i<3; i++) {
         jgb[i] = gyroDCM[i][1];
@@ -202,38 +200,36 @@ void IMU::update() {
     //     Purpose: Measure the rotation rate of the body about the body's i,
     //              j, and k axes.
     // ========================================================================
-    if (loopCount % ACC_READ_INTERVAL != 0) {
-        gyro.poll();
-        for (int i=0; i<3; i++) {
-            gVec[i] = gyro.get(i);
-        }
-        //if (loopCount % COMM_LOOP_INTERVAL == 0) {
-        //    sp("G(");
-        //    sp(gVec[0]); sp(", ");
-        //    sp(gVec[1]); sp(", ");
-        //    sp(gVec[2]);
-        //    spln(")");
-        //}
+    gyro.poll();
+    for (int i=0; i<3; i++) {
+        gVec[i] = gyro.get(i);
+    }
+    //if (loopCount % COMM_LOOP_INTERVAL == 0) {
+    //    sp("G(");
+    //    sp(gVec[0]); sp(", ");
+    //    sp(gVec[1]); sp(", ");
+    //    sp(gVec[2]);
+    //    spln(")");
+    //}
 
-        // Scale gVec by elapsed time (in seconds) to get angle w*dt in
-        // radians, then compute weighted average with the accelerometer and
-        // magnetometer correction vectors to obtain final w*dt.
-        for (int i=0; i<3; i++) {
-            float numerator   = gVec[i] * MASTER_DT/1000000;
-            float denominator = 1.0;
+    // Scale gVec by elapsed time (in seconds) to get angle w*dt in
+    // radians, then compute weighted average with the accelerometer and
+    // magnetometer correction vectors to obtain final w*dt.
+    for (int i=0; i<3; i++) {
+        float numerator   = gVec[i] * MASTER_DT/1000000;
+        float denominator = 1.0;
 
-            #ifdef ACC_WEIGHT
-            numerator   += accWeight * wA[i];
-            denominator += accWeight;
-            #endif // ACC_WEIGHT
+        #ifdef ACC_WEIGHT
+        numerator   += accWeight * wA[i];
+        denominator += accWeight;
+        #endif // ACC_WEIGHT
 
-            #ifdef MAG_WEIGHT
-            numerator   += MAG_WEIGHT * wM[i];
-            denominator += MAG_WEIGHT;
-            #endif // MAG_WEIGHT
+        #ifdef MAG_WEIGHT
+        numerator   += MAG_WEIGHT * wM[i];
+        denominator += MAG_WEIGHT;
+        #endif // MAG_WEIGHT
 
-            wdt[i] = numerator / denominator;
-        }
+        wdt[i] = numerator / denominator;
     }
 
     // ========================================================================
