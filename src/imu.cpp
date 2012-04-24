@@ -220,8 +220,10 @@ void IMU::update() {
         float denominator = 1.0;
 
         #ifdef ACC_WEIGHT
-        numerator   += accWeight * wA[i];
-        denominator += accWeight;
+        if (loopCount % ACC_READ_INTERVAL == 0) {
+            numerator   += accWeight * wA[i];
+            denominator += accWeight;
+        }
         #endif // ACC_WEIGHT
 
         #ifdef MAG_WEIGHT
