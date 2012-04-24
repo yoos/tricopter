@@ -18,7 +18,9 @@ float32 dcmZY
 float32 dcmZZ
 
 # Rotation data
-#float32[3] rotationVector
+float32 targetRotX
+float32 targetRotY
+float32 targetRotZ
 
 # Motor values
 float32 motorT
@@ -30,4 +32,7 @@ float32 servoT
 float32 P
 float32 I
 float32 D
+
+# Loop time
+int32 looptime
 
