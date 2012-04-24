@@ -34,14 +34,12 @@
 #
 # $Id$
 
-#TARGET = $(notdir $(CURDIR))
 TARGET = flight_controller
 INSTALL_DIR = $(HOME)/apps/arduino-0023
 PORT = /dev/ttyUSB*
 UPLOAD_RATE = 57600
 #AVRDUDE_PROGRAMMER = stk500v1
 AVRDUDE_PROGRAMMER = arduino
-#MCU = atmega328p
 MCU = atmega1280
 F_CPU = 16000000
 
@@ -91,11 +89,11 @@ DEBUG =
 OPT = s
 
 # Place -D or -U options here
-CDEFS = -DF_CPU=$(F_CPU)L -DARDUINO=$(VERSION)
+CDEFS   = -DF_CPU=$(F_CPU)L -DARDUINO=$(VERSION)
 CXXDEFS = -DF_CPU=$(F_CPU)L -DARDUINO=$(VERSION)
 
 # Place -I options here
-CINCS = -I$(ARDUINO) -I$(ARDUINO_LIBS) -I`pwd`
+CINCS   = -I$(ARDUINO) -I$(ARDUINO_LIBS) -I`pwd`
 CXXINCS = -I$(ARDUINO) -I$(ARDUINO_LIBS) -I`pwd`
 
 # Compiler flag to set the C Standard level.
@@ -114,7 +112,7 @@ CXXTUNING = -fno-exceptions -ffunction-sections -fdata-sections
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
 
 CFLAGS = $(CDEBUG) -O$(OPT) $(CWARN) $(CTUNING) $(CDEFS) $(CINCS) $(CSTANDARD) $(CEXTRA)
-CXXFLAGS = $(CDEBUG) -O$(OPT) $(CWARN) $(CXXTUNING) $(CDEFS) $(CINCS)
+CXXFLAGS = $(CDEBUG) -O$(OPT) $(CWARN) $(CXXTUNING) $(CDEFS) $(CXXINCS)
 #ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
 LDFLAGS = -O$(OPT) -lm -Wl,--gc-sections
 
