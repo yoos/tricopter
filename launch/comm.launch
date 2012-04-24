@@ -1,15 +1,10 @@
 <!-- %Tag(FULL)%-->
 <launch>
+    <include file="$(find tricopter)/launch/joy.launch" />
 
-    <!-- joy node -->
-    <node name="tri_joy" pkg="joy" type="joy_node" respawn="true" >
-        <param name="dev" type="string" value="/dev/input/js1" />
-        <param name="deadzone" value="0" />
-    </node>
-
-    <node name="tri_tx"  pkg="tricopter" type="groundstation.py"                 />
-    <node name="tri_rx"  pkg="tricopter" type="serialmon.py"     output="screen" />
-    <node name="tri_vis" pkg="tricopter" type="visualization.py" output="screen" />
+    <node name="tricopter_inputs_processor" pkg="tricopter" type="inputs_processor.py" />
+    <node name="tricopter_comm" pkg="tricopter" type="comm.py" output="screen" />
+    <node name="tricopter_visualization" pkg="tricopter" type="visualization.py" output="screen" />
 
 </launch>
 <!-- %EndTag(FULL)%-->

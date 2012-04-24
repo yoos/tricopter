@@ -1,22 +1,12 @@
 <!-- %Tag(FULL)%-->
 <launch>
-
-    <!-- joy node -->
-    <node name="tri_joy" pkg="joy" type="joy_node" respawn="true" >
-        <param name="dev" type="string" value="/dev/input/js1" />
-        <param name="deadzone" value="0" />
-    </node>
-
-    <node name="tri_tx"  pkg="tricopter" type="groundstation.py"                 />
-    <node name="tri_rx"  pkg="tricopter" type="serialmon.py"     output="screen" />
-    <node name="tri_vis" pkg="tricopter" type="visualization.py" output="screen" />
+    <include file="$(find tricopter)/launch/comm.launch" />
 
     <node pkg  = "rosbag"
           type = "rosbag"
-          name = "tri_rosbag"
+          name = "tricopter_rosbag"
           args = "record
-                  --output-prefix=/home/yoos/devel/tricopter/bagfiles/tricopter
+                  --output-prefix=$(find tricopter)/bagfiles/tricopter
                   -a" />
-
 </launch>
 <!-- %EndTag(FULL)%-->
