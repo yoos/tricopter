@@ -1,0 +1,14 @@
+<package>
+  <description brief="tri_ahrs">
+
+     tri_ahrs
+
+  </description>
+  <author></author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/tri_ahrs</url>
+
+</package>
+
+
