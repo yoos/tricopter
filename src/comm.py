@@ -227,7 +227,7 @@ def telemetry():
 if __name__ == "__main__":
     # Initialize ROS node.
     rospy.init_node("tricopter_comm", anonymous=False)
-    pub = rospy.Publisher("telemetry", Telemetry)
+    pub = rospy.Publisher("tricopter_telemetry", Telemetry)
     sub = rospy.Subscriber("tricopter_inputs", Inputs, inputsCallback, queue_size=100)
 
     # =========================================================================

@@ -15,9 +15,9 @@ try:
     from OpenGL.GL import *
     from OpenGL.GLUT import*
     from OpenGL.GLU import *
-    rospy.loginfo("[VIS] OpenGL successfully imported!")
+    rospy.loginfo("[Vis] OpenGL successfully imported!")
 except:
-    rospy.logerr("[VIS] PyOpenGL not installed properly. Exiting...")
+    rospy.logerr("[Vis] PyOpenGL not installed properly. Exiting...")
     exit(1)
 
 
@@ -26,7 +26,9 @@ except:
 # =============================================================================
 
 # Initial DCM values.
-dcm = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+dcm = [[1.0, 0.0, 0.0],
+       [0.0, 1.0, 0.0],
+       [0.0, 0.0, 1.0]]
 
 # Target rotation values
 #targetRot = [0.0, 0.0, 0.0]
@@ -295,7 +297,7 @@ class TelemetrySubscriber(threading.Thread):
         self.running = True
     def run(self):
         while self.running and not rospy.is_shutdown():
-            rospy.Subscriber("telemetry", Telemetry, telCallback, queue_size=1)
+            rospy.Subscriber("tricopter_telemetry", Telemetry, telCallback, queue_size=1)
             rospy.spin()
 
 class Visualizer(threading.Thread):
