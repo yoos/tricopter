@@ -15,8 +15,6 @@ from tricopter.msg import Inputs
 # Tricopter
 import triconfig as cfg   # Import config.
 
-armed = False   # System arm status. Set to True once throttle is set to zero. Communication will not start until this is True.
-
 axisValues = [125, 125, 125, 3]   # [X, Y, T, Z] -- Initialize Z as some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 buttonValues = 0   # Bitfield.
 
@@ -54,13 +52,8 @@ def joyCallback (myJoy):
     for i in range(len(myJoy.buttons)):
         buttonValues += myJoy.buttons[i]<<i
 
-    if armed:
-        pub.publish(Inputs(axisValues, buttonValues))
-    elif axisValues[cfg.axisZ] == 0:
-        armed = True
-        rospy.loginfo("[Inputs] Joystick throttle at minimum. Initiating communication!")
-    else:
-        rospy.loginfo("[Inputs] Joystick throttle not at minimum! Current value: " + str(axisValues[cfg.axisZ]))
+    # Publish input data.
+    pub.publish(Inputs(axisValues, buttonValues))
 
 
 ###############################################################################

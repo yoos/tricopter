@@ -19,6 +19,7 @@ import triconfig as cfg   # Import config.
 # TX data
 # =============================================================================
 
+armed = False   # System arm status. Set to True once throttle is set to zero. Communication will not start until this is True.
 axisValues = [0, 0, 0, 0]
 buttonValues = 0
 
@@ -66,18 +67,25 @@ def serWrite(myStr):
         # TODO: Comm should do something to ensure safety when it loses connection.
 
 def transmit():
-    serWrite(cfg.serHeader +
-             chr(axisValues[cfg.axisX]) +
-             chr(axisValues[cfg.axisY]) +
-             chr(axisValues[cfg.axisT]) +
-             chr(axisValues[cfg.axisZ]) +
-             chr(buttonValues & 0b01111111) +
-             chr(buttonValues >> 7))
-    #rospy.loginfo(str(axisValues[cfg.axisX]) + " " +
-    #              str(axisValues[cfg.axisY]) + " " +
-    #              str(axisValues[cfg.axisT]) + " " +
-    #              str(axisValues[cfg.axisZ]) + " " +
-    #              str(buttonValues))
+    global armed
+    if armed:
+        serWrite(cfg.serHeader +
+                 chr(axisValues[cfg.axisX]) +
+                 chr(axisValues[cfg.axisY]) +
+                 chr(axisValues[cfg.axisT]) +
+                 chr(axisValues[cfg.axisZ]) +
+                 chr(buttonValues & 0b01111111) +
+                 chr(buttonValues >> 7))
+        #rospy.loginfo(str(axisValues[cfg.axisX]) + " " +
+        #              str(axisValues[cfg.axisY]) + " " +
+        #              str(axisValues[cfg.axisT]) + " " +
+        #              str(axisValues[cfg.axisZ]) + " " +
+        #              str(buttonValues))
+    elif axisValues[cfg.axisZ] == 0:
+        armed = True
+        rospy.loginfo("[Comm] Joystick throttle at minimum. Initiating communication!")
+    else:
+        rospy.loginfo("[Comm] Joystick throttle not at minimum! Current value: " + str(axisValues[cfg.axisZ]))
 
 
 # =============================================================================
