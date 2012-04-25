@@ -93,8 +93,36 @@ CDEFS   = -DF_CPU=$(F_CPU)L -DARDUINO=$(VERSION)
 CXXDEFS = -DF_CPU=$(F_CPU)L -DARDUINO=$(VERSION)
 
 # Place -I options here
-CINCS   = -I$(ARDUINO) -I$(ARDUINO_LIBS) -I`pwd`
-CXXINCS = -I$(ARDUINO) -I$(ARDUINO_LIBS) -I`pwd`
+CINCS   = \
+-I$(ARDUINO) \
+-I$(ARDUINO_LIBS) \
+-I$(shell rospack find tri)/include \
+-I$(shell rospack find tri_ahrs)/include \
+-I$(shell rospack find tri_comm)/include \
+-I$(shell rospack find tri_firmware)/include \
+-I$(shell rospack find tri_flight_control)/include \
+-I$(shell rospack find tri_msgs)/include \
+-I$(shell rospack find tri_sensors)/include \
+-I$(shell rospack find tri_vis)/include \
+-I$(shell pwd)
+CXXINCS = $(CINCS)
+
+# Sources.
+PACKAGES = \
+$(shell rospack find tri) \
+$(shell rospack find tri_ahrs) \
+$(shell rospack find tri_comm) \
+$(shell rospack find tri_firmware) \
+$(shell rospack find tri_flight_control) \
+$(shell rospack find tri_msgs) \
+$(shell rospack find tri_sensors) \
+$(shell rospack find tri_vis)
+
+CSRC = $(PACKAGES)/src/*.c
+CXXSRC = $(PACKAGES)/src/*.cpp
+
+COBJ = $(CSRC:.c=.o)
+CXXOBJ = $(CXXSRC:.cpp=.o)
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
@@ -114,7 +142,7 @@ CXXTUNING = -fno-exceptions -ffunction-sections -fdata-sections
 CFLAGS = $(CDEBUG) -O$(OPT) $(CWARN) $(CTUNING) $(CDEFS) $(CINCS) $(CSTANDARD) $(CEXTRA)
 CXXFLAGS = $(CDEBUG) -O$(OPT) $(CWARN) $(CXXTUNING) $(CDEFS) $(CXXINCS)
 #ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
-LDFLAGS = -O$(OPT) -lm -Wl,--gc-sections
+LDFLAGS = -O$(OPT) -lm -Wl,--gc-sections $(LDIRS)
 
 
 # Programming support using avrdude. Settings and variables.
