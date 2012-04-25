@@ -8,9 +8,9 @@
 #ifndef IMU_H
 #define IMU_H
 
-#include <tri_sensors/itg3200.cpp>
-#include <tri_sensors/bma180.cpp>
-#include <tri_sensors/lsm303.cpp>
+#include <tri_sensors/itg3200.h>
+#include <tri_sensors/bma180.h>
+#include <tri_sensors/lsm303.h>
 #include <tri/triMath.h>
 #include <tri/globals.h>
 

@@ -297,5 +297,3 @@ clean:
 
 .PHONY:	all build elf hex eep lss sym program coff extcoff clean applet_files sizebefore sizeafter
 
-#include $(SRC:.c=.d)
-#include $(CXXSRC:.cpp=.d)

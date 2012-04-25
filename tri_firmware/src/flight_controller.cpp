@@ -6,8 +6,8 @@
  */
 
 #include <tri/globals.h>
-#include <tri_flight_controller/pilot.h>
-#include <tri_flight_controller/watchdog.h>
+#include <tri_flight_control/pilot.h>
+#include <tri_flight_control/watchdog.h>
 #include <tri_ahrs/imu.h>
 #include <tri_comm/telemetry.h>
 
