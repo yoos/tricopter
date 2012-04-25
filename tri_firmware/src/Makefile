@@ -70,10 +70,27 @@ $(ARDUINO)/HardwareSerial.cpp \
 #$(ARDUINO)/WString.cpp \
 # end of CXX_MODULES
 
+# Sources.
+PACKAGES = \
+$(shell rospack find tri) \
+$(shell rospack find tri_ahrs) \
+$(shell rospack find tri_comm) \
+$(shell rospack find tri_firmware) \
+$(shell rospack find tri_flight_control) \
+$(shell rospack find tri_msgs) \
+$(shell rospack find tri_sensors) \
+$(shell rospack find tri_vis)
+
+C_SOURCES = $(PACKAGES)/src/*.c
+CXX_SOURCES = $(PACKAGES)/src/*.cpp
+
+C_OBJECTS = $(C_SOURCES:.c=.o)
+CXX_OBJECTS = $(CXX_SOURCES:.cpp=.o)
+
 CXX_APP = applet/$(TARGET).cpp
 MODULES = $(C_MODULES) $(CXX_MODULES)
-SRC = $(C_MODULES)
-CXXSRC = $(CXX_MODULES) $(CXX_APP)
+SRC = $(C_MODULES) $(C_SOURCES)
+CXXSRC = $(CXX_MODULES) $(CXX_APP) $(CXX_SOURCES)
 FORMAT = ihex
 
 
@@ -106,23 +123,6 @@ CINCS   = \
 -I$(shell rospack find tri_vis)/include \
 -I$(shell pwd)
 CXXINCS = $(CINCS)
-
-# Sources.
-PACKAGES = \
-$(shell rospack find tri) \
-$(shell rospack find tri_ahrs) \
-$(shell rospack find tri_comm) \
-$(shell rospack find tri_firmware) \
-$(shell rospack find tri_flight_control) \
-$(shell rospack find tri_msgs) \
-$(shell rospack find tri_sensors) \
-$(shell rospack find tri_vis)
-
-CSRC = $(PACKAGES)/src/*.c
-CXXSRC = $(PACKAGES)/src/*.cpp
-
-COBJ = $(CSRC:.c=.o)
-CXXOBJ = $(CXXSRC:.cpp=.o)
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
