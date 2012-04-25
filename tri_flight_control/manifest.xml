@@ -10,8 +10,6 @@
   <url>http://ros.org/wiki/tri_flight_control</url>
 
   <depend package="tri" />
-  <depend package="tri_ahrs" />
-  <depend package="tri_comm" />
 
 </package>
 
