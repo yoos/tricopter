@@ -53,6 +53,7 @@ serLines = ['']
 # TX
 # =============================================================================
 def inputsCallback (inputs):
+    global axisValues, buttonValues
     axisValues = inputs.axisValues
     buttonValues = inputs.buttonValues
 
