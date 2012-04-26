@@ -20,8 +20,8 @@ import triconfig as cfg   # Import config.
 # =============================================================================
 
 armed = False   # System arm status. Set to True once throttle is set to zero. Communication will not start until this is True.
-axisValues = [0, 0, 0, 0]
-buttonValues = 0
+axisValues = [125, 125, 125, 3]   # [X, Y, T, Z] -- Initialize Z as some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
+buttonValues = 0   # Bitfield.
 
 # =============================================================================
 # RX data
