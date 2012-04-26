@@ -33,12 +33,12 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
         }
 
         // Get rate directly from gyro output to minimize noise.
-        if (PIDparameters.id == PID_ROT_X) {
-            derivative = rateX;
-        }
-        else {
-            derivative = rateY;
-        }
+        //if (PIDparameters.id == PID_ROT_X) {
+        //    derivative = rateX;
+        //}
+        //else {
+        //    derivative = rateY;
+        //}
 
         // Set target rate (rad/s).
         float targetRate = proportional * TARGET_RATE_CAP / TARGET_ANGLE_CAP;
