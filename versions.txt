@@ -1,4 +1,7 @@
 avr-libc        1.7.0-1
 avr-gcc         4.6.3-1
 avr-binutils    2.22-3
+boost           1.49.0-1.1
+boost-libs      1.49.0-1.1
+
 
