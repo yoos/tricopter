@@ -9,6 +9,10 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/tri_firmware</url>
 
+  <export>
+    <cpp cflags="-I${prefix}/include" />
+  </export>
+
 </package>
 
 
