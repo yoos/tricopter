@@ -71,21 +71,14 @@ $(ARDUINO)/HardwareSerial.cpp \
 # end of CXX_MODULES
 
 # Sources.
-PACKAGES = \
-$(shell rospack find tri) \
-$(shell rospack find tri_ahrs) \
-$(shell rospack find tri_comm) \
-$(shell rospack find tri_firmware) \
-$(shell rospack find tri_flight_control) \
-$(shell rospack find tri_msgs) \
-$(shell rospack find tri_sensors) \
-$(shell rospack find tri_vis)
-
-C_SOURCES = $(PACKAGES)/src/*.c
-CXX_SOURCES = $(PACKAGES)/src/*.cpp
-
-C_OBJECTS = $(C_SOURCES:.c=.o)
-CXX_OBJECTS = $(CXX_SOURCES:.cpp=.o)
+CXX_MODULES += \
+$(shell rospack find tri_ahrs)/src/imu.cpp \
+$(shell rospack find tri_flight_control)/src/pilot.cpp \
+$(shell rospack find tri_flight_control)/src/watchdog.cpp \
+$(shell rospack find tri_sensors)/src/bma180.cpp \
+$(shell rospack find tri_sensors)/src/hmc5883.cpp \
+$(shell rospack find tri_sensors)/src/itg3200.cpp \
+$(shell rospack find tri_sensors)/src/lsm303.cpp
 
 CXX_APP = applet/$(TARGET).cpp
 MODULES = $(C_MODULES) $(CXX_MODULES)
@@ -290,10 +283,10 @@ applet/core.a: $(OBJ_MODULES)
 
 # Target: clean project.
 clean:
-	$(REMOVE) applet/$(TARGET).hex applet/$(TARGET).eep applet/$(TARGET).cof applet/$(TARGET).elf \
-	applet/$(TARGET).map applet/$(TARGET).sym applet/$(TARGET).lss applet/core.a \
-	$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d) $(CXXSRC:.cpp=.s) $(CXXSRC:.cpp=.d) \
-	applet
+	$(REMOVE) applet
+
+#$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d) $(CXXSRC:.cpp=.s) $(CXXSRC:.cpp=.d) \
+#applet
 
 .PHONY:	all build elf hex eep lss sym program coff extcoff clean applet_files sizebefore sizeafter
 

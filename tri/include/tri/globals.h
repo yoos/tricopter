@@ -8,6 +8,8 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include <WProgram.h>
+
 // #define DEBUG
 
 // ============================================================================
