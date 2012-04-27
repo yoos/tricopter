@@ -134,6 +134,8 @@ void IMU::update() {
         #ifdef ACC_SCALE_WEIGHT
         accScale = (1 - MIN(1, ACC_SCALE_WEIGHT * ABS(accScale - 1)));
         accWeight = ACC_WEIGHT * accScale;
+        #else
+        accWeight = ACC_WEIGHT;
         #endif // ACC_SCALE_WEIGHT
 
         // Uncomment the loop below to get accelerometer readings in order to
