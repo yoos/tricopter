@@ -7,6 +7,6 @@
           args = "--buffer=20
                   --period=20
                   --refresh_rate=20
-                  /telemetry/dcmZX:dcmZY,
-                  /telemetry/motorR:motorL:motorT" />
+                  /tricopter_telemetry/dcmZX:dcmZY,
+                  /tricopter_telemetry/motorR:motorL:motorT" />
 </launch>
