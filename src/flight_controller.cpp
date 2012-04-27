@@ -88,11 +88,11 @@ int main(void) {
                     if (armCount <= 0)
                         armCount = (int) TIME_TO_ARM/(MASTER_DT*CONTROL_LOOP_INTERVAL);   // Set armed status back off.
                     for (int i=0; i<3; i++) {
-                        pwmOut[i] = TMIN;
+                        pwmOut[i] = TMIN+20;
                     }
-                    Timer3.pwm(PMT, TMIN);
-                    Timer3.pwm(PMR, TMIN);
-                    Timer3.pwm(PML, TMIN);
+                    Timer3.pwm(PMT, TMIN+20);
+                    Timer3.pwm(PMR, TMIN+20);
+                    Timer3.pwm(PML, TMIN+20);
                     pwmDevice[SERVO_T].writeMicroseconds(SERVO_US_ZERO);
                 }
             }
@@ -125,6 +125,8 @@ int main(void) {
             }
 
             if (loopCount % COMM_LOOP_INTERVAL == 3) {
+                triPilot.listen();
+
                 #ifdef SEND_PID_DATA
                 sendPIDData();
                 #endif
