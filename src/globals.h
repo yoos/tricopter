@@ -45,7 +45,7 @@ struct PIDdata {
 #define Z_I_GAIN 0.0
 #define Z_D_GAIN 0.0
 
-#define TARGET_ANGLE_CAP PI/36   // Cap difference between target and current rotation vectors.
+#define TARGET_ANGLE_CAP PI/12   // Cap difference between target and current rotation vectors.
 #define TARGET_RATE_CAP 2*PI   // Cap maximum angular velocity rate.
 #define XY_D_TERM_CAP 0.6   // Cap maximum angular acceleration rate.
 
@@ -58,7 +58,10 @@ struct PIDdata {
 // ============================================================================
 #define BAUDRATE 57600   // Fiddle with this. The XBee sometimes seems to have trouble with high baudrates like 57600.
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
-#define PACKETSIZE 6     // Each packet contains (excluding header) X, Y, Twist, Z, and two bytes for button values.
+#define SER_PACK_LEN 6     // Each packet contains (excluding header) X, Y, Twist, Z, and two bytes for button values.
+#define SER_READ_BUF_LEN 100
+#define SER_PACK_BUF_LEN 5
+
 #define INPUT_MIN  0     // Minimum integer input value from joystick.
 #define INPUT_MAX  250   // Maximum integer input value from joystick.
 #define SX 0   // Serial byte location for joystick X axis.
