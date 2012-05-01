@@ -12,7 +12,7 @@ debug = False
 loopPeriod = 0.005   # 5 ms interval = 200 Hz.
 
 # TX
-txInterval = 6   # 200 Hz / 6 = 33 Hz.
+txInterval = 4   # 200 Hz / 4 = 50 Hz.
 serHeader = '\xff'
 #dogBone = '\xfe'
 
