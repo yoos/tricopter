@@ -109,7 +109,7 @@ void ITG3200::poll() {
     //}
     //spln(")");
 
-    // Read gyro temperature.
+    // Read gyro temperature (DS p. 7).
     //readI2C(GYRADDR, TEMP_OUT, 2, buffer);
     //temp = 35 + (((buffer[0] << 8) | buffer[1]) + 13200)/280.0;
 
