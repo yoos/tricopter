@@ -63,7 +63,7 @@ void Pilot::listen() {
         if (rBuf[rIndex] == SERHEAD) {   // Receive header.
             hasFood = true;   // Prepare food for watchdog.
             for (int i=0; i<SER_PACKET_LEN; i++) {
-                uint8_t serVal = rBuf[(rIndex - SER_PACKET_LEN + i) % SER_READ_BUF_LEN];
+                uint8_t serVal = rBuf[(SER_READ_BUF_LEN + rIndex - SER_PACKET_LEN + i) % SER_READ_BUF_LEN];
                 if (serVal >= INPUT_MIN && serVal <= INPUT_MAX) {
                     serInput[i] = serVal;
                     okayToFly = true;
