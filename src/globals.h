@@ -56,11 +56,11 @@ struct PIDdata {
 // ============================================================================
 // SERIAL IN
 // ============================================================================
-#define BAUDRATE 57600   // Fiddle with this. The XBee sometimes seems to have trouble with high baudrates like 57600.
+#define BAUDRATE 38400   // Do NOT use 57600 or 115200 here, because the error rate is too high!
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
-#define SER_PACK_LEN 6     // Each packet contains (excluding header) X, Y, Twist, Z, and two bytes for button values.
-#define SER_READ_BUF_LEN 100
-#define SER_PACK_BUF_LEN 5
+#define SER_PACKET_LEN 6     // Each packet contains (excluding header) X, Y, Twist, Z, and two bytes for button values.
+#define SER_READ_BUF_LEN 100   // Number of bytes of serial data in buffer (used by Pilot).
+#define SER_READ_CHUNK_LEN 3   // Number of bytes to read off serial bus every loop.
 
 #define INPUT_MIN  0     // Minimum integer input value from joystick.
 #define INPUT_MAX  250   // Maximum integer input value from joystick.
