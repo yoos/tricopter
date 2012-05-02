@@ -48,10 +48,6 @@ int main(void) {
             // Control loop
             // ================================================================
             if (loopCount % CONTROL_LOOP_INTERVAL == 0) {
-                /* The pilot communicates with base and updates pwmOut
-                 * according to the joystick axis values it receives. */
-                //pilot.listen();
-                //pilot.fly();
                 watchdog.watch(pilot.hasFood);
 
                 /* Don't run system unless armed!
@@ -108,18 +104,18 @@ int main(void) {
                 sendArmStatus();
                 #endif
             }
+            else {
+                /* The pilot communicates with base and updates pwmOut
+                 * according to the joystick axis values it receives. */
+                pilot.listen();
+            }
 
             if (loopCount % COMM_LOOP_INTERVAL == 1) {
-                pilot.listen();
-
                 #ifdef SEND_DCM
                 sendDCM();
                 #endif
             }
-
-            if (loopCount % COMM_LOOP_INTERVAL == 2) {
-                pilot.listen();
-
+            else if (loopCount % COMM_LOOP_INTERVAL == 2) {
                 #ifdef SEND_TARGET_ROTATION
                 sendTargetRotation();
                 #endif
@@ -128,23 +124,20 @@ int main(void) {
                 sendMotorValues();
                 #endif
             }
-
-            if (loopCount % COMM_LOOP_INTERVAL == 3) {
-                pilot.listen();
-
+            else if (loopCount % COMM_LOOP_INTERVAL == 3) {
                 #ifdef SEND_PID_DATA
                 sendPIDData();
                 #endif
             }
-
-            if (loopCount % COMM_LOOP_INTERVAL == 4) {
-                pilot.listen();
-
+            else if (loopCount % COMM_LOOP_INTERVAL == 4) {
                 sendTelemetryEnd(nextRuntime);
             }
 
+            // Transmit data.
+            sendTelemetry();
+
             loopCount++;
-            loopCount = loopCount % 1000;
+            loopCount = loopCount % 100;
         } // endif
     } // endfor
 
