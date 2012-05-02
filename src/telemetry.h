@@ -10,11 +10,35 @@
 
 #include "globals.h"
 
+uint8_t txNewDataIndex = 0;
+uint8_t txToSendIndex = 0;
+uint8_t txData[SER_WRITE_BUF_LEN];
+
+void queueByte(uint8_t txByte) {
+    txData[txNewDataIndex] = txByte;
+    txNewDataIndex = (txNewDataIndex + 1) % SER_WRITE_BUF_LEN;
+}
+
+void sendTelemetry() {
+    int i;
+    for (i=0; i<MIN(SER_WRITE_CHUNK_LEN, (SER_WRITE_BUF_LEN + txNewDataIndex - txToSendIndex) % SER_WRITE_BUF_LEN); i++) {
+        sw(txData[txToSendIndex]);
+        txToSendIndex = (txToSendIndex + 1) % SER_WRITE_BUF_LEN;
+    }
+}
+
 /*! Report arm status.
  */
 void sendArmStatus() {
-    sw(armCount);
-    sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
+    char buf[6];
+    int len = sprintf(buf, "%d", armCount);
+
+    int i;
+    for (i=0; i<len; i++) {
+        queueByte(buf[i]);
+    }
+
+    queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
 
 /*! Report target rotation vector (in BODY frame). TODO: targetRot is a
@@ -23,54 +47,58 @@ void sendArmStatus() {
  *  unneeded at this moment.
  */
 void sendTargetRotation() {
-    sw(ROT_SER_TAG);
+    queueByte(ROT_SER_TAG);
     for (int i=0; i<3; i++) {
-        sw((byte) ((int) ((targetRot[i]+PI)/(2*PI)*250.0)));
+        queueByte((uint8_t) ((targetRot[i]+PI)/(2*PI)*250.0));
     }
-    sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
+    queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
 
 /*! Report motor values.
  */
 void sendMotorValues() {
-    sw(MOT_SER_TAG);
+    queueByte(MOT_SER_TAG);
     for (int i=0; i<4; i++) {
-        sw((byte) ((int) (pwmOut[i]-TMIN)*250.0/376.0));
-        //sw((byte*) &pwmOut[i], 4);
+        queueByte((uint8_t) (pwmOut[i]-TMIN)*250.0/376.0);
     }
-    sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
+    queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
 
 /*! Datafeed to serialmon.py for visualization.
  */
 void sendDCM() {
-    sw(DCM_SER_TAG);   // Index tag 'DCM'.
+    queueByte(DCM_SER_TAG);   // Index tag 'DCM'.
     for (int i=0; i<3; i++) {
         for (int j=0; j<3; j++) {
-            //sw((byte*) &gyroDCM[i][j], 4);
-            sw((byte) (250*(bodyDCM[i][j]+1)/2+1));
+            queueByte((uint8_t) (250*(bodyDCM[i][j]+1)/2+1));
         }
     }
-    sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
+    queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
 
 /*! Report PID gains and values.
  */
 void sendPIDData() {
-    sw(PID_SER_TAG);   // Index tag 'PID'.
-    sw((byte) ((int) PID[PID_ROT_X].P));
-    sw((byte) ((int) PID[PID_ROT_X].I));
-    sw((byte) ((int) -PID[PID_ROT_X].D));
-    sw(FIELD_SER_TAG); sw(FIELD_SER_TAG);
+    queueByte(PID_SER_TAG);   // Index tag 'PID'.
+    queueByte((uint8_t) PID[PID_ROT_X].P);
+    queueByte((uint8_t) PID[PID_ROT_X].I);
+    queueByte((uint8_t) -PID[PID_ROT_X].D);
+    queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
 
 /*! Signal end of telemetry.
  */
 void sendTelemetryEnd(int nextRuntime) {
     // Report loop time.
-    sp((int) (micros() - (nextRuntime - MASTER_DT)));
+    char buf[10];
+    int len = sprintf(buf, "%d", (int) (micros() - (nextRuntime - MASTER_DT)));
 
-    sw(0xde); sw(0xad); sw(0xbe); sw(0xef);
+    int i;
+    for (i=0; i<len; i++) {
+        queueByte(buf[i]);
+    }
+
+    queueByte(0xde); queueByte(0xad); queueByte(0xbe); queueByte(0xef);
 }
 
 #endif // TELEMETRY_H
