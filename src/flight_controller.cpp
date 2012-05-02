@@ -18,17 +18,17 @@ int main(void) {
     Wire.begin();
 
     // Introduce crew.
-    Pilot triPilot;
-    Watchdog triWatchdog(DOGLIFE);   // Timeout in ms.
+    Pilot pilot;
+    Watchdog watchdog(DOGLIFE);   // Timeout in ms.
 
     // Start system.
-    IMU myIMU;
-    myIMU.init();
+    IMU imu;
+    imu.init();
 
     Servo pwmDevice[4];
     pwmDevice[SERVO_T].attach(PST);
 
-    Timer3.initialize(2500);
+    Timer3.initialize(2500);   // 400 Hz PWM.
 
     // Variables
 
@@ -41,7 +41,7 @@ int main(void) {
             // ================================================================
             // System loop
             // ================================================================
-            myIMU.update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
+            imu.update();   // Run this ASAP when loop starts so gyro integration is as accurate as possible.
             nextRuntime += MASTER_DT;   // Update next loop start time.
 
             // ================================================================
@@ -50,8 +50,9 @@ int main(void) {
             if (loopCount % CONTROL_LOOP_INTERVAL == 0) {
                 /* The pilot communicates with base and updates pwmOut
                  * according to the joystick axis values it receives. */
-                triPilot.fly();
-                triWatchdog.watch(triPilot.hasFood);
+                //pilot.listen();
+                //pilot.fly();
+                watchdog.watch(pilot.hasFood);
 
                 /* Don't run system unless armed!
                  * Pilot will monitor serial inputs and update
@@ -77,14 +78,14 @@ int main(void) {
                         armCount--;   // Once Pilot shows some sense, arm.
                     }
                 }
-                else if (triWatchdog.isAlive) {   // ..then check if Watchdog is alive.
+                else if (watchdog.isAlive) {   // ..then check if Watchdog is alive.
                     Timer3.pwm(PMT, pwmOut[MOTOR_T]);
                     Timer3.pwm(PMR, pwmOut[MOTOR_R]);
                     Timer3.pwm(PML, pwmOut[MOTOR_L]);
                     pwmDevice[SERVO_T].writeMicroseconds(pwmOut[SERVO_T]);
                 }
                 else {   // ..otherwise, die.
-                    // triPilot.Abort();   // TODO: Do I even need this anymore?
+                    // pilot.Abort();   // TODO: Do I even need this anymore?
                     if (armCount <= 0)
                         armCount = (int) TIME_TO_ARM/(MASTER_DT*CONTROL_LOOP_INTERVAL);   // Set armed status back off.
                     for (int i=0; i<3; i++) {
@@ -101,7 +102,7 @@ int main(void) {
             // Communications loop
             // ================================================================
             if (loopCount % COMM_LOOP_INTERVAL == 0) {
-                triPilot.listen();
+                pilot.fly();
 
                 #ifdef SEND_ARM_STATUS
                 sendArmStatus();
@@ -109,12 +110,16 @@ int main(void) {
             }
 
             if (loopCount % COMM_LOOP_INTERVAL == 1) {
+                pilot.listen();
+
                 #ifdef SEND_DCM
                 sendDCM();
                 #endif
             }
 
             if (loopCount % COMM_LOOP_INTERVAL == 2) {
+                pilot.listen();
+
                 #ifdef SEND_TARGET_ROTATION
                 sendTargetRotation();
                 #endif
@@ -125,7 +130,7 @@ int main(void) {
             }
 
             if (loopCount % COMM_LOOP_INTERVAL == 3) {
-                triPilot.listen();
+                pilot.listen();
 
                 #ifdef SEND_PID_DATA
                 sendPIDData();
@@ -133,6 +138,8 @@ int main(void) {
             }
 
             if (loopCount % COMM_LOOP_INTERVAL == 4) {
+                pilot.listen();
+
                 sendTelemetryEnd(nextRuntime);
             }
 
