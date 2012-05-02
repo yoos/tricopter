@@ -56,42 +56,52 @@ Pilot::Pilot() {
 }
 
 void Pilot::listen() {
-    if (Serial.available() > 0) {
-        serRead = Serial.read();
+    int serCount = Serial.available();
+    for (int h=0; h<MIN(serCount, SER_READ_CHUNK_LEN); h++) {
+        rBuf[rIndex] = Serial.read();
 
-        if (serRead == SERHEAD) {   // Receive header.
+        if (rBuf[rIndex] == SERHEAD) {   // Receive header.
             hasFood = true;   // Prepare food for watchdog.
-            for (int i=0; i<PACKETSIZE; i++) {
-                serRead = Serial.read();
-
-                if (serRead >= INPUT_MIN && serRead <= INPUT_MAX) {
-                    serInput[i] = serRead;
+            for (int i=0; i<SER_PACKET_LEN; i++) {
+                uint8_t serVal = rBuf[(rIndex - SER_PACKET_LEN + i) % SER_READ_BUF_LEN];
+                if (serVal >= INPUT_MIN && serVal <= INPUT_MAX) {
+                    serInput[i] = serVal;
                     okayToFly = true;
-                    numGoodComm++;
                 }
                 else {
-                    i = 10;
                     okayToFly = false;
-                    numBadComm++;
+                    i = SER_PACKET_LEN;   // Don't run this loop anymore.
                     // Flush remaining buffer to avoid taking in the wrong values.
-                    Serial.flush();
                 }
             }
-        }
-        else {
-            okayToFly = false;
-        }
-    }
-}
 
-void Pilot::fly() {
+            if (okayToFly) {
+                numGoodComm++;
+            }
+            else {
+                numBadComm++;
+            }
+        }
+
+        rIndex = (rIndex+1) % SER_READ_BUF_LEN;
+    }
     //sp("(");
     //sp(numGoodComm);
     //sp("/");
     //sp(numBadComm);
+    //sp(" ");
+    //sp((int) rIndex);
+    //sp(" ");
+    //sp((int) serCount);
     //spln(") ");
+}
 
+void Pilot::fly() {
     if (okayToFly) {
+        //spln("");
+        //sp("fly ");
+        //spln(micros());
+
         update_joystick_input();
 
         // ====================================================================

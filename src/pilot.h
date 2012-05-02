@@ -14,8 +14,7 @@
 #include "triMath.h"
 
 class Pilot {
-    byte serRead;
-    uint8_t serInput[PACKETSIZE];
+    uint8_t serRead;
     float throttle;
     float throttleLock;   // Follow throttle within some range +/- THROTTLE_LOCK so if throttle suddenly increases past THROTTLE LOCK, throttle does not change.
     int throttleTrim;
@@ -25,7 +24,11 @@ class Pilot {
     long numGoodComm;
     long numBadComm;
 
-    struct joyInput {
+    uint8_t rBuf[SER_READ_BUF_LEN];   // Serial raw buffer.
+    uint8_t rIndex;
+    uint8_t serInput[SER_PACKET_LEN];
+
+    struct {
         float axes[6];
         bool buttons[14];
     } joy;
