@@ -7,7 +7,7 @@
 
 # General
 #serialPort = "/dev/ttyUSB0"   # Uncomment to specify serial port. Otherwise, will connect to first available port.
-baudRate = 57600
+baudRate = 38400
 debug = False
 loopPeriod = 0.005   # 5 ms interval = 200 Hz.
 
