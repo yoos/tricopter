@@ -8,5 +8,6 @@
                   --period=20
                   --refresh_rate=20
                   /tricopter_telemetry/dcmZX:dcmZY,
-                  /tricopter_telemetry/motorR:motorL:motorT" />
+                  /tricopter_telemetry/motorR:motorL:motorT,
+                  /tricopter_telemetry/looptime" />
 </launch>
