@@ -15,12 +15,14 @@ ITG3200::ITG3200() {
 
     readI2C(GYRADDR, 0x15, 2, buffer);
 
-    // Sample rate divider is 15 + 1 = 16, so 8000 Hz / 16 = 500 Hz
-    buffer[0] = 15;
+    // Sample rate divider is 1 + 1 = 2, so 1000 Hz / 2 = 500 Hz
+    buffer[0] = 1;
 
     // Set FS_SEL = 3 as recommended on DS p. 24.
-    // Set DLPF_CFG = 0. (8 kHz internal sample rate.)
-    buffer[1] = (3 << 3);   // FS_SEL is on bits 4 and 3.
+    // Set DLPF_CFG = 3. This signifies a 1 kHz internal sample rate with a 42
+    // Hz LPF bandwidth, which should be low enough to filter out the motor
+    // vibrations.
+    buffer[1] = (3 << 3) | 3;   // FS_SEL is on bits 4 and 3.
 
     writeI2C(GYRADDR, 0x15, 2, buffer);
 
