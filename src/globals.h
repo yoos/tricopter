@@ -102,9 +102,9 @@ struct PIDdata {
 
 // Throttle stuff. Minimum signal is 750 us. Maximum signal is 2200 us. Hover
 // is around 1200 us.
-#define TMIN   450   // Minimum throttle PWM duty cycle (450/1023, or 1100 us at 400 kHz)
-#define THOVER 500   // Hover throttle PWM duty cycle
-#define TMAX   600   // Maximum throttle PWM duty cycle (826/1023, or 2020 us at 400 kHz)
+#define TMIN   432   // Minimum throttle PWM duty cycle. At 400 kHz, 2500 * 432/1023 = 1055 us. Although simonk's firmware should register 1060 us as the minimum throttle, one of my ESCs will not arm until it is this low.
+#define THOVER 480   // Hover throttle PWM duty cycle
+#define TMAX   600   // Maximum throttle PWM duty cycle (at 400 kHz, 2500 * 761/1023 = 1860 us).
 
 #define SERVO_US_ZERO 1430   // Servo "zero" position (i.e., level to chassis).
 #define SERVO_US_NEUTRAL 1370   // Servo neutral position (i.e., net Z torque = 0).
