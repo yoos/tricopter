@@ -165,6 +165,12 @@ void IMU::update() {
         // that we can later add to the angular displacement vector to correct
         // for gyro drift in the X and Y axes.
         vCrossP(kgb, aVec, wA);
+
+        // Divide by ACC_READ_INTERVAL since the acceleration vector is not
+        // updated every loop.
+        for (int i=0; i<3; i++) {
+            wA[i] /= ACC_READ_INTERVAL;
+        }
     }
     #endif // ACC_WEIGHT
 
