@@ -95,9 +95,9 @@ struct PIDdata {
 // relatively frequently changed.
 // ============================================================================
 #define MASTER_DT            6000   // 6000 us interval = 166 Hz master loop.
-#define CONTROL_LOOP_INTERVAL   1   // 1x master = 200 Hz.
+#define CONTROL_LOOP_INTERVAL   1   // 1x master = 166 Hz.
 #define ACC_READ_INTERVAL       5   // Read accelerometer every 5th loop.
-#define COMM_LOOP_INTERVAL      5   // 1/5 master = 40 Hz. This frequency should be HIGHER than groundstation.py's dataSend frequency!
+#define COMM_LOOP_INTERVAL      5   // 1/5 master = 33 Hz.
 #define DOGLIFE 600   // Watchdog life in milliseconds.
 
 // Throttle stuff. Minimum signal is 750 us. Maximum signal is 2200 us. Hover
