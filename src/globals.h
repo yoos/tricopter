@@ -18,7 +18,7 @@ int loopCount;   // Count system loops.
 uint16_t pwmOut[4];   // 10 bit PWM output duty cycle.
 float bodyDCM[3][3];   // Current body orientation calculated by IMU.
 float targetRot[3], currentRot[3], pidRot[3];
-
+float gVec[3];   // This used to be part of ITG3200, but is now global so the PID controller can have direct access to the gyro measurements. This is a hack, and I am a bad programmer.
 
 // ============================================================================
 // PID
@@ -94,7 +94,7 @@ struct PIDdata {
 // Software configuration: any parameter that is purely code-related or is
 // relatively frequently changed.
 // ============================================================================
-#define MASTER_DT            5000   // 5000 us interval = 200 Hz master loop.
+#define MASTER_DT            6000   // 5000 us interval = 200 Hz master loop.
 #define CONTROL_LOOP_INTERVAL   1   // 1x master = 200 Hz.
 #define ACC_READ_INTERVAL       5   // Read accelerometer every 5th loop.
 #define COMM_LOOP_INTERVAL      5   // 1/5 master = 40 Hz. This frequency should be HIGHER than groundstation.py's dataSend frequency!
