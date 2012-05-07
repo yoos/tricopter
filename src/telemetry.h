@@ -49,7 +49,7 @@ void sendArmStatus() {
 void sendTargetRotation() {
     queueByte(ROT_SER_TAG);
     for (int i=0; i<3; i++) {
-        queueByte((uint8_t) ((targetRot[i]+PI)/(2*PI)*250.0));
+        queueByte((uint8_t) ((targetRot[i]+PI)*250/(2*PI)));
     }
     queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
@@ -59,7 +59,7 @@ void sendTargetRotation() {
 void sendMotorValues() {
     queueByte(MOT_SER_TAG);
     for (int i=0; i<4; i++) {
-        queueByte((uint8_t) (pwmOut[i]-TMIN)*250.0/376.0);
+        queueByte((uint8_t) (pwmOut[i]-TMIN)*250/376);
     }
     queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
@@ -70,7 +70,7 @@ void sendDCM() {
     queueByte(DCM_SER_TAG);   // Index tag 'DCM'.
     for (int i=0; i<3; i++) {
         for (int j=0; j<3; j++) {
-            queueByte((uint8_t) (250*(bodyDCM[i][j]+1)/2+1));
+            queueByte((uint8_t) ((int8_t) (bodyDCM[i][j] * 125) + 125));
         }
     }
     queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
