@@ -11,18 +11,7 @@
 #include "globals.h"
 #include "pid.h"
 
-// Calculate throttle shifts for the individual motors based on desired rate
-// inputs.
-void angular_rate_controller (float* desired_rate, float* current_rate, int16_t* pwmShift) {
-    pidAngRate[0] = updatePID(desired_rate[0], current_rate[0], PID[PID_ANG_RATE_X]);
-    pidAngRate[1] = updatePID(desired_rate[1], current_rate[1], PID[PID_ANG_RATE_Y]);
-    pidAngRate[2] = updatePID(desired_rate[2], current_rate[2], PID[PID_ANG_RATE_Z]);
-
-    for (int i=0; i<3; i++) {
-        pwmShift[i] = (int16_t) pidAngRate[i];
-    }
-}
-
+// Calculate desired angular rates based on desired angular position inputs.
 void angular_position_controller (float* desired_pos, float* current_pos, float* desired_rate) {
     pidAngPos[0] = updatePID(desired_pos[0], current_pos[0], PID[PID_ANG_POS_X]);
     pidAngPos[1] = updatePID(desired_pos[1], current_pos[1], PID[PID_ANG_POS_Y]);
@@ -30,6 +19,18 @@ void angular_position_controller (float* desired_pos, float* current_pos, float*
 
     for (int i=0; i<3; i++) {
         desired_rate[i] = pidAngPos[i];
+    }
+}
+
+// Calculate throttle shifts for the individual motors based on desired angular
+// rate inputs.
+void angular_rate_controller (float* desired_rate, float* current_rate, int16_t* pwmShift) {
+    pidAngRate[0] = updatePID(desired_rate[0], current_rate[0], PID[PID_ANG_RATE_X]);
+    pidAngRate[1] = updatePID(desired_rate[1], current_rate[1], PID[PID_ANG_RATE_Y]);
+    pidAngRate[2] = updatePID(desired_rate[2], current_rate[2], PID[PID_ANG_RATE_Z]);
+
+    for (int i=0; i<3; i++) {
+        pwmShift[i] = (int16_t) pidAngRate[i];
     }
 }
 
