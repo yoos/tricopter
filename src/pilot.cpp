@@ -23,33 +23,43 @@ Pilot::Pilot() {
 
     // Zero rotation values.
     for (int i=0; i<3; i++) {
-        targetRot[i] = 0;
-        currentRot[i] = 0;
-        pidRot[i] = 0;
+        targetAngPos[i] = 0;
+        currentAngPos[i] = 0;
+        pidAngPos[i] = 0;
+        pidAngRate[i] = 0;
+        currentAngPos[i] = 0;
     }
 
     // Initialize trim to 0.
     throttleTrim = 0;
 
     // Set PID data ID so the PID function can apply appropriate caps, etc.
-    PID[PID_ROT_X].id = PID_ROT_X;
-    PID[PID_ROT_Y].id = PID_ROT_Y;
-    PID[PID_ROT_Z].id = PID_ROT_Z;
+    PID[PID_ANG_POS_X].id = PID_ANG_POS_X;
+    PID[PID_ANG_POS_Y].id = PID_ANG_POS_Y;
+    PID[PID_ANG_POS_Z].id = PID_ANG_POS_Z;
 
     // Set dt.
     float deltaPIDTime = (float) MASTER_DT * CONTROL_LOOP_INTERVAL / 1000000;   // Time difference in seconds.
-    PID[PID_ROT_X].deltaPIDTime = deltaPIDTime;
-    PID[PID_ROT_Y].deltaPIDTime = deltaPIDTime;
-    PID[PID_ROT_Z].deltaPIDTime = deltaPIDTime;
+    PID[PID_ANG_POS_X].deltaPIDTime = deltaPIDTime;
+    PID[PID_ANG_POS_Y].deltaPIDTime = deltaPIDTime;
+    PID[PID_ANG_POS_Z].deltaPIDTime = deltaPIDTime;
 
     // Set initial PID gains.
-    PID[PID_ROT_X].P = PID[PID_ROT_Y].P = XY_P_GAIN;
-    PID[PID_ROT_X].I = PID[PID_ROT_Y].I = XY_I_GAIN;
-    PID[PID_ROT_X].D = PID[PID_ROT_Y].D = XY_D_GAIN;
+    PID[PID_ANG_POS_X].P = PID[PID_ANG_POS_Y].P = XY_ANG_POS_P_GAIN;
+    PID[PID_ANG_POS_X].I = PID[PID_ANG_POS_Y].I = XY_ANG_POS_I_GAIN;
+    PID[PID_ANG_POS_X].D = PID[PID_ANG_POS_Y].D = XY_ANG_POS_D_GAIN;
 
-    PID[PID_ROT_Z].P = Z_P_GAIN;
-    PID[PID_ROT_Z].I = Z_I_GAIN;
-    PID[PID_ROT_Z].D = Z_D_GAIN;
+    PID[PID_ANG_POS_Z].P = Z_ANG_POS_P_GAIN;
+    PID[PID_ANG_POS_Z].I = Z_ANG_POS_I_GAIN;
+    PID[PID_ANG_POS_Z].D = Z_ANG_POS_D_GAIN;
+
+    PID[PID_ANG_RATE_X].P = PID[PID_ANG_RATE_Y].P = XY_ANG_RATE_P_GAIN;
+    PID[PID_ANG_RATE_X].I = PID[PID_ANG_RATE_Y].I = XY_ANG_RATE_I_GAIN;
+    PID[PID_ANG_RATE_X].D = PID[PID_ANG_RATE_Y].D = XY_ANG_RATE_D_GAIN;
+
+    PID[PID_ANG_RATE_Z].P = Z_ANG_RATE_P_GAIN;
+    PID[PID_ANG_RATE_Z].I = Z_ANG_RATE_I_GAIN;
+    PID[PID_ANG_RATE_Z].D = Z_ANG_RATE_D_GAIN;
 
     numGoodComm = 0;   // Number of good communication packets.
     numBadComm = 0;   // Number of bad communication packets.
@@ -111,19 +121,19 @@ void Pilot::fly() {
         // TODO: The first two are approximations! Need to figure out how to
         // properly use the DCM.
         // ====================================================================
-        targetRot[0] = -joy.axes[SY]/125 * PI/10;
-        targetRot[1] =  joy.axes[SX]/125 * PI/10;
-        targetRot[2] += joy.axes[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
+        targetAngPos[0] = -joy.axes[SY]/125 * PI/10;
+        targetAngPos[1] =  joy.axes[SX]/125 * PI/10;
+        targetAngPos[2] += joy.axes[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
 
         process_joystick_buttons();
 
-        // Keep targetRot within [-PI, PI].
+        // Keep targetAngPos within [-PI, PI].
         for (int i=0; i<3; i++) {
-            if (targetRot[i] > PI) {
-                targetRot[i] -= 2*PI;
+            if (targetAngPos[i] > PI) {
+                targetAngPos[i] -= 2*PI;
             }
-            else if (targetRot[i] < -PI) {
-                targetRot[i] += 2*PI;
+            else if (targetAngPos[i] < -PI) {
+                targetAngPos[i] += 2*PI;
             }
         }
 
@@ -131,18 +141,18 @@ void Pilot::fly() {
         // Calculate current rotation vector (Euler angles) from DCM and make
         // appropriate modifications to make PID calculations work later.
         // ====================================================================
-        currentRot[0] = bodyDCM[1][2];
-        currentRot[1] = -bodyDCM[0][2];
-        currentRot[2] = atan2(bodyDCM[0][1], bodyDCM[0][0]);
+        currentAngPos[0] = bodyDCM[1][2];
+        currentAngPos[1] = -bodyDCM[0][2];
+        currentAngPos[2] = atan2(bodyDCM[0][1], bodyDCM[0][0]);
 
-        // Keep abs(targetRot[i] - currentRot[i]) within [-PI, PI]. This way,
+        // Keep abs(targetAngPos[i] - currentAngPos[i]) within [-PI, PI]. This way,
         // nothing bad happens as we rotate to any angle in [-PI, PI].
         for (int i=0; i<3; i++) {
-            if (targetRot[i] - currentRot[i] > PI) {
-                currentRot[i] += 2*PI;
+            if (targetAngPos[i] - currentAngPos[i] > PI) {
+                currentAngPos[i] += 2*PI;
             }
-            else if (targetRot[i] - currentRot[i] < -PI) {
-                currentRot[i] -= 2*PI;
+            else if (targetAngPos[i] - currentAngPos[i] < -PI) {
+                currentAngPos[i] -= 2*PI;
             }
         }
 
@@ -151,11 +161,9 @@ void Pilot::fly() {
         //
         // TODO: rename pidRot because it is not necessary a rotation value.
         // ====================================================================
-        pidRot[0] = updatePID(targetRot[0], currentRot[0], PID[PID_ROT_X]);
-        pidRot[1] = updatePID(targetRot[1], currentRot[1], PID[PID_ROT_Y]);
-        pidRot[2] = updatePID(targetRot[2], currentRot[2], PID[PID_ROT_Z]);
+        angular_position_controller(targetAngPos, currentAngPos, targetAngRate);
 
-        throttle = throttleTrim + joy.axes[SZ] * (TMAX-TMIN) / 250;
+        angular_rate_controller(targetAngRate, gVec, pwmShift);
 
         // If throttle has increased past THROTTLE_LOCK_DIFF_UP or decreased
         // past THROTTLE_LOCK_DIFF_DOWN in one step, set throttle to
@@ -169,7 +177,9 @@ void Pilot::fly() {
         //    throttleLock = throttle;
         //}
 
-        calculate_pwm_outputs(throttle, pidRot);
+        throttle = throttleTrim + joy.axes[SZ] * (TMAX-TMIN) / 250;
+
+        calculate_pwm_outputs(throttle, pwmShift, pwmOut);
 
         okayToFly = false;
     }
@@ -211,16 +221,16 @@ void Pilot::update_joystick_input(void) {
 }
 
 void Pilot::process_joystick_buttons(void) {
-    // "Reset" targetRot[2] to currentRot[2] if thumb button is pressed.
+    // "Reset" targetAngPos[2] to currentAngPos[2] if thumb button is pressed.
     if (joy.buttons[BUTTON_RESET_YAW]) {
-        targetRot[2] = currentRot[2];
-        targetRot[2] += joy.axes[ST]/125 * Z_ROT_SPEED;
+        targetAngPos[2] = currentAngPos[2];
+        targetAngPos[2] += joy.axes[ST]/125 * Z_ROT_SPEED;
     }
 
     // Zero integral.
     if (joy.buttons[BUTTON_ZERO_INTEGRAL]) {
-        PID[PID_ROT_X].integral = 0;
-        PID[PID_ROT_Y].integral = 0;
+        PID[PID_ANG_POS_X].integral = 0;
+        PID[PID_ANG_POS_Y].integral = 0;
     }
 
     // Trim throttle value.
@@ -236,42 +246,42 @@ void Pilot::process_joystick_buttons(void) {
 
     // Adjust gains on-the-fly.
     if (joy.buttons[BUTTON_DECREASE_XY_P_GAIN] && joy.buttons[BUTTON_INCREASE_XY_P_GAIN]) {
-        PID[PID_ROT_X].P = XY_P_GAIN;
-        PID[PID_ROT_Y].P = XY_P_GAIN;
+        PID[PID_ANG_POS_X].P = XY_ANG_POS_P_GAIN;
+        PID[PID_ANG_POS_Y].P = XY_ANG_POS_P_GAIN;
     }
-    else if (joy.buttons[BUTTON_DECREASE_XY_P_GAIN] && PID[PID_ROT_X].P > 0) {
-        PID[PID_ROT_X].P -= 1.0;
-        PID[PID_ROT_Y].P -= 1.0;
+    else if (joy.buttons[BUTTON_DECREASE_XY_P_GAIN] && PID[PID_ANG_POS_X].P > 0) {
+        PID[PID_ANG_POS_X].P -= 1.0;
+        PID[PID_ANG_POS_Y].P -= 1.0;
     }
     else if (joy.buttons[BUTTON_INCREASE_XY_P_GAIN]) {
-        PID[PID_ROT_X].P += 1.0;
-        PID[PID_ROT_Y].P += 1.0;
+        PID[PID_ANG_POS_X].P += 1.0;
+        PID[PID_ANG_POS_Y].P += 1.0;
     }
 
     if (joy.buttons[BUTTON_DECREASE_XY_I_GAIN] && joy.buttons[BUTTON_INCREASE_XY_I_GAIN]) {
-        PID[PID_ROT_X].I = XY_I_GAIN;
-        PID[PID_ROT_Y].I = XY_I_GAIN;
+        PID[PID_ANG_POS_X].I = XY_ANG_POS_I_GAIN;
+        PID[PID_ANG_POS_Y].I = XY_ANG_POS_I_GAIN;
     }
-    else if (joy.buttons[BUTTON_DECREASE_XY_I_GAIN] && PID[PID_ROT_X].I > 0) {
-        PID[PID_ROT_X].I -= 1.0;
-        PID[PID_ROT_Y].I -= 1.0;
+    else if (joy.buttons[BUTTON_DECREASE_XY_I_GAIN] && PID[PID_ANG_POS_X].I > 0) {
+        PID[PID_ANG_POS_X].I -= 1.0;
+        PID[PID_ANG_POS_Y].I -= 1.0;
     }
     else if (joy.buttons[BUTTON_INCREASE_XY_I_GAIN]) {
-        PID[PID_ROT_X].I += 1.0;
-        PID[PID_ROT_Y].I += 1.0;
+        PID[PID_ANG_POS_X].I += 1.0;
+        PID[PID_ANG_POS_Y].I += 1.0;
     }
 
     if (joy.buttons[BUTTON_DECREASE_XY_D_GAIN] && joy.buttons[BUTTON_INCREASE_XY_D_GAIN]) {
-        PID[PID_ROT_X].D = XY_D_GAIN;
-        PID[PID_ROT_Y].D = XY_D_GAIN;
+        PID[PID_ANG_POS_X].D = XY_ANG_POS_D_GAIN;
+        PID[PID_ANG_POS_Y].D = XY_ANG_POS_D_GAIN;
     }
-    else if (joy.buttons[BUTTON_DECREASE_XY_D_GAIN] && PID[PID_ROT_X].D < 0) {
-        PID[PID_ROT_X].D += 1.0;
-        PID[PID_ROT_Y].D += 1.0;
+    else if (joy.buttons[BUTTON_DECREASE_XY_D_GAIN] && PID[PID_ANG_POS_X].D < 0) {
+        PID[PID_ANG_POS_X].D += 1.0;
+        PID[PID_ANG_POS_Y].D += 1.0;
     }
     else if (joy.buttons[BUTTON_INCREASE_XY_D_GAIN]) {
-        PID[PID_ROT_X].D -= 1.0;
-        PID[PID_ROT_Y].D -= 1.0;
+        PID[PID_ANG_POS_X].D -= 1.0;
+        PID[PID_ANG_POS_Y].D -= 1.0;
     }
 }
 

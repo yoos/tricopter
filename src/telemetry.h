@@ -49,7 +49,7 @@ void sendArmStatus() {
 void sendTargetRotation() {
     queueByte(ROT_SER_TAG);
     for (int i=0; i<3; i++) {
-        queueByte((uint8_t) ((targetRot[i]+PI)*250/(2*PI)));
+        queueByte((uint8_t) ((targetAngPos[i]+PI)*250/(2*PI)));
     }
     queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
@@ -80,9 +80,12 @@ void sendDCM() {
  */
 void sendPIDData() {
     queueByte(PID_SER_TAG);   // Index tag 'PID'.
-    queueByte((uint8_t) PID[PID_ROT_X].P);
-    queueByte((uint8_t) PID[PID_ROT_X].I);
-    queueByte((uint8_t) -PID[PID_ROT_X].D);
+    queueByte((uint8_t) PID[PID_ANG_POS_X].P);
+    queueByte((uint8_t) PID[PID_ANG_POS_X].I);
+    queueByte((uint8_t) -PID[PID_ANG_POS_X].D);
+    queueByte((uint8_t) PID[PID_ANG_RATE_X].P);
+    queueByte((uint8_t) PID[PID_ANG_RATE_X].I);
+    queueByte((uint8_t) -PID[PID_ANG_RATE_X].D);
     queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
 
@@ -91,7 +94,7 @@ void sendPIDData() {
 void sendTelemetryEnd(int nextRuntime) {
     // Report loop time.
     char buf[10];
-    int len = sprintf(buf, "%d", (int) (micros() - (nextRuntime - MASTER_DT)));
+    int len = sprintf(buf, "%d", (unsigned int) (micros() - (nextRuntime - MASTER_DT)));
 
     int i;
     for (i=0; i<len; i++) {

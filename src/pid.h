@@ -22,8 +22,8 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
     PIDparameters.lastValue = currentValue;
 
     // Process X and Y rotation vectors differently.
-    if (PIDparameters.id == PID_ROT_X ||
-        PIDparameters.id == PID_ROT_Y) {
+    if (PIDparameters.id == PID_ANG_POS_X ||
+        PIDparameters.id == PID_ANG_POS_Y) {
         // Cap proportional term.
         if (proportional > TARGET_ANGLE_CAP) {
             proportional = TARGET_ANGLE_CAP;
@@ -33,7 +33,7 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
         }
 
         // Get rate directly from gyro output to minimize noise.
-        if (PIDparameters.id == PID_ROT_X) {
+        if (PIDparameters.id == PID_ANG_POS_X) {
             derivative = gVec[0];
         }
         else {

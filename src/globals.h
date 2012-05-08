@@ -15,9 +15,9 @@
 // ============================================================================
 int armCount;   // Arm status counter.
 int loopCount;   // Count system loops.
-uint16_t pwmOut[4];   // 10 bit PWM output duty cycle.
+int16_t pwmShift[4], pwmOut[4];   // 10 bit PWM output duty cycle.
 float bodyDCM[3][3];   // Current body orientation calculated by IMU.
-float targetRot[3], currentRot[3], pidRot[3];
+float targetAngPos[3], targetAngRate[3], pidAngPos[3], pidAngRate[3], currentAngPos[3];
 float gVec[3];   // This used to be part of ITG3200, but is now global so the PID controller can have direct access to the gyro measurements. This is a hack, and I am a bad programmer.
 
 // ============================================================================
@@ -31,19 +31,28 @@ struct PIDdata {
     float lastValue;
     float integral;
     float lastDerivative;
-} PID[3];
+} PID[10];
 
-#define PID_ROT_X 0
-#define PID_ROT_Y 1
-#define PID_ROT_Z 2
+#define PID_ANG_POS_X  0
+#define PID_ANG_POS_Y  1
+#define PID_ANG_POS_Z  2
+#define PID_ANG_RATE_X 3
+#define PID_ANG_RATE_Y 4
+#define PID_ANG_RATE_Z 5
 
-#define XY_P_GAIN 25.0 // 17  30  35  42
-#define XY_I_GAIN  0.0 // 10  20  50  24
-#define XY_D_GAIN -7.0 //  6  10   9  10
+#define XY_ANG_POS_P_GAIN  0.0
+#define XY_ANG_POS_I_GAIN  0.0
+#define XY_ANG_POS_D_GAIN -0.0
+#define XY_ANG_RATE_P_GAIN  0.0
+#define XY_ANG_RATE_I_GAIN  0.0
+#define XY_ANG_RATE_D_GAIN -0.0
 
-#define Z_P_GAIN 50.0
-#define Z_I_GAIN 0.0
-#define Z_D_GAIN 0.0
+#define Z_ANG_POS_P_GAIN 0.0
+#define Z_ANG_POS_I_GAIN 0.0
+#define Z_ANG_POS_D_GAIN 0.0
+#define Z_ANG_RATE_P_GAIN 0.0
+#define Z_ANG_RATE_I_GAIN 0.0
+#define Z_ANG_RATE_D_GAIN 0.0
 
 #define TARGET_ANGLE_CAP PI/12   // Cap difference between target and current rotation vectors.
 #define TARGET_RATE_CAP 2*PI   // Cap maximum angular velocity rate.
