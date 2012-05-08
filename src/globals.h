@@ -137,12 +137,12 @@ struct PIDdata {
 #define BUTTON_DECREASE_TRIM        3
 #define BUTTON_ZERO_INTEGRAL        4
 #define BUTTON_INCREASE_TRIM        5
-#define BUTTON_DECREASE_XY_P_GAIN   6
-#define BUTTON_INCREASE_XY_P_GAIN   7
-#define BUTTON_DECREASE_XY_I_GAIN   8
-#define BUTTON_INCREASE_XY_I_GAIN   9
-#define BUTTON_DECREASE_XY_D_GAIN   10
-#define BUTTON_INCREASE_XY_D_GAIN   11
+#define BUTTON_DECREASE_XY_ANG_POS_P_GAIN   6
+#define BUTTON_INCREASE_XY_ANG_POS_P_GAIN   7
+#define BUTTON_DECREASE_XY_ANG_RATE_P_GAIN   8
+#define BUTTON_INCREASE_XY_ANG_RATE_P_GAIN   9
+#define BUTTON_DECREASE_XY_ANG_RATE_D_GAIN   10
+#define BUTTON_INCREASE_XY_ANG_RATE_D_GAIN   11
 
 // ============================================================================
 // Hardware configuration: any parameter that is changed so infrequently that

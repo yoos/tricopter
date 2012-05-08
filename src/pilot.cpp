@@ -246,43 +246,43 @@ void Pilot::process_joystick_buttons(void) {
     }
 
     // Adjust gains on-the-fly.
-    if (joy.buttons[BUTTON_DECREASE_XY_P_GAIN] && joy.buttons[BUTTON_INCREASE_XY_P_GAIN]) {
+    if (joy.buttons[BUTTON_DECREASE_XY_ANG_POS_P_GAIN] && joy.buttons[BUTTON_INCREASE_XY_ANG_POS_P_GAIN]) {
         PID[PID_ANG_POS_X].P = XY_ANG_POS_P_GAIN;
         PID[PID_ANG_POS_Y].P = XY_ANG_POS_P_GAIN;
     }
-    else if (joy.buttons[BUTTON_DECREASE_XY_P_GAIN] && PID[PID_ANG_POS_X].P > 0) {
+    else if (joy.buttons[BUTTON_DECREASE_XY_ANG_POS_P_GAIN] && PID[PID_ANG_POS_X].P > 0) {
         PID[PID_ANG_POS_X].P -= 1.0;
         PID[PID_ANG_POS_Y].P -= 1.0;
     }
-    else if (joy.buttons[BUTTON_INCREASE_XY_P_GAIN]) {
+    else if (joy.buttons[BUTTON_INCREASE_XY_ANG_POS_P_GAIN]) {
         PID[PID_ANG_POS_X].P += 1.0;
         PID[PID_ANG_POS_Y].P += 1.0;
     }
 
-    if (joy.buttons[BUTTON_DECREASE_XY_I_GAIN] && joy.buttons[BUTTON_INCREASE_XY_I_GAIN]) {
-        PID[PID_ANG_POS_X].I = XY_ANG_POS_I_GAIN;
-        PID[PID_ANG_POS_Y].I = XY_ANG_POS_I_GAIN;
+    if (joy.buttons[BUTTON_DECREASE_XY_ANG_RATE_P_GAIN] && joy.buttons[BUTTON_INCREASE_XY_ANG_RATE_P_GAIN]) {
+        PID[PID_ANG_RATE_X].P = XY_ANG_RATE_P_GAIN;
+        PID[PID_ANG_RATE_Y].P = XY_ANG_RATE_P_GAIN;
     }
-    else if (joy.buttons[BUTTON_DECREASE_XY_I_GAIN] && PID[PID_ANG_POS_X].I > 0) {
-        PID[PID_ANG_POS_X].I -= 1.0;
-        PID[PID_ANG_POS_Y].I -= 1.0;
+    else if (joy.buttons[BUTTON_DECREASE_XY_ANG_RATE_P_GAIN] && PID[PID_ANG_RATE_X].P > 0) {
+        PID[PID_ANG_RATE_X].P -= 1.0;
+        PID[PID_ANG_RATE_Y].P -= 1.0;
     }
-    else if (joy.buttons[BUTTON_INCREASE_XY_I_GAIN]) {
-        PID[PID_ANG_POS_X].I += 1.0;
-        PID[PID_ANG_POS_Y].I += 1.0;
+    else if (joy.buttons[BUTTON_INCREASE_XY_ANG_RATE_P_GAIN]) {
+        PID[PID_ANG_RATE_X].P += 1.0;
+        PID[PID_ANG_RATE_Y].P += 1.0;
     }
 
-    if (joy.buttons[BUTTON_DECREASE_XY_D_GAIN] && joy.buttons[BUTTON_INCREASE_XY_D_GAIN]) {
-        PID[PID_ANG_POS_X].D = XY_ANG_POS_D_GAIN;
-        PID[PID_ANG_POS_Y].D = XY_ANG_POS_D_GAIN;
+    if (joy.buttons[BUTTON_DECREASE_XY_ANG_RATE_D_GAIN] && joy.buttons[BUTTON_INCREASE_XY_ANG_RATE_D_GAIN]) {
+        PID[PID_ANG_RATE_X].D = XY_ANG_RATE_D_GAIN;
+        PID[PID_ANG_RATE_Y].D = XY_ANG_RATE_D_GAIN;
     }
-    else if (joy.buttons[BUTTON_DECREASE_XY_D_GAIN] && PID[PID_ANG_POS_X].D < 0) {
-        PID[PID_ANG_POS_X].D += 1.0;
-        PID[PID_ANG_POS_Y].D += 1.0;
+    else if (joy.buttons[BUTTON_DECREASE_XY_ANG_RATE_D_GAIN] && PID[PID_ANG_RATE_X].D < 0) {
+        PID[PID_ANG_RATE_X].D += 1.0;
+        PID[PID_ANG_RATE_Y].D += 1.0;
     }
-    else if (joy.buttons[BUTTON_INCREASE_XY_D_GAIN]) {
-        PID[PID_ANG_POS_X].D -= 1.0;
-        PID[PID_ANG_POS_Y].D -= 1.0;
+    else if (joy.buttons[BUTTON_INCREASE_XY_ANG_RATE_D_GAIN]) {
+        PID[PID_ANG_RATE_X].D -= 1.0;
+        PID[PID_ANG_RATE_Y].D -= 1.0;
     }
 }
 
