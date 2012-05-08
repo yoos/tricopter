@@ -18,6 +18,9 @@ class Pilot {
     float throttle;
     float throttleLock;   // Follow throttle within some range +/- THROTTLE_LOCK so if throttle suddenly increases past THROTTLE LOCK, throttle does not change.
     int throttleTrim;
+
+    int flightMode;
+
     float mapLower, mapUpper;
 //  double dir;   // Direction in radians
     bool okayToFly;

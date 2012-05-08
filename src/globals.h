@@ -43,7 +43,7 @@ struct PIDdata {
 #define XY_ANG_POS_P_GAIN  0.0
 #define XY_ANG_POS_I_GAIN  0.0
 #define XY_ANG_POS_D_GAIN -0.0
-#define XY_ANG_RATE_P_GAIN  0.0
+#define XY_ANG_RATE_P_GAIN  5.0
 #define XY_ANG_RATE_I_GAIN  0.0
 #define XY_ANG_RATE_D_GAIN -0.0
 
@@ -133,9 +133,9 @@ struct PIDdata {
 // ============================================================================
 #define BUTTON_UNDEFINED            0
 #define BUTTON_RESET_YAW            1
-#define BUTTON_ZERO_INTEGRAL        2
+#define BUTTON_ACRO_MODE            2
 #define BUTTON_DECREASE_TRIM        3
-#define BUTTON_UNDEFINED            4
+#define BUTTON_ZERO_INTEGRAL        4
 #define BUTTON_INCREASE_TRIM        5
 #define BUTTON_DECREASE_XY_P_GAIN   6
 #define BUTTON_INCREASE_XY_P_GAIN   7
@@ -183,12 +183,12 @@ struct PIDdata {
 // Flight modes: not yet implemented.
 // ============================================================================
 
-//#define OFF 0
-//#define IDLE 1
-//#define HOVER 2
-//#define ACRO 3
-//#define AUTO 4
-//#define AUTO_HOVER 5
+#define OFF 0
+#define IDLE 1
+#define HOVER 2
+#define ACRO 3
+#define AUTO 4
+#define AUTO_HOVER 5
 
 
 // ============================================================================

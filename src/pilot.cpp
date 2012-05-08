@@ -61,6 +61,8 @@ Pilot::Pilot() {
     PID[PID_ANG_RATE_Z].I = Z_ANG_RATE_I_GAIN;
     PID[PID_ANG_RATE_Z].D = Z_ANG_RATE_D_GAIN;
 
+    flightMode = OFF;
+
     numGoodComm = 0;   // Number of good communication packets.
     numBadComm = 0;   // Number of bad communication packets.
 }
@@ -113,78 +115,69 @@ void Pilot::fly() {
         //spln(micros());
 
         update_joystick_input();
-
-        // ====================================================================
-        // Calculate target rotation vector based on joystick input scaled to a
-        // maximum rotation of PI/6.
-        //
-        // TODO: The first two are approximations! Need to figure out how to
-        // properly use the DCM.
-        // ====================================================================
-        targetAngPos[0] = -joy.axes[SY]/125 * PI/10;
-        targetAngPos[1] =  joy.axes[SX]/125 * PI/10;
-        targetAngPos[2] += joy.axes[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
-
         process_joystick_buttons();
 
-        // Keep targetAngPos within [-PI, PI].
-        for (int i=0; i<3; i++) {
-            if (targetAngPos[i] > PI) {
-                targetAngPos[i] -= 2*PI;
+        // ATTITUDE CONTROL FLIGHT MODE
+        if (flightMode == HOVER) {
+            // ====================================================================
+            // Calculate target rotation vector based on joystick input scaled to a
+            // maximum rotation of PI/6.
+            //
+            // TODO: The first two are approximations! Need to figure out how to
+            // properly use the DCM.
+            // ====================================================================
+            targetAngPos[0] = -joy.axes[SY]/125 * TARGET_ANGLE_CAP;
+            targetAngPos[1] =  joy.axes[SX]/125 * TARGET_ANGLE_CAP;
+            targetAngPos[2] += joy.axes[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
+
+            // Keep targetAngPos within [-PI, PI].
+            for (int i=0; i<3; i++) {
+                if (targetAngPos[i] > PI) {
+                    targetAngPos[i] -= 2*PI;
+                }
+                else if (targetAngPos[i] < -PI) {
+                    targetAngPos[i] += 2*PI;
+                }
             }
-            else if (targetAngPos[i] < -PI) {
-                targetAngPos[i] += 2*PI;
+
+            // ====================================================================
+            // Calculate current rotation vector (Euler angles) from DCM and make
+            // appropriate modifications to make PID calculations work later.
+            // ====================================================================
+            currentAngPos[0] = bodyDCM[1][2];
+            currentAngPos[1] = -bodyDCM[0][2];
+            currentAngPos[2] = atan2(bodyDCM[0][1], bodyDCM[0][0]);
+
+            // Keep abs(targetAngPos[i] - currentAngPos[i]) within [-PI, PI]. This way,
+            // nothing bad happens as we rotate to any angle in [-PI, PI].
+            for (int i=0; i<3; i++) {
+                if (targetAngPos[i] - currentAngPos[i] > PI) {
+                    currentAngPos[i] += 2*PI;
+                }
+                else if (targetAngPos[i] - currentAngPos[i] < -PI) {
+                    currentAngPos[i] -= 2*PI;
+                }
             }
+
+            angular_position_controller(targetAngPos, currentAngPos, targetAngRate);
         }
 
-        // ====================================================================
-        // Calculate current rotation vector (Euler angles) from DCM and make
-        // appropriate modifications to make PID calculations work later.
-        // ====================================================================
-        currentAngPos[0] = bodyDCM[1][2];
-        currentAngPos[1] = -bodyDCM[0][2];
-        currentAngPos[2] = atan2(bodyDCM[0][1], bodyDCM[0][0]);
 
-        // Keep abs(targetAngPos[i] - currentAngPos[i]) within [-PI, PI]. This way,
-        // nothing bad happens as we rotate to any angle in [-PI, PI].
-        for (int i=0; i<3; i++) {
-            if (targetAngPos[i] - currentAngPos[i] > PI) {
-                currentAngPos[i] += 2*PI;
-            }
-            else if (targetAngPos[i] - currentAngPos[i] < -PI) {
-                currentAngPos[i] -= 2*PI;
-            }
+        // RATE CONTROL FLIGHT MODE
+        else if (flightMode == ACRO) {
+            targetAngRate[0] = -joy.axes[SY]/125 * TARGET_RATE_CAP;
+            targetAngRate[1] =  joy.axes[SX]/125 * TARGET_RATE_CAP;
+            targetAngRate[2] =  joy.axes[ST]/125 * Z_ROT_SPEED;
         }
 
-        // ====================================================================
-        // Calculate the PID outputs that update motor values.
-        //
-        // TODO: rename pidRot because it is not necessary a rotation value.
-        // ====================================================================
-        angular_position_controller(targetAngPos, currentAngPos, targetAngRate);
 
         angular_rate_controller(targetAngRate, gVec, pwmShift);
-
-        // If throttle has increased past THROTTLE_LOCK_DIFF_UP or decreased
-        // past THROTTLE_LOCK_DIFF_DOWN in one step, set throttle to
-        // throttleLock and leave throttleLock alone. Otherwise, update
-        // throttleLock to throttle.
-        //if (throttle - throttleLock > THROTTLE_LOCK_DIFF_UP ||
-        //    throttleLock - throttle > THROTTLE_LOCK_DIFF_DOWN) {
-        //    throttle = throttleLock;
-        //}
-        //else {
-        //    throttleLock = throttle;
-        //}
 
         throttle = throttleTrim + joy.axes[SZ] * (TMAX-TMIN) / 250;
 
         calculate_pwm_outputs(throttle, pwmShift, pwmOut);
 
         okayToFly = false;
-    }
-    else {
-        // spln("Pilot not okay to fly.");
     }
 }
 
@@ -231,6 +224,14 @@ void Pilot::process_joystick_buttons(void) {
     if (joy.buttons[BUTTON_ZERO_INTEGRAL]) {
         PID[PID_ANG_POS_X].integral = 0;
         PID[PID_ANG_POS_Y].integral = 0;
+    }
+
+    // Enable acro mode (rate control).
+    if (joy.buttons[BUTTON_ACRO_MODE]) {
+        flightMode = ACRO;
+    }
+    else {
+        flightMode = HOVER;
     }
 
     // Trim throttle value.
