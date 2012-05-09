@@ -13,6 +13,18 @@
 
 // Calculate desired angular rates based on desired angular position inputs.
 void angular_position_controller (float* desired_pos, float* current_pos, float* desired_rate) {
+    // Cap desired_pos.
+    for (int i=0; i<3; i++) {
+        if (desired_pos[i] > TARGET_ANG_POS_CAP) {
+            desired_pos[i] = TARGET_ANG_POS_CAP;
+        }
+        else if (desired_pos[i] < -TARGET_ANG_POS_CAP) {
+            desired_pos[i] = -TARGET_ANG_POS_CAP;
+        }
+    }
+
+    // Calculate intermediate PID values that will be used later to calculate
+    // the PWM outputs for the motors.
     pidAngPos[0] = updatePID(desired_pos[0], current_pos[0], PID[PID_ANG_POS_X]);
     pidAngPos[1] = updatePID(desired_pos[1], current_pos[1], PID[PID_ANG_POS_Y]);
     pidAngPos[2] = updatePID(desired_pos[2], current_pos[2], PID[PID_ANG_POS_Z]);
@@ -25,6 +37,18 @@ void angular_position_controller (float* desired_pos, float* current_pos, float*
 // Calculate throttle shifts for the individual motors based on desired angular
 // rate inputs.
 void angular_rate_controller (float* desired_rate, float* current_rate, int16_t* pwmShift) {
+    // Cap desired_rate.
+    for (int i=0; i<3; i++) {
+        if (desired_rate[i] > TARGET_ANG_RATE_CAP) {
+            desired_rate[i] = TARGET_ANG_RATE_CAP;
+        }
+        else if (desired_rate[i] < -TARGET_ANG_RATE_CAP) {
+            desired_rate[i] = -TARGET_ANG_RATE_CAP;
+        }
+    }
+
+    // Calculate intermediate PID values that will be used later to calculate
+    // the PWM outputs for the motors.
     pidAngRate[0] = updatePID(desired_rate[0], current_rate[0], PID[PID_ANG_RATE_X]);
     pidAngRate[1] = updatePID(desired_rate[1], current_rate[1], PID[PID_ANG_RATE_Y]);
     pidAngRate[2] = updatePID(desired_rate[2], current_rate[2], PID[PID_ANG_RATE_Z]);
