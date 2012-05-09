@@ -30,7 +30,6 @@ struct PIDdata {
     float P, I, D;
     float lastValue;
     float integral;
-    float lastDerivative;
 } PID[10];
 
 #define PID_ANG_POS_X  0
@@ -54,12 +53,8 @@ struct PIDdata {
 #define Z_ANG_RATE_I_GAIN 0.0
 #define Z_ANG_RATE_D_GAIN 0.0
 
-#define TARGET_ANGLE_CAP PI/12   // Cap difference between target and current rotation vectors.
-#define TARGET_RATE_CAP 2*PI   // Cap maximum angular velocity rate.
-#define XY_D_TERM_CAP 0.6   // Cap maximum angular acceleration rate.
-
-#define THROTTLE_LOCK_DIFF_UP   70   // "Lock" throttle input. See pilot.h.
-#define THROTTLE_LOCK_DIFF_DOWN 120   // "Lock" throttle input. See pilot.h.
+#define TARGET_ANG_POS_CAP PI/12   // Cap difference between target and current rotation vectors.
+#define TARGET_ANG_RATE_CAP 2*PI   // Cap maximum angular velocity rate.
 
 
 // ============================================================================
@@ -139,10 +134,10 @@ struct PIDdata {
 #define BUTTON_INCREASE_TRIM        5
 #define BUTTON_DECREASE_XY_ANG_POS_P_GAIN   6
 #define BUTTON_INCREASE_XY_ANG_POS_P_GAIN   7
-#define BUTTON_DECREASE_XY_ANG_RATE_P_GAIN   8
-#define BUTTON_INCREASE_XY_ANG_RATE_P_GAIN   9
-#define BUTTON_DECREASE_XY_ANG_RATE_D_GAIN   10
-#define BUTTON_INCREASE_XY_ANG_RATE_D_GAIN   11
+#define BUTTON_DECREASE_XY_ANG_RATE_P_GAIN  8
+#define BUTTON_INCREASE_XY_ANG_RATE_P_GAIN  9
+#define BUTTON_DECREASE_XY_ANG_RATE_D_GAIN  10
+#define BUTTON_INCREASE_XY_ANG_RATE_D_GAIN  11
 
 // ============================================================================
 // Hardware configuration: any parameter that is changed so infrequently that
@@ -164,8 +159,7 @@ struct PIDdata {
 #define ACCEL_Z_OFFSET -0.999
 
 // Calibration values for magnetometer. These are what the magnetometer axes
-// see as "zero".   TODO: This is not entirely accurate. Need to figure out how
-// magnetometers actually work!
+// see as "zero".
 #define MAG_X_MIN -314
 #define MAG_X_MAX 320
 #define MAG_Y_MIN -316
@@ -180,7 +174,7 @@ struct PIDdata {
 
 
 // ============================================================================
-// Flight modes: not yet implemented.
+// Flight modes
 // ============================================================================
 
 #define OFF 0
