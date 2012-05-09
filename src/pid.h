@@ -21,38 +21,26 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
     float derivative = (currentValue - PIDparameters.lastValue) / PIDparameters.deltaPIDTime;   // Per second.
     PIDparameters.lastValue = currentValue;
 
-    // Process X and Y rotation vectors differently.
-    if (PIDparameters.id == PID_ANG_POS_X ||
-        PIDparameters.id == PID_ANG_POS_Y) {
-        // Cap proportional term.
-        if (proportional > TARGET_ANGLE_CAP) {
-            proportional = TARGET_ANGLE_CAP;
-        }
-        else if (proportional < -TARGET_ANGLE_CAP) {
-            proportional = -TARGET_ANGLE_CAP;
-        }
+    //// Process X and Y rotation vectors differently.
+    //if (PIDparameters.id == PID_ANG_POS_X ||
+    //    PIDparameters.id == PID_ANG_POS_Y) {
+    //    // Cap maximum error.
+    //    if (proportional > TARGET_ANGLE_CAP) {
+    //        proportional = TARGET_ANGLE_CAP;
+    //    }
+    //    else if (proportional < -TARGET_ANGLE_CAP) {
+    //        proportional = -TARGET_ANGLE_CAP;
+    //    }
+    //}
 
-        // Get rate directly from gyro output to minimize noise.
-        if (PIDparameters.id == PID_ANG_POS_X) {
-            derivative = gVec[0];
-        }
-        else {
-            derivative = gVec[1];
-        }
-
-        // Set target rate (rad/s).
-        float targetRate = proportional * TARGET_RATE_CAP / TARGET_ANGLE_CAP;
-        derivative = derivative - targetRate;
-
-        // Cap change in derivative to help reduce jerkiness.
-        if (derivative - PIDparameters.lastDerivative > XY_D_TERM_CAP) {
-            derivative = XY_D_TERM_CAP;
-        }
-        else if (derivative - PIDparameters.lastDerivative < -XY_D_TERM_CAP) {
-            derivative = -XY_D_TERM_CAP;
-        }
-        PIDparameters.lastDerivative = derivative;
-    }
+    //// For rate controller, get rate directly from gyro outputs to minimize
+    //// noise.
+    //else if (PIDparameters.id == PID_ANG_RATE_X) {
+    //    derivative = gVec[0];
+    //}
+    //else if (PIDparameters.id == PID_ANG_RATE_Y) {
+    //    derivative = gVec[1];
+    //}
 
     // Zero integral once overshoot is detected.
     //if ((proportional < 0 && derivative > 0) ||
