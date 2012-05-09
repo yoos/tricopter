@@ -283,12 +283,12 @@ void Pilot::process_joystick_buttons(void) {
         PID[PID_ANG_RATE_Y].D = XY_ANG_RATE_D_GAIN;
     }
     else if (joy.buttons[BUTTON_DECREASE_XY_ANG_RATE_D_GAIN] && PID[PID_ANG_RATE_X].D < 0) {
-        PID[PID_ANG_RATE_X].D += 1.0;
-        PID[PID_ANG_RATE_Y].D += 1.0;
+        PID[PID_ANG_RATE_X].D += 0.01;
+        PID[PID_ANG_RATE_Y].D += 0.01;
     }
     else if (joy.buttons[BUTTON_INCREASE_XY_ANG_RATE_D_GAIN]) {
-        PID[PID_ANG_RATE_X].D -= 1.0;
-        PID[PID_ANG_RATE_Y].D -= 1.0;
+        PID[PID_ANG_RATE_X].D -= 0.01;
+        PID[PID_ANG_RATE_Y].D -= 0.01;
     }
 }
 
