@@ -39,12 +39,12 @@ struct PIDdata {
 #define PID_ANG_RATE_Y 4
 #define PID_ANG_RATE_Z 5
 
-#define XY_ANG_POS_P_GAIN  0.0
-#define XY_ANG_POS_I_GAIN  0.0
-#define XY_ANG_POS_D_GAIN -0.0
-#define XY_ANG_RATE_P_GAIN  5.0
+#define XY_ANG_POS_P_GAIN   4.0
+#define XY_ANG_POS_I_GAIN   0.0
+#define XY_ANG_POS_D_GAIN  -0.0
+#define XY_ANG_RATE_P_GAIN 14.0
 #define XY_ANG_RATE_I_GAIN  0.0
-#define XY_ANG_RATE_D_GAIN -0.0
+#define XY_ANG_RATE_D_GAIN -0.14
 
 #define Z_ANG_POS_P_GAIN 0.0
 #define Z_ANG_POS_I_GAIN 0.0
