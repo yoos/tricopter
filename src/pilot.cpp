@@ -26,7 +26,7 @@ Pilot::Pilot() {
         targetAngPos[i] = 0;
         currentAngPos[i] = 0;
         pidAngPos[i] = 0;
-        pidAngRate[i] = 0;
+        pidAngVel[i] = 0;
         currentAngPos[i] = 0;
     }
 
@@ -37,18 +37,18 @@ Pilot::Pilot() {
     PID[PID_ANG_POS_X].id = PID_ANG_POS_X;
     PID[PID_ANG_POS_Y].id = PID_ANG_POS_Y;
     PID[PID_ANG_POS_Z].id = PID_ANG_POS_Z;
-    PID[PID_ANG_RATE_X].id = PID_ANG_RATE_X;
-    PID[PID_ANG_RATE_Y].id = PID_ANG_RATE_Y;
-    PID[PID_ANG_RATE_Z].id = PID_ANG_RATE_Z;
+    PID[PID_ANG_VEL_X].id = PID_ANG_VEL_X;
+    PID[PID_ANG_VEL_Y].id = PID_ANG_VEL_Y;
+    PID[PID_ANG_VEL_Z].id = PID_ANG_VEL_Z;
 
     // Set dt.
     float deltaPIDTime = (float) MASTER_DT * CONTROL_LOOP_INTERVAL / 1000000;   // Time difference in seconds.
     PID[PID_ANG_POS_X].deltaPIDTime = deltaPIDTime;
     PID[PID_ANG_POS_Y].deltaPIDTime = deltaPIDTime;
     PID[PID_ANG_POS_Z].deltaPIDTime = deltaPIDTime;
-    PID[PID_ANG_RATE_X].deltaPIDTime = deltaPIDTime;
-    PID[PID_ANG_RATE_Y].deltaPIDTime = deltaPIDTime;
-    PID[PID_ANG_RATE_Z].deltaPIDTime = deltaPIDTime;
+    PID[PID_ANG_VEL_X].deltaPIDTime = deltaPIDTime;
+    PID[PID_ANG_VEL_Y].deltaPIDTime = deltaPIDTime;
+    PID[PID_ANG_VEL_Z].deltaPIDTime = deltaPIDTime;
 
     // Set initial PID gains.
     PID[PID_ANG_POS_X].P = PID[PID_ANG_POS_Y].P = XY_ANG_POS_P_GAIN;
@@ -59,13 +59,13 @@ Pilot::Pilot() {
     PID[PID_ANG_POS_Z].I = Z_ANG_POS_I_GAIN;
     PID[PID_ANG_POS_Z].D = Z_ANG_POS_D_GAIN;
 
-    PID[PID_ANG_RATE_X].P = PID[PID_ANG_RATE_Y].P = XY_ANG_RATE_P_GAIN;
-    PID[PID_ANG_RATE_X].I = PID[PID_ANG_RATE_Y].I = XY_ANG_RATE_I_GAIN;
-    PID[PID_ANG_RATE_X].D = PID[PID_ANG_RATE_Y].D = XY_ANG_RATE_D_GAIN;
+    PID[PID_ANG_VEL_X].P = PID[PID_ANG_VEL_Y].P = XY_ANG_VEL_P_GAIN;
+    PID[PID_ANG_VEL_X].I = PID[PID_ANG_VEL_Y].I = XY_ANG_VEL_I_GAIN;
+    PID[PID_ANG_VEL_X].D = PID[PID_ANG_VEL_Y].D = XY_ANG_VEL_D_GAIN;
 
-    PID[PID_ANG_RATE_Z].P = Z_ANG_RATE_P_GAIN;
-    PID[PID_ANG_RATE_Z].I = Z_ANG_RATE_I_GAIN;
-    PID[PID_ANG_RATE_Z].D = Z_ANG_RATE_D_GAIN;
+    PID[PID_ANG_VEL_Z].P = Z_ANG_VEL_P_GAIN;
+    PID[PID_ANG_VEL_Z].I = Z_ANG_VEL_I_GAIN;
+    PID[PID_ANG_VEL_Z].D = Z_ANG_VEL_D_GAIN;
 
     flightMode = OFF;
 
@@ -123,7 +123,7 @@ void Pilot::fly() {
         update_joystick_input();
         process_joystick_buttons();
 
-        // ATTITUDE CONTROL FLIGHT MODE
+        // ANGULAR POSITION CONTROL FLIGHT MODE
         if (flightMode == HOVER) {
             // ====================================================================
             // Calculate target rotation vector based on joystick input scaled to a
@@ -165,19 +165,19 @@ void Pilot::fly() {
                 }
             }
 
-            angular_position_controller(targetAngPos, currentAngPos, targetAngRate);
+            angular_position_controller(targetAngPos, currentAngPos, targetAngVel);
         }
 
 
-        // RATE CONTROL FLIGHT MODE
+        // ANGULAR VELOCITY CONTROL FLIGHT MODE
         else if (flightMode == ACRO) {
-            targetAngRate[0] = -joy.axes[SY]/125 * TARGET_ANG_RATE_CAP;
-            targetAngRate[1] =  joy.axes[SX]/125 * TARGET_ANG_RATE_CAP;
-            targetAngRate[2] =  joy.axes[ST]/125 * Z_ROT_SPEED;
+            targetAngVel[0] = -joy.axes[SY]/125 * TARGET_ANG_VEL_CAP;
+            targetAngVel[1] =  joy.axes[SX]/125 * TARGET_ANG_VEL_CAP;
+            targetAngVel[2] =  joy.axes[ST]/125 * Z_ROT_SPEED;
         }
 
 
-        angular_rate_controller(targetAngRate, gVec, pwmShift);
+        angular_velocity_controller(targetAngVel, gVec, pwmShift);
 
         throttle = throttleTrim + joy.axes[SZ] * (TMAX-TMIN) / 250;
 
@@ -232,7 +232,7 @@ void Pilot::process_joystick_buttons(void) {
         PID[PID_ANG_POS_Y].integral = 0;
     }
 
-    // Enable acro mode (rate control).
+    // Enable acro mode (velocity control).
     if (joy.buttons[BUTTON_ACRO_MODE]) {
         flightMode = ACRO;
     }
@@ -265,30 +265,30 @@ void Pilot::process_joystick_buttons(void) {
         PID[PID_ANG_POS_Y].P += 1.0;
     }
 
-    if (joy.buttons[BUTTON_DECREASE_XY_ANG_RATE_P_GAIN] && joy.buttons[BUTTON_INCREASE_XY_ANG_RATE_P_GAIN]) {
-        PID[PID_ANG_RATE_X].P = XY_ANG_RATE_P_GAIN;
-        PID[PID_ANG_RATE_Y].P = XY_ANG_RATE_P_GAIN;
+    if (joy.buttons[BUTTON_DECREASE_XY_ANG_VEL_P_GAIN] && joy.buttons[BUTTON_INCREASE_XY_ANG_VEL_P_GAIN]) {
+        PID[PID_ANG_VEL_X].P = XY_ANG_VEL_P_GAIN;
+        PID[PID_ANG_VEL_Y].P = XY_ANG_VEL_P_GAIN;
     }
-    else if (joy.buttons[BUTTON_DECREASE_XY_ANG_RATE_P_GAIN] && PID[PID_ANG_RATE_X].P > 0) {
-        PID[PID_ANG_RATE_X].P -= 1.0;
-        PID[PID_ANG_RATE_Y].P -= 1.0;
+    else if (joy.buttons[BUTTON_DECREASE_XY_ANG_VEL_P_GAIN] && PID[PID_ANG_VEL_X].P > 0) {
+        PID[PID_ANG_VEL_X].P -= 1.0;
+        PID[PID_ANG_VEL_Y].P -= 1.0;
     }
-    else if (joy.buttons[BUTTON_INCREASE_XY_ANG_RATE_P_GAIN]) {
-        PID[PID_ANG_RATE_X].P += 1.0;
-        PID[PID_ANG_RATE_Y].P += 1.0;
+    else if (joy.buttons[BUTTON_INCREASE_XY_ANG_VEL_P_GAIN]) {
+        PID[PID_ANG_VEL_X].P += 1.0;
+        PID[PID_ANG_VEL_Y].P += 1.0;
     }
 
-    if (joy.buttons[BUTTON_DECREASE_XY_ANG_RATE_D_GAIN] && joy.buttons[BUTTON_INCREASE_XY_ANG_RATE_D_GAIN]) {
-        PID[PID_ANG_RATE_X].D = XY_ANG_RATE_D_GAIN;
-        PID[PID_ANG_RATE_Y].D = XY_ANG_RATE_D_GAIN;
+    if (joy.buttons[BUTTON_DECREASE_XY_ANG_VEL_D_GAIN] && joy.buttons[BUTTON_INCREASE_XY_ANG_VEL_D_GAIN]) {
+        PID[PID_ANG_VEL_X].D = XY_ANG_VEL_D_GAIN;
+        PID[PID_ANG_VEL_Y].D = XY_ANG_VEL_D_GAIN;
     }
-    else if (joy.buttons[BUTTON_DECREASE_XY_ANG_RATE_D_GAIN] && PID[PID_ANG_RATE_X].D < 0) {
-        PID[PID_ANG_RATE_X].D += 0.01;
-        PID[PID_ANG_RATE_Y].D += 0.01;
+    else if (joy.buttons[BUTTON_DECREASE_XY_ANG_VEL_D_GAIN] && PID[PID_ANG_VEL_X].D < 0) {
+        PID[PID_ANG_VEL_X].D += 0.01;
+        PID[PID_ANG_VEL_Y].D += 0.01;
     }
-    else if (joy.buttons[BUTTON_INCREASE_XY_ANG_RATE_D_GAIN]) {
-        PID[PID_ANG_RATE_X].D -= 0.01;
-        PID[PID_ANG_RATE_Y].D -= 0.01;
+    else if (joy.buttons[BUTTON_INCREASE_XY_ANG_VEL_D_GAIN]) {
+        PID[PID_ANG_VEL_X].D -= 0.01;
+        PID[PID_ANG_VEL_Y].D -= 0.01;
     }
 }
 

@@ -11,8 +11,9 @@
 #include "globals.h"
 #include "pid.h"
 
-// Calculate desired angular rates based on desired angular position inputs.
-void angular_position_controller (float* desired_pos, float* current_pos, float* desired_rate) {
+// Calculate desired angular velocities based on desired angular position
+// inputs.
+void angular_position_controller (float* desired_pos, float* current_pos, float* desired_vel) {
     // Cap desired_pos.
     for (int i=0; i<3; i++) {
         if (desired_pos[i] > TARGET_ANG_POS_CAP) {
@@ -30,31 +31,31 @@ void angular_position_controller (float* desired_pos, float* current_pos, float*
     pidAngPos[2] = updatePID(desired_pos[2], current_pos[2], PID[PID_ANG_POS_Z]);
 
     for (int i=0; i<3; i++) {
-        desired_rate[i] = pidAngPos[i];
+        desired_vel[i] = pidAngPos[i];
     }
 }
 
 // Calculate throttle shifts for the individual motors based on desired angular
-// rate inputs.
-void angular_rate_controller (float* desired_rate, float* current_rate, int16_t* pwmShift) {
-    // Cap desired_rate.
+// velocity inputs.
+void angular_velocity_controller (float* desired_vel, float* current_vel, int16_t* pwmShift) {
+    // Cap desired_vel.
     for (int i=0; i<3; i++) {
-        if (desired_rate[i] > TARGET_ANG_RATE_CAP) {
-            desired_rate[i] = TARGET_ANG_RATE_CAP;
+        if (desired_vel[i] > TARGET_ANG_VEL_CAP) {
+            desired_vel[i] = TARGET_ANG_VEL_CAP;
         }
-        else if (desired_rate[i] < -TARGET_ANG_RATE_CAP) {
-            desired_rate[i] = -TARGET_ANG_RATE_CAP;
+        else if (desired_vel[i] < -TARGET_ANG_VEL_CAP) {
+            desired_vel[i] = -TARGET_ANG_VEL_CAP;
         }
     }
 
     // Calculate intermediate PID values that will be used later to calculate
     // the PWM outputs for the motors.
-    pidAngRate[0] = updatePID(desired_rate[0], current_rate[0], PID[PID_ANG_RATE_X]);
-    pidAngRate[1] = updatePID(desired_rate[1], current_rate[1], PID[PID_ANG_RATE_Y]);
-    pidAngRate[2] = updatePID(desired_rate[2], current_rate[2], PID[PID_ANG_RATE_Z]);
+    pidAngVel[0] = updatePID(desired_vel[0], current_vel[0], PID[PID_ANG_VEL_X]);
+    pidAngVel[1] = updatePID(desired_vel[1], current_vel[1], PID[PID_ANG_VEL_Y]);
+    pidAngVel[2] = updatePID(desired_vel[2], current_vel[2], PID[PID_ANG_VEL_Z]);
 
     for (int i=0; i<3; i++) {
-        pwmShift[i] = (int16_t) pidAngRate[i];
+        pwmShift[i] = (int16_t) pidAngVel[i];
     }
 }
 

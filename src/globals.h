@@ -17,7 +17,7 @@ int armCount;   // Arm status counter.
 int loopCount;   // Count system loops.
 int16_t pwmShift[4], pwmOut[4];   // 10 bit PWM output duty cycle.
 float bodyDCM[3][3];   // Current body orientation calculated by IMU.
-float targetAngPos[3], targetAngRate[3], pidAngPos[3], pidAngRate[3], currentAngPos[3];
+float targetAngPos[3], targetAngVel[3], pidAngPos[3], pidAngVel[3], currentAngPos[3];
 float gVec[3];   // This used to be part of ITG3200, but is now global so the PID controller can have direct access to the gyro measurements. This is a hack, and I am a bad programmer.
 
 // ============================================================================
@@ -35,26 +35,26 @@ struct PIDdata {
 #define PID_ANG_POS_X  0
 #define PID_ANG_POS_Y  1
 #define PID_ANG_POS_Z  2
-#define PID_ANG_RATE_X 3
-#define PID_ANG_RATE_Y 4
-#define PID_ANG_RATE_Z 5
+#define PID_ANG_VEL_X 3
+#define PID_ANG_VEL_Y 4
+#define PID_ANG_VEL_Z 5
 
 #define XY_ANG_POS_P_GAIN   4.0
 #define XY_ANG_POS_I_GAIN   0.0
 #define XY_ANG_POS_D_GAIN  -0.0
-#define XY_ANG_RATE_P_GAIN 14.0
-#define XY_ANG_RATE_I_GAIN  0.0
-#define XY_ANG_RATE_D_GAIN -0.14
+#define XY_ANG_VEL_P_GAIN 14.0
+#define XY_ANG_VEL_I_GAIN  0.0
+#define XY_ANG_VEL_D_GAIN -0.14
 
 #define Z_ANG_POS_P_GAIN 0.0
 #define Z_ANG_POS_I_GAIN 0.0
 #define Z_ANG_POS_D_GAIN 0.0
-#define Z_ANG_RATE_P_GAIN 0.0
-#define Z_ANG_RATE_I_GAIN 0.0
-#define Z_ANG_RATE_D_GAIN 0.0
+#define Z_ANG_VEL_P_GAIN 0.0
+#define Z_ANG_VEL_I_GAIN 0.0
+#define Z_ANG_VEL_D_GAIN 0.0
 
-#define TARGET_ANG_POS_CAP PI/12   // Cap difference between target and current rotation vectors.
-#define TARGET_ANG_RATE_CAP 2*PI   // Cap maximum angular velocity rate.
+#define TARGET_ANG_POS_CAP PI/12   // Cap maximum angular position.
+#define TARGET_ANG_VEL_CAP 2*PI   // Cap maximum angular velocity.
 
 
 // ============================================================================
@@ -134,10 +134,10 @@ struct PIDdata {
 #define BUTTON_INCREASE_TRIM        5
 #define BUTTON_DECREASE_XY_ANG_POS_P_GAIN   6
 #define BUTTON_INCREASE_XY_ANG_POS_P_GAIN   7
-#define BUTTON_DECREASE_XY_ANG_RATE_P_GAIN  8
-#define BUTTON_INCREASE_XY_ANG_RATE_P_GAIN  9
-#define BUTTON_DECREASE_XY_ANG_RATE_D_GAIN  10
-#define BUTTON_INCREASE_XY_ANG_RATE_D_GAIN  11
+#define BUTTON_DECREASE_XY_ANG_VEL_P_GAIN   8
+#define BUTTON_INCREASE_XY_ANG_VEL_P_GAIN   9
+#define BUTTON_DECREASE_XY_ANG_VEL_D_GAIN   10
+#define BUTTON_INCREASE_XY_ANG_VEL_D_GAIN   11
 
 // ============================================================================
 // Hardware configuration: any parameter that is changed so infrequently that

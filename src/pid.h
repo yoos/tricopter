@@ -33,12 +33,12 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
     //    }
     //}
 
-    //// For rate controller, get rate directly from gyro outputs to minimize
+    //// For velocity controller, get velocity directly from gyro outputs to minimize
     //// noise.
-    //else if (PIDparameters.id == PID_ANG_RATE_X) {
+    //else if (PIDparameters.id == PID_ANG_VEL_X) {
     //    derivative = gVec[0];
     //}
-    //else if (PIDparameters.id == PID_ANG_RATE_Y) {
+    //else if (PIDparameters.id == PID_ANG_VEL_Y) {
     //    derivative = gVec[1];
     //}
 
@@ -52,7 +52,7 @@ float updatePID(float targetValue, float currentValue, struct PIDdata &PIDparame
     // NOTE: The P, I, and D gains should end up being no more than a single
     // degree of magnitude away from each other... maybe.
     //
-    // TODO: Try returning just the D term so the PID loop is just a rate
+    // TODO: Try returning just the D term so the PID loop is just a velocity
     // calculator.
     return PIDparameters.P * proportional +
            PIDparameters.I * PIDparameters.integral +
