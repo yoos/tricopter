@@ -187,7 +187,8 @@ def telemetry():
             if pidDataIndex:
                 try:
                     for i in range(3):
-                        pidData[i] = int(fields[pidDataIndex][i+1:i+2].encode('hex'), 16)
+                        pidData[i] = float(int(fields[pidDataIndex][i+1:i+2].encode('hex'), 16))
+                    pidData[2] /= 100
                 except Exception, e:
                     dataIsGood = False
                     if cfg.debug:
