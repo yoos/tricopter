@@ -37,12 +37,18 @@ Pilot::Pilot() {
     PID[PID_ANG_POS_X].id = PID_ANG_POS_X;
     PID[PID_ANG_POS_Y].id = PID_ANG_POS_Y;
     PID[PID_ANG_POS_Z].id = PID_ANG_POS_Z;
+    PID[PID_ANG_RATE_X].id = PID_ANG_RATE_X;
+    PID[PID_ANG_RATE_Y].id = PID_ANG_RATE_Y;
+    PID[PID_ANG_RATE_Z].id = PID_ANG_RATE_Z;
 
     // Set dt.
     float deltaPIDTime = (float) MASTER_DT * CONTROL_LOOP_INTERVAL / 1000000;   // Time difference in seconds.
     PID[PID_ANG_POS_X].deltaPIDTime = deltaPIDTime;
     PID[PID_ANG_POS_Y].deltaPIDTime = deltaPIDTime;
     PID[PID_ANG_POS_Z].deltaPIDTime = deltaPIDTime;
+    PID[PID_ANG_RATE_X].deltaPIDTime = deltaPIDTime;
+    PID[PID_ANG_RATE_Y].deltaPIDTime = deltaPIDTime;
+    PID[PID_ANG_RATE_Z].deltaPIDTime = deltaPIDTime;
 
     // Set initial PID gains.
     PID[PID_ANG_POS_X].P = PID[PID_ANG_POS_Y].P = XY_ANG_POS_P_GAIN;
@@ -126,8 +132,8 @@ void Pilot::fly() {
             // TODO: The first two are approximations! Need to figure out how to
             // properly use the DCM.
             // ====================================================================
-            targetAngPos[0] = -joy.axes[SY]/125 * TARGET_ANGLE_CAP;
-            targetAngPos[1] =  joy.axes[SX]/125 * TARGET_ANGLE_CAP;
+            targetAngPos[0] = -joy.axes[SY]/125 * TARGET_ANG_POS_CAP;
+            targetAngPos[1] =  joy.axes[SX]/125 * TARGET_ANG_POS_CAP;
             targetAngPos[2] += joy.axes[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
 
             // Keep targetAngPos within [-PI, PI].
@@ -165,8 +171,8 @@ void Pilot::fly() {
 
         // RATE CONTROL FLIGHT MODE
         else if (flightMode == ACRO) {
-            targetAngRate[0] = -joy.axes[SY]/125 * TARGET_RATE_CAP;
-            targetAngRate[1] =  joy.axes[SX]/125 * TARGET_RATE_CAP;
+            targetAngRate[0] = -joy.axes[SY]/125 * TARGET_ANG_RATE_CAP;
+            targetAngRate[1] =  joy.axes[SX]/125 * TARGET_ANG_RATE_CAP;
             targetAngRate[2] =  joy.axes[ST]/125 * Z_ROT_SPEED;
         }
 
