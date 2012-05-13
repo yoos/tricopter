@@ -39,10 +39,10 @@ struct PIDdata {
 #define PID_ANG_VEL_Y 4
 #define PID_ANG_VEL_Z 5
 
-#define XY_ANG_POS_P_GAIN   4.0
+#define XY_ANG_POS_P_GAIN   4.5
 #define XY_ANG_POS_I_GAIN   0.0
 #define XY_ANG_POS_D_GAIN  -0.0
-#define XY_ANG_VEL_P_GAIN 14.0
+#define XY_ANG_VEL_P_GAIN 12.2
 #define XY_ANG_VEL_I_GAIN  0.0
 #define XY_ANG_VEL_D_GAIN -0.14
 
@@ -53,7 +53,7 @@ struct PIDdata {
 #define Z_ANG_VEL_I_GAIN 0.0
 #define Z_ANG_VEL_D_GAIN 0.0
 
-#define TARGET_ANG_POS_CAP PI/12   // Cap maximum angular position.
+#define TARGET_ANG_POS_CAP PI/6   // Cap maximum angular position.
 #define TARGET_ANG_VEL_CAP 2*PI   // Cap maximum angular velocity.
 
 
@@ -110,7 +110,7 @@ struct PIDdata {
 #define THOVER 480   // Hover throttle PWM duty cycle
 #define TMAX   600   // Maximum throttle PWM duty cycle (at 400 kHz, 2500 * 761/1023 = 1860 us).
 
-#define SERVO_US_ZERO 1430   // Servo "zero" position (i.e., level to chassis).
+#define SERVO_US_ZERO 1480   // Servo "zero" position (i.e., level to chassis).
 #define SERVO_US_NEUTRAL 1370   // Servo neutral position (i.e., net Z torque = 0).
 #define SERVO_US_PER_RAD 500   // Microseconds per radian of servo rotation.
 
