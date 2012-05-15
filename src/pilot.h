@@ -16,8 +16,6 @@
 class Pilot {
     uint8_t serRead;
     float throttle;
-    float throttleLock;   // Follow throttle within some range +/- THROTTLE_LOCK so if throttle suddenly increases past THROTTLE LOCK, throttle does not change.
-    int throttleTrim;
 
     int flightMode;
 
@@ -32,7 +30,7 @@ class Pilot {
     uint8_t serInput[SER_PACKET_LEN];
 
     struct {
-        float axes[6];
+        float axes[7];
         bool buttons[14];
     } joy;
 

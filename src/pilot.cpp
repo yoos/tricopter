@@ -15,11 +15,14 @@ Pilot::Pilot() {
     // Assume serial inputs, all axes zeroed.
     serInput[SX] = 125;
     serInput[SY] = 125;
-    serInput[ST] = 125;
+    serInput[SZ] = 125;
     /* Keep Z value at some non-zero value (albeit very low so the tricopter 
      * doesn't fly off if something goes awry) so user is forced to adjust 
      * throttle before motors arm. */
-    serInput[SZ] = 3;
+    serInput[ST0] = 3;
+    serInput[ST1] = 3;
+    serInput[SH0] = 125;
+    serInput[SH1] = 125;
 
     // Zero rotation values.
     for (int i=0; i<3; i++) {
@@ -29,9 +32,6 @@ Pilot::Pilot() {
         pidAngVel[i] = 0;
         currentAngPos[i] = 0;
     }
-
-    // Initialize trim to 0.
-    throttleTrim = 0;
 
     // Set PID data ID so the PID function can apply appropriate caps, etc.
     PID[PID_ANG_POS_X].id = PID_ANG_POS_X;
@@ -136,9 +136,9 @@ void Pilot::fly() {
         // TODO: The first two are approximations! Need to figure out how to
         // properly use the DCM.
         // ====================================================================
-        targetAngPos[0] = -joy.axes[SY]/125 * TARGET_ANG_POS_CAP;
-        targetAngPos[1] =  joy.axes[SX]/125 * TARGET_ANG_POS_CAP;
-        targetAngPos[2] += joy.axes[ST]/125 * Z_ROT_SPEED * CONTROL_LOOP_INTERVAL * MASTER_DT / 1000000;
+        targetAngPos[0] = -joy.axes[SY] * TARGET_ANG_POS_CAP;
+        targetAngPos[1] =  joy.axes[SX] * TARGET_ANG_POS_CAP;
+        targetAngPos[2] += joy.axes[SZ] * Z_ROT_SPEED * CONTROL_LOOP_INTERVAL * MASTER_DT / 1000000;
 
         // Keep targetAngPos within [-PI, PI].
         for (int i=0; i<3; i++) {
@@ -176,15 +176,15 @@ void Pilot::fly() {
 
     // ANGULAR VELOCITY CONTROL FLIGHT MODE
     else if (flightMode == ACRO) {
-        targetAngVel[0] = -joy.axes[SY]/125 * TARGET_ANG_VEL_CAP;
-        targetAngVel[1] =  joy.axes[SX]/125 * TARGET_ANG_VEL_CAP;
-        targetAngVel[2] =  joy.axes[ST]/125 * Z_ROT_SPEED;
+        targetAngVel[0] = -joy.axes[SY] * TARGET_ANG_VEL_CAP;
+        targetAngVel[1] =  joy.axes[SX] * TARGET_ANG_VEL_CAP;
+        targetAngVel[2] =  joy.axes[SZ] * Z_ROT_SPEED;
     }
 
 
     angular_velocity_controller(targetAngVel, gVec, pwmShift);
 
-    throttle = throttleTrim + joy.axes[SZ] * (TMAX-TMIN) / 250;
+    throttle = (joy.axes[ST1] + 0.1*joy.axes[ST0]) * (TMAX-TMIN);
 
     calculate_pwm_outputs(throttle, pwmShift, pwmOut);
 }
@@ -206,34 +206,25 @@ void Pilot::update_joystick_input(void) {
     // Shift serial input values [0, 250] to correct range for each axis. Z
     // stays positive for ease of calculation.
     // ========================================================================
-    joy.axes[SX] = (float) serInput[SX] - 125;   // [-125, 125]
-    joy.axes[SY] = (float) serInput[SY] - 125;   // [-125, 125]
-    joy.axes[ST] = (float) serInput[ST] - 125;   // [-125, 125]
-    joy.axes[SZ] = (float) serInput[SZ];         // [   0, 250]
+    joy.axes[SX]  = ((float) serInput[SX] - 125)/125;    // [-1.0, 1.0]
+    joy.axes[SY]  = ((float) serInput[SY] - 125)/125;    // [-1.0, 1.0]
+    joy.axes[SZ]  = ((float) serInput[SZ] - 125)/125;    // [-1.0, 1.0]
+    joy.axes[ST0] = ((float) serInput[ST0])/250;         // [ 0.0, 1.0]
+    joy.axes[ST1] = ((float) serInput[ST1])/250;         // [ 0.0, 1.0]
+    joy.axes[SH0] = ((float) serInput[SH0] - 125)/125;   // [-1.0, 1.0]
+    joy.axes[SH1] = ((float) serInput[SH1] - 125)/125;   // [-1.0, 1.0]
 
     // ========================================================================
     // Set button values. We utilize only the lower 7 bits, since doing
     // otherwise would cause overlaps with serial headers.
     // ========================================================================
     for (int i=0; i<7; i++) {
-        joy.buttons[i]   = serInput[SB1] & (1<<i);
-        joy.buttons[7+i] = serInput[SB2] & (1<<i);
+        joy.buttons[i]   = serInput[SB0] & (1<<i);
+        joy.buttons[7+i] = serInput[SB1] & (1<<i);
     }
 }
 
 void Pilot::process_joystick_buttons(void) {
-    // "Reset" targetAngPos[2] to currentAngPos[2] if thumb button is pressed.
-    if (joy.buttons[BUTTON_RESET_YAW]) {
-        targetAngPos[2] = currentAngPos[2];
-        targetAngPos[2] += joy.axes[ST]/125 * Z_ROT_SPEED;
-    }
-
-    // Zero integral.
-    if (joy.buttons[BUTTON_ZERO_INTEGRAL]) {
-        PID[PID_ANG_POS_X].integral = 0;
-        PID[PID_ANG_POS_Y].integral = 0;
-    }
-
     // Enable acro mode (velocity control).
     if (joy.buttons[BUTTON_ACRO_MODE]) {
         flightMode = ACRO;
@@ -242,55 +233,58 @@ void Pilot::process_joystick_buttons(void) {
         flightMode = HOVER;
     }
 
-    // Trim throttle value.
-    if (joy.buttons[BUTTON_DECREASE_TRIM] && joy.buttons[BUTTON_INCREASE_TRIM]) {
-        throttleTrim = 0;
-    }
-    else if (joy.buttons[BUTTON_DECREASE_TRIM]) {
-        throttleTrim--;
-    }
-    else if (joy.buttons[BUTTON_INCREASE_TRIM]) {
-        throttleTrim++;
+    // "Reset" targetAngPos[2] to currentAngPos[2] if thumb button is pressed.
+    if (joy.buttons[BUTTON_RESET_YAW]) {
+        targetAngPos[2] = currentAngPos[2];
+        targetAngPos[2] += joy.axes[SZ] * Z_ROT_SPEED;
     }
 
     // Adjust gains on-the-fly.
-    if (joy.buttons[BUTTON_DECREASE_XY_ANG_POS_P_GAIN] && joy.buttons[BUTTON_INCREASE_XY_ANG_POS_P_GAIN]) {
-        PID[PID_ANG_POS_X].P = XY_ANG_POS_P_GAIN;
-        PID[PID_ANG_POS_Y].P = XY_ANG_POS_P_GAIN;
+    if (joy.buttons[BUTTON_INCREMENT_GAIN]) {
+        if (joy.buttons[BUTTON_ANG_POS_XY_P_GAIN]) {
+            PID[PID_ANG_POS_X].P = MAX(PID[PID_ANG_POS_X].P + 0.1, 0);
+            PID[PID_ANG_POS_Y].P = MAX(PID[PID_ANG_POS_Y].P + 0.1, 0);
+        }
+        if (joy.buttons[BUTTON_ANG_VEL_XY_P_GAIN]) {
+            PID[PID_ANG_VEL_X].P = MAX(PID[PID_ANG_VEL_X].P + 0.1, 0);
+            PID[PID_ANG_VEL_Y].P = MAX(PID[PID_ANG_VEL_Y].P + 0.1, 0);
+        }
+        if (joy.buttons[BUTTON_ANG_VEL_XY_D_GAIN]) {
+            PID[PID_ANG_VEL_X].D = MIN(PID[PID_ANG_VEL_X].D - 0.01, 0);
+            PID[PID_ANG_VEL_Y].D = MIN(PID[PID_ANG_VEL_Y].D - 0.01, 0);
+        }
+        if (joy.buttons[BUTTON_ANG_POS_Z_P_GAIN]) {
+            PID[PID_ANG_POS_Z].P = MAX(PID[PID_ANG_POS_Z].P + 0.1, 0);
+        }
+        if (joy.buttons[BUTTON_ANG_VEL_Z_P_GAIN]) {
+            PID[PID_ANG_VEL_Z].P = MAX(PID[PID_ANG_VEL_Z].P + 0.1, 0);
+        }
+        if (joy.buttons[BUTTON_ANG_VEL_Z_D_GAIN]) {
+            PID[PID_ANG_VEL_Z].D = MIN(PID[PID_ANG_VEL_Z].D - 0.01, 0);
+        }
     }
-    else if (joy.buttons[BUTTON_DECREASE_XY_ANG_POS_P_GAIN] && PID[PID_ANG_POS_X].P > 0) {
-        PID[PID_ANG_POS_X].P -= 0.1;
-        PID[PID_ANG_POS_Y].P -= 0.1;
-    }
-    else if (joy.buttons[BUTTON_INCREASE_XY_ANG_POS_P_GAIN]) {
-        PID[PID_ANG_POS_X].P += 0.1;
-        PID[PID_ANG_POS_Y].P += 0.1;
-    }
-
-    if (joy.buttons[BUTTON_DECREASE_XY_ANG_VEL_P_GAIN] && joy.buttons[BUTTON_INCREASE_XY_ANG_VEL_P_GAIN]) {
-        PID[PID_ANG_VEL_X].P = XY_ANG_VEL_P_GAIN;
-        PID[PID_ANG_VEL_Y].P = XY_ANG_VEL_P_GAIN;
-    }
-    else if (joy.buttons[BUTTON_DECREASE_XY_ANG_VEL_P_GAIN] && PID[PID_ANG_VEL_X].P > 0) {
-        PID[PID_ANG_VEL_X].P -= 0.1;
-        PID[PID_ANG_VEL_Y].P -= 0.1;
-    }
-    else if (joy.buttons[BUTTON_INCREASE_XY_ANG_VEL_P_GAIN]) {
-        PID[PID_ANG_VEL_X].P += 0.1;
-        PID[PID_ANG_VEL_Y].P += 0.1;
-    }
-
-    if (joy.buttons[BUTTON_DECREASE_XY_ANG_VEL_D_GAIN] && joy.buttons[BUTTON_INCREASE_XY_ANG_VEL_D_GAIN]) {
-        PID[PID_ANG_VEL_X].D = XY_ANG_VEL_D_GAIN;
-        PID[PID_ANG_VEL_Y].D = XY_ANG_VEL_D_GAIN;
-    }
-    else if (joy.buttons[BUTTON_DECREASE_XY_ANG_VEL_D_GAIN] && PID[PID_ANG_VEL_X].D < 0) {
-        PID[PID_ANG_VEL_X].D += 0.01;
-        PID[PID_ANG_VEL_Y].D += 0.01;
-    }
-    else if (joy.buttons[BUTTON_INCREASE_XY_ANG_VEL_D_GAIN]) {
-        PID[PID_ANG_VEL_X].D -= 0.01;
-        PID[PID_ANG_VEL_Y].D -= 0.01;
+    else if (joy.buttons[BUTTON_DECREMENT_GAIN]) {
+        if (joy.buttons[BUTTON_ANG_VEL_XY_P_GAIN]) {
+            PID[PID_ANG_VEL_X].P = MAX(PID[PID_ANG_VEL_X].P + 0.1, 0);
+            PID[PID_ANG_VEL_Y].P = MAX(PID[PID_ANG_VEL_Y].P + 0.1, 0);
+        }
+        if (joy.buttons[BUTTON_ANG_VEL_XY_P_GAIN]) {
+            PID[PID_ANG_VEL_X].P = MAX(PID[PID_ANG_VEL_X].P + 0.1, 0);
+            PID[PID_ANG_VEL_Y].P = MAX(PID[PID_ANG_VEL_Y].P + 0.1, 0);
+        }
+        if (joy.buttons[BUTTON_ANG_VEL_XY_D_GAIN]) {
+            PID[PID_ANG_VEL_X].D = MIN(PID[PID_ANG_VEL_X].D - 0.01, 0);
+            PID[PID_ANG_VEL_Y].D = MIN(PID[PID_ANG_VEL_Y].D - 0.01, 0);
+        }
+        if (joy.buttons[BUTTON_ANG_VEL_Z_P_GAIN]) {
+            PID[PID_ANG_VEL_Z].P = MAX(PID[PID_ANG_VEL_Z].P + 0.1, 0);
+        }
+        if (joy.buttons[BUTTON_ANG_VEL_Z_P_GAIN]) {
+            PID[PID_ANG_VEL_Z].P = MAX(PID[PID_ANG_VEL_Z].P + 0.1, 0);
+        }
+        if (joy.buttons[BUTTON_ANG_VEL_Z_D_GAIN]) {
+            PID[PID_ANG_VEL_Z].D = MIN(PID[PID_ANG_VEL_Z].D - 0.01, 0);
+        }
     }
 }
 
