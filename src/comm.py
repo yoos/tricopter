@@ -39,7 +39,7 @@ targetRot = [0.0, 0.0, 0.0]
 motorVal = [0.0, 0.0, 0.0, 0.0]
 
 # PID data
-pidData = [0.0, 0.0, 0.0]
+pidData = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 # Loop time
 loopTime = 0
@@ -188,12 +188,12 @@ def telemetry():
                 try:
                     for i in range(6):
                         pidData[i] = float(int(fields[pidDataIndex][i+1:i+2].encode('hex'), 16))
-                    pidData[0] /= 10    # Position P
-                    pidData[1] /= 10    # Position I
-                    pidData[2] /= 100   # Position D
-                    pidData[3] /= 10    # Velocity P
-                    pidData[4] /= 10    # Velocity I
-                    pidData[5] /= 100   # Velocity D
+                    pidData[0] /= 10    # XY position P
+                    pidData[1] /= 10    # XY velocity P
+                    pidData[2] /= 100   # XY velocity D
+                    pidData[3] /= 10    # Z position P
+                    pidData[4] /= 10    # Z velocity P
+                    pidData[5] /= 100   # Z velocity D
                 except Exception, e:
                     dataIsGood = False
                     if cfg.debug:
