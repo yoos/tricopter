@@ -46,10 +46,10 @@ struct PIDdata {
 #define XY_ANG_VEL_I_GAIN  0.0
 #define XY_ANG_VEL_D_GAIN -0.14
 
-#define Z_ANG_POS_P_GAIN 0.0
+#define Z_ANG_POS_P_GAIN 6.0
 #define Z_ANG_POS_I_GAIN 0.0
 #define Z_ANG_POS_D_GAIN 0.0
-#define Z_ANG_VEL_P_GAIN 0.0
+#define Z_ANG_VEL_P_GAIN 30.0
 #define Z_ANG_VEL_I_GAIN 0.0
 #define Z_ANG_VEL_D_GAIN 0.0
 
@@ -98,7 +98,7 @@ struct PIDdata {
 // Software configuration: any parameter that is purely code-related or is
 // relatively frequently changed.
 // ============================================================================
-#define MASTER_DT            6000   // 6000 us interval = 166 Hz master loop.
+#define MASTER_DT            7000   // 6000 us interval = 166 Hz master loop.
 #define CONTROL_LOOP_INTERVAL   1   // 1x master = 166 Hz.
 #define ACC_READ_INTERVAL       5   // Read accelerometer every 5th loop.
 #define COMM_LOOP_INTERVAL      5   // 1/5 master = 33 Hz.
@@ -110,9 +110,9 @@ struct PIDdata {
 #define THOVER 480   // Hover throttle PWM duty cycle
 #define TMAX   600   // Maximum throttle PWM duty cycle (at 400 kHz, 2500 * 761/1023 = 1860 us).
 
-#define SERVO_US_ZERO 1480   // Servo "zero" position (i.e., level to chassis).
-#define SERVO_US_NEUTRAL 1370   // Servo neutral position (i.e., net Z torque = 0).
-#define SERVO_US_PER_RAD 500   // Microseconds per radian of servo rotation.
+#define SERVO_MIN 1000   // Servo "zero" position (i.e., level to chassis).
+#define SERVO_NEUTRAL 1400   // Servo neutral position (i.e., net Z torque = 0).
+#define SERVO_MAX 2000   // Microseconds per radian of servo rotation.
 
 #define TIME_TO_ARM 2000000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 30   // This is added to TMIN to determine whether or not to arm the system.
@@ -151,11 +151,11 @@ struct PIDdata {
 #define MOTOR_R_SCALE  1   // Scale speed of right motor.
 #define MOTOR_L_SCALE  1   // Scale speed of left motor.
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
-#define Z_ROT_SPEED 1   // Scale how much joystick twist input affects target Z rotation. A value of 1 here means a maximum Z rotation speed is 1 rad/s.
+#define Z_ROT_SPEED 1.0   // Scale how much joystick twist input affects target Z rotation. A value of 1 here means a maximum Z rotation speed is 1 rad/s.
 
 // Calibration values for accelerometer.
 #define ACCEL_X_OFFSET -0.033
-#define ACCEL_Y_OFFSET -0.011
+#define ACCEL_Y_OFFSET  0.015
 #define ACCEL_Z_OFFSET -0.999
 
 // Calibration values for magnetometer. These are what the magnetometer axes
