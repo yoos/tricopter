@@ -173,9 +173,11 @@ def telemetry():
             # =========================================================
             if motorDataIndex:
                 try:
-                    for i in range(4):
-                        motorVal[i] = int(fields[motorDataIndex][i+1:i+2].encode('hex'), 16) * 376 / 250
-                        #motorVal[i] = struct.unpack('f', fields[motorDataIndex][3+i*4:3+(i+1)*4])[0]
+                    # Thrust motors
+                    for i in range(3):
+                        motorVal[i] = int(fields[motorDataIndex][i+1:i+2].encode('hex'), 16) * 329 / 250
+                    # Servo
+                    motorVal[3] = int(fields[motorDataIndex][4:5].encode('hex'), 16) * 1000 / 250 + 1000
                 except Exception, e:
                     dataIsGood = False
                     if cfg.debug:
