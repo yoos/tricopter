@@ -29,9 +29,12 @@ float32 motorL
 float32 servoT
 
 # PID gains for X, Y, Z axes.
-float32 P
-float32 I
-float32 D
+float32 ang_pos_xy_P
+float32 ang_vel_xy_P
+float32 ang_vel_xy_D
+float32 ang_pos_z_P
+float32 ang_vel_z_P
+float32 ang_vel_z_D
 
 # Loop time
 int32 looptime
