@@ -212,13 +212,13 @@ def telemetry():
                 print "PID:", pidData
                 print "Loop:", loopTime
 
-                """pub.publish(Telemetry(dcm[0][0], dcm[0][1], dcm[0][2],
+                pub.publish(Telemetry(dcm[0][0], dcm[0][1], dcm[0][2],
                                       dcm[1][0], dcm[1][1], dcm[1][2],
                                       dcm[2][0], dcm[2][1], dcm[2][2],
                                       targetRot[0], targetRot[1], targetRot[2],
                                       motorVal[0], motorVal[1], motorVal[2], motorVal[3],
                                       pidData[0], pidData[1], pidData[2], pidData[3], pidData[4], pidData[5],
-                                      loopTime))"""
+                                      loopTime))
             else:
                 if cfg.debug:
                     print "[Comm] Bad data!"
