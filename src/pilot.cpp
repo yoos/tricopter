@@ -123,68 +123,70 @@ void Pilot::fly() {
         update_joystick_input();
         process_joystick_buttons();
 
-        // ANGULAR POSITION CONTROL FLIGHT MODE
-        if (flightMode == HOVER) {
-            // ====================================================================
-            // Calculate target rotation vector based on joystick input scaled to a
-            // maximum rotation of PI/6.
-            //
-            // TODO: The first two are approximations! Need to figure out how to
-            // properly use the DCM.
-            // ====================================================================
-            targetAngPos[0] = -joy.axes[SY]/125 * TARGET_ANG_POS_CAP;
-            targetAngPos[1] =  joy.axes[SX]/125 * TARGET_ANG_POS_CAP;
-            targetAngPos[2] += joy.axes[ST]/125 * Z_ROT_SPEED / (MASTER_DT * CONTROL_LOOP_INTERVAL);
-
-            // Keep targetAngPos within [-PI, PI].
-            for (int i=0; i<3; i++) {
-                if (targetAngPos[i] > PI) {
-                    targetAngPos[i] -= 2*PI;
-                }
-                else if (targetAngPos[i] < -PI) {
-                    targetAngPos[i] += 2*PI;
-                }
-            }
-
-            // ====================================================================
-            // Calculate current rotation vector (Euler angles) from DCM and make
-            // appropriate modifications to make PID calculations work later.
-            // ====================================================================
-            currentAngPos[0] = bodyDCM[1][2];
-            currentAngPos[1] = -bodyDCM[0][2];
-            currentAngPos[2] = atan2(bodyDCM[0][1], bodyDCM[0][0]);
-
-            // Keep abs(targetAngPos[i] - currentAngPos[i]) within [-PI, PI]. This way,
-            // nothing bad happens as we rotate to any angle in [-PI, PI].
-            for (int i=0; i<3; i++) {
-                if (targetAngPos[i] - currentAngPos[i] > PI) {
-                    currentAngPos[i] += 2*PI;
-                }
-                else if (targetAngPos[i] - currentAngPos[i] < -PI) {
-                    currentAngPos[i] -= 2*PI;
-                }
-            }
-
-            angular_position_controller(targetAngPos, currentAngPos, targetAngVel);
-        }
-
-
-        // ANGULAR VELOCITY CONTROL FLIGHT MODE
-        else if (flightMode == ACRO) {
-            targetAngVel[0] = -joy.axes[SY]/125 * TARGET_ANG_VEL_CAP;
-            targetAngVel[1] =  joy.axes[SX]/125 * TARGET_ANG_VEL_CAP;
-            targetAngVel[2] =  joy.axes[ST]/125 * Z_ROT_SPEED;
-        }
-
-
-        angular_velocity_controller(targetAngVel, gVec, pwmShift);
-
-        throttle = throttleTrim + joy.axes[SZ] * (TMAX-TMIN) / 250;
-
-        calculate_pwm_outputs(throttle, pwmShift, pwmOut);
-
         okayToFly = false;
     }
+
+
+    // ANGULAR POSITION CONTROL FLIGHT MODE
+    if (flightMode == HOVER) {
+        // ====================================================================
+        // Calculate target rotation vector based on joystick input scaled to a
+        // maximum rotation of PI/6.
+        //
+        // TODO: The first two are approximations! Need to figure out how to
+        // properly use the DCM.
+        // ====================================================================
+        targetAngPos[0] = -joy.axes[SY]/125 * TARGET_ANG_POS_CAP;
+        targetAngPos[1] =  joy.axes[SX]/125 * TARGET_ANG_POS_CAP;
+        targetAngPos[2] += joy.axes[ST]/125 * Z_ROT_SPEED * CONTROL_LOOP_INTERVAL * MASTER_DT / 1000000;
+
+        // Keep targetAngPos within [-PI, PI].
+        for (int i=0; i<3; i++) {
+            if (targetAngPos[i] > PI) {
+                targetAngPos[i] -= 2*PI;
+            }
+            else if (targetAngPos[i] < -PI) {
+                targetAngPos[i] += 2*PI;
+            }
+        }
+
+        // ====================================================================
+        // Calculate current rotation vector (Euler angles) from DCM and make
+        // appropriate modifications to make PID calculations work later.
+        // ====================================================================
+        currentAngPos[0] = bodyDCM[1][2];
+        currentAngPos[1] = -bodyDCM[0][2];
+        currentAngPos[2] = atan2(bodyDCM[0][1], bodyDCM[0][0]);
+
+        // Keep abs(targetAngPos[i] - currentAngPos[i]) within [-PI, PI].
+        // This way, nothing bad happens as we rotate to any angle in [-PI,
+        // PI].
+        for (int i=0; i<3; i++) {
+            if (targetAngPos[i] - currentAngPos[i] > PI) {
+                currentAngPos[i] += 2*PI;
+            }
+            else if (targetAngPos[i] - currentAngPos[i] < -PI) {
+                currentAngPos[i] -= 2*PI;
+            }
+        }
+
+        angular_position_controller(targetAngPos, currentAngPos, targetAngVel);
+    }
+
+
+    // ANGULAR VELOCITY CONTROL FLIGHT MODE
+    else if (flightMode == ACRO) {
+        targetAngVel[0] = -joy.axes[SY]/125 * TARGET_ANG_VEL_CAP;
+        targetAngVel[1] =  joy.axes[SX]/125 * TARGET_ANG_VEL_CAP;
+        targetAngVel[2] =  joy.axes[ST]/125 * Z_ROT_SPEED;
+    }
+
+
+    angular_velocity_controller(targetAngVel, gVec, pwmShift);
+
+    throttle = throttleTrim + joy.axes[SZ] * (TMAX-TMIN) / 250;
+
+    calculate_pwm_outputs(throttle, pwmShift, pwmOut);
 }
 
 void Pilot::die() {
