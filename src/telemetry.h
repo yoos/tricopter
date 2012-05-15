@@ -84,6 +84,9 @@ void sendPIDData() {
     queueByte((uint8_t) (  10*PID[PID_ANG_POS_X].P));
     queueByte((uint8_t) (  10*PID[PID_ANG_VEL_X].P));
     queueByte((uint8_t) (-100*PID[PID_ANG_VEL_X].D));
+    queueByte((uint8_t) (  10*PID[PID_ANG_POS_Z].P));
+    queueByte((uint8_t) (  10*PID[PID_ANG_VEL_Z].P));
+    queueByte((uint8_t) (-100*PID[PID_ANG_VEL_Z].D));
     queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
 
