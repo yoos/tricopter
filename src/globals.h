@@ -32,26 +32,26 @@ struct PIDdata {
     float integral;
 } PID[10];
 
-#define PID_ANG_POS_X  0
-#define PID_ANG_POS_Y  1
-#define PID_ANG_POS_Z  2
+#define PID_ANG_POS_X 0
+#define PID_ANG_POS_Y 1
+#define PID_ANG_POS_Z 2
 #define PID_ANG_VEL_X 3
 #define PID_ANG_VEL_Y 4
 #define PID_ANG_VEL_Z 5
 
-#define XY_ANG_POS_P_GAIN   4.5
-#define XY_ANG_POS_I_GAIN   0.0
-#define XY_ANG_POS_D_GAIN  -0.0
+#define XY_ANG_POS_P_GAIN  4.5
+#define XY_ANG_POS_I_GAIN  0.0
+#define XY_ANG_POS_D_GAIN -0.0
 #define XY_ANG_VEL_P_GAIN 12.2
 #define XY_ANG_VEL_I_GAIN  0.0
 #define XY_ANG_VEL_D_GAIN -0.14
 
-#define Z_ANG_POS_P_GAIN 6.0
-#define Z_ANG_POS_I_GAIN 0.0
-#define Z_ANG_POS_D_GAIN 0.0
+#define Z_ANG_POS_P_GAIN  6.0
+#define Z_ANG_POS_I_GAIN  0.0
+#define Z_ANG_POS_D_GAIN  0.0
 #define Z_ANG_VEL_P_GAIN 30.0
-#define Z_ANG_VEL_I_GAIN 0.0
-#define Z_ANG_VEL_D_GAIN 0.0
+#define Z_ANG_VEL_I_GAIN  0.0
+#define Z_ANG_VEL_D_GAIN  0.0
 
 #define TARGET_ANG_POS_CAP PI/6   // Cap maximum angular position.
 #define TARGET_ANG_VEL_CAP 2*PI   // Cap maximum angular velocity.
@@ -62,18 +62,21 @@ struct PIDdata {
 // ============================================================================
 #define BAUDRATE 38400   // Do NOT use 57600 or 115200 here, because the error rate is too high!
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
-#define SER_PACKET_LEN 6     // Each packet contains (excluding header) X, Y, Twist, Z, and two bytes for button values.
-#define SER_READ_BUF_LEN 100   // Number of bytes of serial data in buffer (used by Pilot).
-#define SER_READ_CHUNK_LEN 2   // Number of bytes to read off serial bus every loop.
+#define SER_PACKET_LEN 9     // Each packet contains (excluding header) X, Y, Z, T0, T1, H0, H1, and two bytes for button values.
+#define SER_READ_BUF_LEN 200   // Number of bytes of serial data in buffer (used by Pilot).
+#define SER_READ_CHUNK_LEN 3   // Number of bytes to read off serial bus every loop.
 
 #define INPUT_MIN  0     // Minimum integer input value from joystick.
 #define INPUT_MAX  250   // Maximum integer input value from joystick.
 #define SX 0   // Serial byte location for joystick X axis.
 #define SY 1   // Serial byte location for joystick Y axis.
-#define ST 2   // Serial byte location for joystick T (twist) axis.
-#define SZ 3   // Serial byte location for joystick Z axis.
-#define SB1 4   // Serial byte location for joystick buttons (0 to 7).
-#define SB2 5   // Serial byte location for joystick buttons (8 to 15).
+#define SZ 2   // Serial byte location for joystick Z (twist) axis.
+#define ST0 3   // Serial byte location for joystick T0 (throttle 0) axis.
+#define ST1 4   // Serial byte location for joystick T1 (throttle 1) axis.
+#define SH0 5   // Serial byte location for joystick H0 (hat 0) axis.
+#define SH1 6   // Serial byte location for joystick H1 (hat 1) axis.
+#define SB0 7   // Serial byte location for joystick buttons (0 to 6).
+#define SB1 8   // Serial byte location for joystick buttons (7 to 13).
 
 // ============================================================================
 // SERIAL OUT
@@ -126,18 +129,20 @@ struct PIDdata {
 // ============================================================================
 // Buttons
 // ============================================================================
-#define BUTTON_UNDEFINED            0
-#define BUTTON_RESET_YAW            1
-#define BUTTON_ACRO_MODE            2
-#define BUTTON_DECREASE_TRIM        3
-#define BUTTON_ZERO_INTEGRAL        4
-#define BUTTON_INCREASE_TRIM        5
-#define BUTTON_DECREASE_XY_ANG_POS_P_GAIN   6
-#define BUTTON_INCREASE_XY_ANG_POS_P_GAIN   7
-#define BUTTON_DECREASE_XY_ANG_VEL_P_GAIN   8
-#define BUTTON_INCREASE_XY_ANG_VEL_P_GAIN   9
-#define BUTTON_DECREASE_XY_ANG_VEL_D_GAIN   10
-#define BUTTON_INCREASE_XY_ANG_VEL_D_GAIN   11
+#define BUTTON_UNDEFINED           0
+#define BUTTON_ACRO_MODE           1
+#define BUTTON_RESET_YAW           2
+#define BUTTON_UNDEFINED           3
+#define BUTTON_UNDEFINED           4
+#define BUTTON_ANG_POS_XY_P_GAIN   5
+#define BUTTON_ANG_VEL_XY_P_GAIN   6
+#define BUTTON_ANG_VEL_XY_D_GAIN   7
+#define BUTTON_ANG_POS_Z_P_GAIN    8
+#define BUTTON_ANG_VEL_Z_P_GAIN    9
+#define BUTTON_ANG_VEL_Z_D_GAIN    10
+#define BUTTON_INCREMENT_GAIN      11
+#define BUTTON_DECREMENT_GAIN      12
+#define BUTTON_UNDEFINED           13
 
 // ============================================================================
 // Hardware configuration: any parameter that is changed so infrequently that
