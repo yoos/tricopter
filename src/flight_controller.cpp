@@ -48,6 +48,7 @@ int main(void) {
             // Control loop
             // ================================================================
             if (loopCount % CONTROL_LOOP_INTERVAL == 0) {
+                pilot.fly();
                 watchdog.watch(pilot.hasFood);
 
                 /* Don't run system unless armed!
@@ -64,7 +65,7 @@ int main(void) {
                     Timer3.pwm(PMT, TMIN);
                     Timer3.pwm(PMR, TMIN);
                     Timer3.pwm(PML, TMIN);
-                    pwmDevice[SERVO_T].writeMicroseconds(SERVO_US_ZERO);
+                    pwmDevice[SERVO_T].writeMicroseconds(SERVO_NEUTRAL);
 
                     // Check that motor values set by Pilot are within the
                     // arming threshold.
@@ -90,7 +91,7 @@ int main(void) {
                     Timer3.pwm(PMT, TMIN);
                     Timer3.pwm(PMR, TMIN);
                     Timer3.pwm(PML, TMIN);
-                    pwmDevice[SERVO_T].writeMicroseconds(SERVO_US_ZERO);
+                    pwmDevice[SERVO_T].writeMicroseconds(SERVO_NEUTRAL);
                 }
             }
 
@@ -98,8 +99,6 @@ int main(void) {
             // Communications loop
             // ================================================================
             if (loopCount % COMM_LOOP_INTERVAL == 0) {
-                pilot.fly();
-
                 #ifdef SEND_ARM_STATUS
                 sendArmStatus();
                 #endif
