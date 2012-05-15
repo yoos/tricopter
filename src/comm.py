@@ -20,7 +20,7 @@ import triconfig as cfg   # Import config.
 # =============================================================================
 
 armed = False   # System arm status. Set to True once throttle is set to zero. Communication will not start until this is True.
-axisValues = [125, 125, 125, 3]   # [X, Y, T, Z] -- Initialize Z as some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
+axisValues = [125, 125, 125, 3, 3, 125, 125]   # [X, Y, Z, T0, T1, H0, H1] -- Initialize (T)hrottle as some non-zero value (albeit very low so the tricopter doesn't fly off if something goes awry) so user is forced to fiddle with throttle before motors arm. Hopefully prevents disasters.
 buttonValues = 0   # Bitfield.
 
 # =============================================================================
@@ -73,20 +73,18 @@ def transmit():
         serWrite(cfg.serHeader +
                  chr(axisValues[cfg.axisX]) +
                  chr(axisValues[cfg.axisY]) +
-                 chr(axisValues[cfg.axisT]) +
                  chr(axisValues[cfg.axisZ]) +
+                 chr(axisValues[cfg.axisT0]) +
+                 chr(axisValues[cfg.axisT1]) +
+                 chr(axisValues[cfg.axisH0]) +
+                 chr(axisValues[cfg.axisH1]) +
                  chr(buttonValues & 0b01111111) +
                  chr(buttonValues >> 7))
-        #rospy.loginfo(str(axisValues[cfg.axisX]) + " " +
-        #              str(axisValues[cfg.axisY]) + " " +
-        #              str(axisValues[cfg.axisT]) + " " +
-        #              str(axisValues[cfg.axisZ]) + " " +
-        #              str(buttonValues))
-    elif axisValues[cfg.axisZ] == 0:
+    elif axisValues[cfg.axisT0] == 0 and axisValues[cfg.axisT1] == 0:
         armed = True
         rospy.loginfo("[Comm] Joystick throttle at minimum. Initiating communication!")
     else:
-        rospy.loginfo("[Comm] Joystick throttle not at minimum! Current value: " + str(axisValues[cfg.axisZ]))
+        rospy.loginfo("[Comm] Joystick throttle not at minimum! Current values: " + str(axisValues[cfg.axisT0]) + " " + str(axisValues[cfg.axisT1]))
 
 
 # =============================================================================
@@ -188,11 +186,14 @@ def telemetry():
             # =========================================================
             if pidDataIndex:
                 try:
-                    for i in range(3):
+                    for i in range(6):
                         pidData[i] = float(int(fields[pidDataIndex][i+1:i+2].encode('hex'), 16))
-                    pidData[0] /= 10
-                    pidData[1] /= 10
-                    pidData[2] /= 100
+                    pidData[0] /= 10    # Position P
+                    pidData[1] /= 10    # Position I
+                    pidData[2] /= 100   # Position D
+                    pidData[3] /= 10    # Velocity P
+                    pidData[4] /= 10    # Velocity I
+                    pidData[5] /= 100   # Velocity D
                 except Exception, e:
                     dataIsGood = False
                     if cfg.debug:
@@ -211,13 +212,13 @@ def telemetry():
                 print "PID:", pidData
                 print "Loop:", loopTime
 
-                pub.publish(Telemetry(dcm[0][0], dcm[0][1], dcm[0][2],
+                """pub.publish(Telemetry(dcm[0][0], dcm[0][1], dcm[0][2],
                                       dcm[1][0], dcm[1][1], dcm[1][2],
                                       dcm[2][0], dcm[2][1], dcm[2][2],
                                       targetRot[0], targetRot[1], targetRot[2],
                                       motorVal[0], motorVal[1], motorVal[2], motorVal[3],
-                                      pidData[0], pidData[1], pidData[2],
-                                      loopTime))
+                                      pidData[0], pidData[1], pidData[2], pidData[3], pidData[4], pidData[5],
+                                      loopTime))"""
             else:
                 if cfg.debug:
                     print "[Comm] Bad data!"
