@@ -265,25 +265,25 @@ void Pilot::process_joystick_buttons(void) {
     }
     else if (joy.buttons[BUTTON_DECREMENT_GAIN]) {
         if (joy.buttons[BUTTON_ANG_VEL_XY_P_GAIN]) {
-            PID[PID_ANG_VEL_X].P = MAX(PID[PID_ANG_VEL_X].P + 0.1, 0);
-            PID[PID_ANG_VEL_Y].P = MAX(PID[PID_ANG_VEL_Y].P + 0.1, 0);
+            PID[PID_ANG_VEL_X].P = MAX(PID[PID_ANG_VEL_X].P - 0.1, 0);
+            PID[PID_ANG_VEL_Y].P = MAX(PID[PID_ANG_VEL_Y].P - 0.1, 0);
         }
         if (joy.buttons[BUTTON_ANG_VEL_XY_P_GAIN]) {
-            PID[PID_ANG_VEL_X].P = MAX(PID[PID_ANG_VEL_X].P + 0.1, 0);
-            PID[PID_ANG_VEL_Y].P = MAX(PID[PID_ANG_VEL_Y].P + 0.1, 0);
+            PID[PID_ANG_VEL_X].P = MAX(PID[PID_ANG_VEL_X].P - 0.1, 0);
+            PID[PID_ANG_VEL_Y].P = MAX(PID[PID_ANG_VEL_Y].P - 0.1, 0);
         }
         if (joy.buttons[BUTTON_ANG_VEL_XY_D_GAIN]) {
-            PID[PID_ANG_VEL_X].D = MIN(PID[PID_ANG_VEL_X].D - 0.01, 0);
-            PID[PID_ANG_VEL_Y].D = MIN(PID[PID_ANG_VEL_Y].D - 0.01, 0);
+            PID[PID_ANG_VEL_X].D = MIN(PID[PID_ANG_VEL_X].D + 0.01, 0);
+            PID[PID_ANG_VEL_Y].D = MIN(PID[PID_ANG_VEL_Y].D + 0.01, 0);
         }
         if (joy.buttons[BUTTON_ANG_VEL_Z_P_GAIN]) {
-            PID[PID_ANG_VEL_Z].P = MAX(PID[PID_ANG_VEL_Z].P + 0.1, 0);
+            PID[PID_ANG_VEL_Z].P = MAX(PID[PID_ANG_VEL_Z].P - 0.1, 0);
         }
         if (joy.buttons[BUTTON_ANG_VEL_Z_P_GAIN]) {
-            PID[PID_ANG_VEL_Z].P = MAX(PID[PID_ANG_VEL_Z].P + 0.1, 0);
+            PID[PID_ANG_VEL_Z].P = MAX(PID[PID_ANG_VEL_Z].P - 0.1, 0);
         }
         if (joy.buttons[BUTTON_ANG_VEL_Z_D_GAIN]) {
-            PID[PID_ANG_VEL_Z].D = MIN(PID[PID_ANG_VEL_Z].D - 0.01, 0);
+            PID[PID_ANG_VEL_Z].D = MIN(PID[PID_ANG_VEL_Z].D + 0.01, 0);
         }
     }
 }
