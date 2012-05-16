@@ -9,10 +9,10 @@
 #serialPort = "/dev/ttyUSB0"   # Uncomment to specify serial port. Otherwise, will connect to first available port.
 baudRate = 38400
 debug = False
-loopPeriod = 0.005   # 5 ms interval = 200 Hz.
+loopPeriod = 0.002   # 2 ms interval = 500 Hz.
 
 # TX
-txInterval = 6   # 200 Hz / 6 = 33 Hz.
+txInterval = 10   # 500 Hz / 10 = 50 Hz.
 serHeader = '\xff'
 #dogBone = '\xfe'
 
