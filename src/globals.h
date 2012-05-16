@@ -64,7 +64,7 @@ struct PIDdata {
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
 #define SER_PACKET_LEN 9     // Each packet contains (excluding header) X, Y, Z, T0, T1, H0, H1, and two bytes for button values.
 #define SER_READ_BUF_LEN 200   // Number of bytes of serial data in buffer (used by Pilot).
-#define SER_READ_CHUNK_LEN 3   // Number of bytes to read off serial bus every loop.
+#define SER_READ_CHUNK_LEN 6   // Number of bytes to read off serial bus every loop.
 
 #define INPUT_MIN  0     // Minimum integer input value from joystick.
 #define INPUT_MAX  250   // Maximum integer input value from joystick.
