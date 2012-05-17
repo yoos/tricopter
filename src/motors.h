@@ -16,11 +16,11 @@
 void angular_position_controller (float* desired_pos, float* current_pos, float* desired_vel) {
     // Cap desired_pos for X and Y axes.
     for (int i=0; i<2; i++) {
-        if (desired_pos[i] > ANG_POS_XY_CAP) {
-            desired_pos[i] = ANG_POS_XY_CAP;
+        if (desired_pos[i] > ang_pos_cap) {
+            desired_pos[i] = ang_pos_cap;
         }
-        else if (desired_pos[i] < -ANG_POS_XY_CAP) {
-            desired_pos[i] = -ANG_POS_XY_CAP;
+        else if (desired_pos[i] < -ang_pos_cap) {
+            desired_pos[i] = -ang_pos_cap;
         }
     }
 

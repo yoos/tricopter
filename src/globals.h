@@ -19,6 +19,7 @@ int16_t pwmShift[4], pwmOut[4];   // 10 bit PWM output duty cycle.
 float bodyDCM[3][3];   // Current body orientation calculated by IMU.
 float targetAngPos[3], targetAngVel[3], pidAngPos[3], pidAngVel[3], currentAngPos[3];
 float gVec[3];   // This used to be part of ITG3200, but is now global so the PID controller can have direct access to the gyro measurements. This is a hack, and I am a bad programmer.
+float ang_pos_cap;
 
 // ============================================================================
 // PID
@@ -53,8 +54,9 @@ struct PIDdata {
 #define Z_ANG_VEL_I_GAIN  0.0
 #define Z_ANG_VEL_D_GAIN  0.0
 
-#define ANG_POS_XY_CAP PI/6   // Cap maximum angular position.
-#define ANG_VEL_XY_CAP 2*PI   // Cap maximum angular velocity.
+#define ANG_POS_XY_CAP_LOW  PI/12   // Low angular position cap.
+#define ANG_POS_XY_CAP_HIGH PI/6    // High angular position cap.
+#define ANG_VEL_XY_CAP 2*PI   // Angular velocity cap.
 #define ANG_VEL_Z_CAP  2.0
 
 
@@ -134,7 +136,7 @@ struct PIDdata {
 #define BUTTON_ACRO_MODE           1
 #define BUTTON_RESET_YAW           2
 #define BUTTON_UNDEFINED           3
-#define BUTTON_UNDEFINED           4
+#define BUTTON_INC_MAX_ANG_POS     4
 #define BUTTON_ANG_POS_XY_P_GAIN   5
 #define BUTTON_ANG_VEL_XY_P_GAIN   6
 #define BUTTON_ANG_VEL_XY_D_GAIN   7

@@ -32,6 +32,7 @@ Pilot::Pilot() {
         pidAngVel[i] = 0;
         currentAngPos[i] = 0;
     }
+    ang_pos_cap = 0;
 
     // Set PID data ID so the PID function can apply appropriate caps, etc.
     PID[PID_ANG_POS_X].id = PID_ANG_POS_X;
@@ -136,8 +137,8 @@ void Pilot::fly() {
         // TODO: The first two are approximations! Need to figure out how to
         // properly use the DCM.
         // ====================================================================
-        targetAngPos[0] = -joy.axes[SY] * ANG_POS_XY_CAP;
-        targetAngPos[1] =  joy.axes[SX] * ANG_POS_XY_CAP;
+        targetAngPos[0] = -joy.axes[SY] * ang_pos_cap;
+        targetAngPos[1] =  joy.axes[SX] * ang_pos_cap;
         targetAngPos[2] += joy.axes[SZ] * ANG_VEL_Z_CAP * CONTROL_LOOP_INTERVAL * MASTER_DT / 1000000;
 
         // Keep targetAngPos within [-PI, PI].
@@ -237,6 +238,14 @@ void Pilot::process_joystick_buttons(void) {
     if (joy.buttons[BUTTON_RESET_YAW]) {
         targetAngPos[2] = currentAngPos[2];
         targetAngPos[2] += joy.axes[SZ] * ANG_VEL_Z_CAP;
+    }
+
+    // Increase the angular position cap.
+    if (joy.buttons[BUTTON_INC_ANG_POS_CAP]) {
+        ang_pos_cap = ANG_POS_XY_CAP_HIGH;
+    }
+    else {
+        ang_pos_cap = ANG_POS_XY_CAP_LOW;
     }
 
     // Adjust gains on-the-fly.
