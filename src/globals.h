@@ -53,8 +53,9 @@ struct PIDdata {
 #define Z_ANG_VEL_I_GAIN  0.0
 #define Z_ANG_VEL_D_GAIN  0.0
 
-#define TARGET_ANG_POS_CAP PI/6   // Cap maximum angular position.
-#define TARGET_ANG_VEL_CAP 2*PI   // Cap maximum angular velocity.
+#define ANG_POS_XY_CAP PI/6   // Cap maximum angular position.
+#define ANG_VEL_XY_CAP 2*PI   // Cap maximum angular velocity.
+#define ANG_VEL_Z_CAP  2.0
 
 
 // ============================================================================
@@ -156,7 +157,6 @@ struct PIDdata {
 #define MOTOR_R_SCALE  1   // Scale speed of right motor.
 #define MOTOR_L_SCALE  1   // Scale speed of left motor.
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
-#define Z_ROT_SPEED 1.0   // Scale how much joystick twist input affects target Z rotation. A value of 1 here means a maximum Z rotation speed is 1 rad/s.
 
 // Calibration values for accelerometer.
 #define ACCEL_X_OFFSET -0.033
