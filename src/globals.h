@@ -136,7 +136,7 @@ struct PIDdata {
 #define BUTTON_ACRO_MODE           1
 #define BUTTON_RESET_YAW           2
 #define BUTTON_UNDEFINED           3
-#define BUTTON_INC_MAX_ANG_POS     4
+#define BUTTON_INC_ANG_POS_CAP     4
 #define BUTTON_ANG_POS_XY_P_GAIN   5
 #define BUTTON_ANG_VEL_XY_P_GAIN   6
 #define BUTTON_ANG_VEL_XY_D_GAIN   7
