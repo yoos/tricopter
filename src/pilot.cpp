@@ -136,9 +136,9 @@ void Pilot::fly() {
         // TODO: The first two are approximations! Need to figure out how to
         // properly use the DCM.
         // ====================================================================
-        targetAngPos[0] = -joy.axes[SY] * TARGET_ANG_POS_CAP;
-        targetAngPos[1] =  joy.axes[SX] * TARGET_ANG_POS_CAP;
-        targetAngPos[2] += joy.axes[SZ] * Z_ROT_SPEED * CONTROL_LOOP_INTERVAL * MASTER_DT / 1000000;
+        targetAngPos[0] = -joy.axes[SY] * ANG_POS_XY_CAP;
+        targetAngPos[1] =  joy.axes[SX] * ANG_POS_XY_CAP;
+        targetAngPos[2] += joy.axes[SZ] * ANG_VEL_Z_CAP * CONTROL_LOOP_INTERVAL * MASTER_DT / 1000000;
 
         // Keep targetAngPos within [-PI, PI].
         for (int i=0; i<3; i++) {
@@ -176,15 +176,15 @@ void Pilot::fly() {
 
     // ANGULAR VELOCITY CONTROL FLIGHT MODE
     else if (flightMode == ACRO) {
-        targetAngVel[0] = -joy.axes[SY] * TARGET_ANG_VEL_CAP;
-        targetAngVel[1] =  joy.axes[SX] * TARGET_ANG_VEL_CAP;
-        targetAngVel[2] =  joy.axes[SZ] * Z_ROT_SPEED;
+        targetAngVel[0] = -joy.axes[SY] * ANG_VEL_XY_CAP;
+        targetAngVel[1] =  joy.axes[SX] * ANG_VEL_XY_CAP;
+        targetAngVel[2] =  joy.axes[SZ] * ANG_VEL_Z_CAP;
     }
 
 
     angular_velocity_controller(targetAngVel, gVec, pwmShift);
 
-    throttle = (joy.axes[ST1] + 0.1*joy.axes[ST0]) * (TMAX-TMIN);
+    throttle = (0.9*joy.axes[ST1] + 0.1*joy.axes[ST0]) * (TMAX-TMIN);
 
     calculate_pwm_outputs(throttle, pwmShift, pwmOut);
 }
@@ -236,7 +236,7 @@ void Pilot::process_joystick_buttons(void) {
     // "Reset" targetAngPos[2] to currentAngPos[2] if thumb button is pressed.
     if (joy.buttons[BUTTON_RESET_YAW]) {
         targetAngPos[2] = currentAngPos[2];
-        targetAngPos[2] += joy.axes[SZ] * Z_ROT_SPEED;
+        targetAngPos[2] += joy.axes[SZ] * ANG_VEL_Z_CAP;
     }
 
     // Adjust gains on-the-fly.

@@ -14,13 +14,13 @@
 // Calculate desired angular velocities based on desired angular position
 // inputs.
 void angular_position_controller (float* desired_pos, float* current_pos, float* desired_vel) {
-    // Cap desired_pos.
-    for (int i=0; i<3; i++) {
-        if (desired_pos[i] > TARGET_ANG_POS_CAP) {
-            desired_pos[i] = TARGET_ANG_POS_CAP;
+    // Cap desired_pos for X and Y axes.
+    for (int i=0; i<2; i++) {
+        if (desired_pos[i] > ANG_POS_XY_CAP) {
+            desired_pos[i] = ANG_POS_XY_CAP;
         }
-        else if (desired_pos[i] < -TARGET_ANG_POS_CAP) {
-            desired_pos[i] = -TARGET_ANG_POS_CAP;
+        else if (desired_pos[i] < -ANG_POS_XY_CAP) {
+            desired_pos[i] = -ANG_POS_XY_CAP;
         }
     }
 
@@ -38,14 +38,22 @@ void angular_position_controller (float* desired_pos, float* current_pos, float*
 // Calculate throttle shifts for the individual motors based on desired angular
 // velocity inputs.
 void angular_velocity_controller (float* desired_vel, float* current_vel, int16_t* pwmShift) {
-    // Cap desired_vel.
-    for (int i=0; i<3; i++) {
-        if (desired_vel[i] > TARGET_ANG_VEL_CAP) {
-            desired_vel[i] = TARGET_ANG_VEL_CAP;
+    // Cap desired_vel for X and Y axes.
+    for (int i=0; i<2; i++) {
+        if (desired_vel[i] > ANG_VEL_XY_CAP) {
+            desired_vel[i] = ANG_VEL_XY_CAP;
         }
-        else if (desired_vel[i] < -TARGET_ANG_VEL_CAP) {
-            desired_vel[i] = -TARGET_ANG_VEL_CAP;
+        else if (desired_vel[i] < -ANG_VEL_XY_CAP) {
+            desired_vel[i] = -ANG_VEL_XY_CAP;
         }
+    }
+
+    // Cap desired_vel for Z axis.
+    if (desired_vel[2] > ANG_VEL_Z_CAP) {
+        desired_vel[2] = ANG_VEL_Z_CAP;
+    }
+    else if (desired_vel[2] < -ANG_VEL_Z_CAP) {
+        desired_vel[2] = -ANG_VEL_Z_CAP;
     }
 
     // Calculate intermediate PID values that will be used later to calculate
