@@ -132,10 +132,16 @@ void IMU::update() {
         // the "cutoff" value (the constant before the ABS() below) for
         // disregaring acceleration input can be more accurately determined.
         #ifdef ACC_SCALE_WEIGHT
-        accScale = (1 - MIN(1, ACC_SCALE_WEIGHT * ABS(accScale - 1)));
+        // For some reason, 1 gravity has magnitude of 1.05.
+        accScale = (1.05 - MIN(1.05, ACC_SCALE_WEIGHT * ABS(accScale - 1.05)));
         accWeight = ACC_WEIGHT * accScale;
         #else
         accWeight = ACC_WEIGHT;
+
+        // Ignore accelerometer if it measures anything 0.5g past gravity.
+        if (accScale > 1.5 || accScale < 0.5) {
+            accWeight = 0;
+        }
         #endif // ACC_SCALE_WEIGHT
 
         // Uncomment the loop below to get accelerometer readings in order to

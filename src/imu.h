@@ -14,8 +14,8 @@
 #include "triMath.h"
 #include "globals.h"
 
-#define ACC_WEIGHT 0.050   // Accelerometer data weight relative to gyro's weight of 1
-//#define ACC_SCALE_WEIGHT 30   // Reduce accelerometer weight if measured magnitude of acceleration differs significantly from 1 g.
+#define ACC_WEIGHT 0.080   // Accelerometer data weight relative to gyro's weight of 1
+#define ACC_SCALE_WEIGHT 2   // Gradually drive accelerometer weight to zero. For example, a value of 5 here will drive the accelerometer weight to zero if the magnitude of the measured acceleration differs by more than 1/5 gravity.
 //#define ACC_SELF_WEIGHT 0.02   // The weight of the newest measurement in the weighted average of accumulated and newest measurements.
 //#define ACC_UPDATE_SIG 50.0   // Update sigma for Kalman filter
 //#define ACC_PREDICT_SIG 10.2   // Prediction sigma for Kalman filter
