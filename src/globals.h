@@ -67,7 +67,7 @@ struct PIDdata {
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
 #define SER_PACKET_LEN 9     // Each packet contains (excluding header) X, Y, Z, T0, T1, H0, H1, and two bytes for button values.
 #define SER_READ_BUF_LEN 200   // Number of bytes of serial data in buffer (used by Pilot).
-#define SER_READ_CHUNK_LEN 6   // Number of bytes to read off serial bus every loop.
+#define SER_READ_CHUNK_LEN 5   // Number of bytes to read off serial bus every loop.
 
 #define INPUT_MIN  0     // Minimum integer input value from joystick.
 #define INPUT_MAX  250   // Maximum integer input value from joystick.
@@ -104,20 +104,20 @@ struct PIDdata {
 // Software configuration: any parameter that is purely code-related or is
 // relatively frequently changed.
 // ============================================================================
-#define MASTER_DT            7000   // 6000 us interval = 166 Hz master loop.
-#define CONTROL_LOOP_INTERVAL   1   // 1x master = 166 Hz.
+#define MASTER_DT            7500   // 7500 us interval = 133 Hz master loop.
+#define CONTROL_LOOP_INTERVAL   1   // 1x master = 133 Hz.
 #define ACC_READ_INTERVAL       5   // Read accelerometer every 5th loop.
-#define COMM_LOOP_INTERVAL      5   // 1/5 master = 33 Hz.
-#define DOGLIFE 600   // Watchdog life in milliseconds.
+#define COMM_LOOP_INTERVAL      5   // 1/5 master = 27 Hz.
+#define DOGLIFE 400   // Watchdog life in milliseconds.
 
 // Throttle stuff. Minimum signal is 750 us. Maximum signal is 2200 us. Hover
 // is around 1200 us.
 #define TMIN   432   // Minimum throttle PWM duty cycle. At 400 kHz, 2500 * 432/1023 = 1055 us. Although simonk's firmware should register 1060 us as the minimum throttle, one of my ESCs will not arm until it is this low.
 #define THOVER 480   // Hover throttle PWM duty cycle
-#define TMAX   600   // Maximum throttle PWM duty cycle (at 400 kHz, 2500 * 761/1023 = 1860 us).
+#define TMAX   761   // Maximum throttle PWM duty cycle (at 400 kHz, 2500 * 761/1023 = 1860 us).
 
 #define SERVO_MIN 1000   // Servo "zero" position (i.e., level to chassis).
-#define SERVO_NEUTRAL 1400   // Servo neutral position (i.e., net Z torque = 0).
+#define SERVO_NEUTRAL 1330   // Servo neutral position (i.e., net Z torque = 0). 1280 if reverse prop. 1330 otherwise.
 #define SERVO_MAX 2000   // Microseconds per radian of servo rotation.
 
 #define TIME_TO_ARM 2000000   // This divided by MASTER_DT determines how long it takes to arm the system.

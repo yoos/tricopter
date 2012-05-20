@@ -30,16 +30,39 @@
 
 ---
 
+XBee 2.4 GHz
+
      XBee A   XBee B   Factory default
 ID   1071     1071     3332
 CH   1A       1A       C
 DH   0        0        0
 DL   1        0        0
 MY   0        1        0
-BD   6        6        3
+BD   5        5        3
 RO   10       10       3
 D3   3        5        0
 IC   8        ___      0
 IU   ___      0        1
 IA   ___      FFFF     FFFFFFFFFFFFFFFF
+
+---
+
+XBee 900 MHz
+
+     XBee A   XBee B   Factory default
+ID   1A9F     1A9F     7FFF
+CH                     FF
+DH   13A200   13A200   0
+DL   40941ACD 40941AC2 FFFF
+SH   13A200   13A200   READ-ONLY
+SL   40941AC2 40941ACD READ-ONLY
+BD   5        5        3
+RO   3        3        3
+D3   3        5        0
+IC   8        ___      0
+
+MT   0        0        3
+RR   0        0        10
+
+CE   0        0        0
 
