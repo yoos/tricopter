@@ -14,7 +14,7 @@
 #define ACC_LPF_DEPTH 8   // Enable low-pass filter.
 
 #define ACC_RANGE 4
-#define ACC_BW 5
+#define ACC_BW 1   // 20 Hz low-pass filter.
 
 #define ACCADDR 0x40   // BMA180 device address.
 
