@@ -75,16 +75,6 @@ void IMU::init() {
     wAOffset[2] = ACCEL_Z_OFFSET;
     vCrossP(wAOffset, kbb, wAOffset);
 
-    offsetDCM[0][0] =            1;
-    offsetDCM[0][1] =  wAOffset[2];
-    offsetDCM[0][2] = -wAOffset[1];
-    offsetDCM[1][0] = -wAOffset[2];
-    offsetDCM[1][1] =            1;
-    offsetDCM[1][2] =  wAOffset[0];
-    offsetDCM[2][0] =  wAOffset[1];
-    offsetDCM[2][1] = -wAOffset[0];
-    offsetDCM[2][2] =            1;
-
     aVec[0] = 0;
     aVec[1] = 0;
     aVec[2] = -1;
@@ -312,6 +302,16 @@ void IMU::update() {
     orthonormalize(gyroDCM);
 
     #ifdef ACC_WEIGHT
+    offsetDCM[0][0] =            1;
+    offsetDCM[0][1] =  wAOffset[2];
+    offsetDCM[0][2] = -wAOffset[1];
+    offsetDCM[1][0] = -wAOffset[2];
+    offsetDCM[1][1] =            1;
+    offsetDCM[1][2] =  wAOffset[0];
+    offsetDCM[2][0] =  wAOffset[1];
+    offsetDCM[2][1] = -wAOffset[0];
+    offsetDCM[2][2] =            1;
+
     // Rotate gyroDCM with offsetDCM.
     mProduct(offsetDCM, gyroDCM, bodyDCM);
     //orthonormalize(bodyDCM);   // TODO: This shouldn't be necessary.

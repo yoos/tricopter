@@ -16,6 +16,7 @@
 int armCount;   // Arm status counter.
 int loopCount;   // Count system loops.
 int16_t pwmShift[4], pwmOut[4];   // 10 bit PWM output duty cycle.
+float wAOffset[3];   // Correction vector for wA that also doubles as trim.
 float bodyDCM[3][3];   // Current body orientation calculated by IMU.
 float targetAngPos[3], targetAngVel[3], pidAngPos[3], pidAngVel[3], currentAngPos[3];
 float gVec[3];   // This used to be part of ITG3200, but is now global so the PID controller can have direct access to the gyro measurements. This is a hack, and I am a bad programmer.
@@ -88,7 +89,7 @@ struct PIDdata {
 #define SER_WRITE_CHUNK_LEN 15   // Number of bytes to send per loop.
 
 #define SEND_ARM_STATUS
-//#define SEND_TARGET_ROTATION
+#define SEND_TARGET_ROTATION
 #define SEND_MOTOR_VALUES
 #define SEND_DCM
 #define SEND_PID_DATA

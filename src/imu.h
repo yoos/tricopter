@@ -42,7 +42,7 @@ class IMU {
 
     float wA[3];   // Corrective rotation vector based on acceleration vector.
     float wM[3];   // Corrective rotation vector based on magnetic north vector.
-    float wAOffset[3];   // Correction vector for wA.
+    //float wAOffset[3];   // Correction vector for wA.
     float wdt[3];    // Angular displacement vector = w * dt, where w is the angular velocity vector and dt is the time elapsed.
 
     float gyroDCM[3][3];     // DCM based on gyro readings, corrected with wA.

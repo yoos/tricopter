@@ -159,12 +159,12 @@ def telemetry():
             if rotationDataIndex:
                 try:
                     for i in range(3):
-                        targetRot[i] = float(int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16))/250*2*pi-pi
+                        targetRot[i] = (float(int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16)) - 125) / 250 * 180/20   # Trim angle in degrees.
                         #targetRot[i] = struct.unpack('f', fields[rotationDataIndex][3+i*4:3+i*4+4])[0]
                 except Exception, e:
                     dataIsGood = False
                     if cfg.debug:
-                        print "ROT:", str(e)
+                        print "TRIM:", str(e)
 
             # =========================================================
             # Check if we're receiving motor/servo output data.
@@ -207,7 +207,7 @@ def telemetry():
             # =========================================================
             if dataIsGood:
                 print "Arm:", int(fields[0].encode('hex'), 16)
-                print "Rot:", targetRot
+                print "Trim:", targetRot
                 print "Mot:", motorVal
                 print "PID:", pidData
                 print "Loop:", loopTime

@@ -49,7 +49,7 @@ void sendArmStatus() {
 void sendTargetRotation() {
     queueByte(ROT_SER_TAG);
     for (int i=0; i<3; i++) {
-        queueByte((uint8_t) ((targetAngPos[i]+PI)*250/(2*PI)));
+        queueByte((uint8_t) (wAOffset[i]*20/PI * 125) + 125);   // Hopefully the magnitude of wAOffset will remain under PI/20.
     }
     queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
