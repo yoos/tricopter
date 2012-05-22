@@ -155,13 +155,21 @@ void Pilot::fly() {
         // Calculate current rotation vector (Euler angles) from DCM and make
         // appropriate modifications to make PID calculations work later.
         // ====================================================================
-        currentAngPos[0] = bodyDCM[1][2];
-        currentAngPos[1] = -bodyDCM[0][2];
-        currentAngPos[2] = atan2(bodyDCM[0][1], bodyDCM[0][0]);
+        currentAngPos[0] = -atan2(bodyDCM[2][1], bodyDCM[2][2]) * bodyDCM[0][0] + atan2(bodyDCM[2][0], bodyDCM[2][2]) * bodyDCM[0][1];
+        currentAngPos[1] =  atan2(bodyDCM[2][0], bodyDCM[2][2]) * bodyDCM[1][1] - atan2(bodyDCM[2][1], bodyDCM[2][2]) * bodyDCM[1][0];
+
+        if (ABS(currentAngPos[0]) < PI/4 && ABS(currentAngPos[1]) < PI/4) {
+            currentAngPos[2] = atan2(bodyDCM[0][1], bodyDCM[0][0]);
+        }
+        else {
+            currentAngPos[2] = targetAngPos[2];
+        }
 
         // Keep abs(targetAngPos[i] - currentAngPos[i]) within [-PI, PI].
         // This way, nothing bad happens as we rotate to any angle in [-PI,
-        // PI].
+        // PI].   TODO: This would be more effective if the current angular
+        // velocity is taken into consideration before calculating
+        // currentAngPos.
         for (int i=0; i<3; i++) {
             if (targetAngPos[i] - currentAngPos[i] > PI) {
                 currentAngPos[i] += 2*PI;
