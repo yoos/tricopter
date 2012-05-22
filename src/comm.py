@@ -159,7 +159,7 @@ def telemetry():
             if rotationDataIndex:
                 try:
                     for i in range(3):
-                        targetRot[i] = (float(int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16)) - 125) / 250 * 180/20   # Trim angle in degrees.
+                        targetRot[i] = (float(int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16)) - 125) / 250 * pi/20   # Trim angle in radians.
                         #targetRot[i] = struct.unpack('f', fields[rotationDataIndex][3+i*4:3+i*4+4])[0]
                 except Exception, e:
                     dataIsGood = False

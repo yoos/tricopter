@@ -46,16 +46,15 @@ void IMU::init() {
      *  chassis, along the X and Y rotational axes.
      *
      *  The rotational difference between the orientations of the accelerometer
-     *  (gyroDCM) and the chassis (bodyDCM) is constant and can be represented
-     *  as another rotation matrix we will call offsetDCM. We first calculate a
-     *  rotation vector wAOffset based on the accelerometer's reading of
-     *  "gravity" when the chassis is horizontal. We then turn wAOffset into
-     *  offsetDCM with which we rotate gyroDCM to obtain bodyDCM.
+     *  (gyroDCM) and the chassis (bodyDCM) is constant and can be approximated
+     *  by another rotation matrix we will call trimDCM, which we populate with
+     *  trim angles obtained during hover calibration. We rotate gyroDCM by
+     *  trimDCM to obtain bodyDCM.
      *
      *  Keep in mind, however, that we still update the IMU based on gyroDCM
      *  and not bodyDCM. This is because it is gyroDCM we are correcting with
      *  the accelerometer's measurement of the gravity vector, and bodyDCM is
-     *  only a transformation of that DCM based on offsetDCM. We use bodyDCM
+     *  only a transformation of that DCM based on trimDCM. We use bodyDCM
      *  for flight calculations, but gyroDCM is what we keep track of within
      *  the IMU.
      *
@@ -65,15 +64,8 @@ void IMU::init() {
      *  insufficient, we can't expect software to fix everything.
      */
     #ifdef ACC_WEIGHT
-    // k body unit vector in body coordinates.
-    kbb[0] = 0.0;
-    kbb[1] = 0.0;
-    kbb[2] = 1.0;
-
-    wAOffset[0] = ACCEL_X_OFFSET;
-    wAOffset[1] = ACCEL_Y_OFFSET;
-    wAOffset[2] = ACCEL_Z_OFFSET;
-    vCrossP(wAOffset, kbb, wAOffset);
+    trimAngle[0] = TRIM_ANGLE_X;
+    trimAngle[1] = TRIM_ANGLE_Y;
 
     aVec[0] = 0;
     aVec[1] = 0;
@@ -135,7 +127,7 @@ void IMU::update() {
         #endif // ACC_SCALE_WEIGHT
 
         // Uncomment the loop below to get accelerometer readings in order to
-        // obtain wAOffset.
+        // obtain trimAngle.
         //if (loopCount % COMM_LOOP_INTERVAL == 0) {
         //    sp("A(");
         //    sp(aVec[0]*1000); sp(", ");
@@ -302,18 +294,18 @@ void IMU::update() {
     orthonormalize(gyroDCM);
 
     #ifdef ACC_WEIGHT
-    offsetDCM[0][0] =            1;
-    offsetDCM[0][1] =  wAOffset[2];
-    offsetDCM[0][2] = -wAOffset[1];
-    offsetDCM[1][0] = -wAOffset[2];
-    offsetDCM[1][1] =            1;
-    offsetDCM[1][2] =  wAOffset[0];
-    offsetDCM[2][0] =  wAOffset[1];
-    offsetDCM[2][1] = -wAOffset[0];
-    offsetDCM[2][2] =            1;
+    trimDCM[0][0] =             1;
+    trimDCM[0][1] =             0;
+    trimDCM[0][2] = -trimAngle[1];
+    trimDCM[1][0] =             0;
+    trimDCM[1][1] =             1;
+    trimDCM[1][2] =  trimAngle[0];
+    trimDCM[2][0] =  trimAngle[1];
+    trimDCM[2][1] = -trimAngle[0];
+    trimDCM[2][2] =             1;
 
-    // Rotate gyroDCM with offsetDCM.
-    mProduct(offsetDCM, gyroDCM, bodyDCM);
+    // Rotate gyroDCM with trimDCM.
+    mProduct(trimDCM, gyroDCM, bodyDCM);
     //orthonormalize(bodyDCM);   // TODO: This shouldn't be necessary.
     #else
     for (int i=0; i<3; i++) {

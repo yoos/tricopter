@@ -233,8 +233,8 @@ void Pilot::update_joystick_input(void) {
         joy.buttons[7+i] = serInput[SB1] & (1<<i);
     }
 
-    wAOffset[0] -= joy.axes[SH1] * COMM_LOOP_INTERVAL / MASTER_DT;
-    wAOffset[1] += joy.axes[SH0] * COMM_LOOP_INTERVAL / MASTER_DT;
+    trimAngle[0] -= joy.axes[SH1] * COMM_LOOP_INTERVAL / MASTER_DT;
+    trimAngle[1] += joy.axes[SH0] * COMM_LOOP_INTERVAL / MASTER_DT;
 }
 
 void Pilot::process_joystick_buttons(void) {

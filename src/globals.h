@@ -16,7 +16,7 @@
 int armCount;   // Arm status counter.
 int loopCount;   // Count system loops.
 int16_t pwmShift[4], pwmOut[4];   // 10 bit PWM output duty cycle.
-float wAOffset[3];   // Correction vector for wA that also doubles as trim.
+float trimAngle[2];   // Trim.
 float bodyDCM[3][3];   // Current body orientation calculated by IMU.
 float targetAngPos[3], targetAngVel[3], pidAngPos[3], pidAngVel[3], currentAngPos[3];
 float gVec[3];   // This used to be part of ITG3200, but is now global so the PID controller can have direct access to the gyro measurements. This is a hack, and I am a bad programmer.
@@ -161,10 +161,9 @@ struct PIDdata {
 #define MOTOR_L_SCALE  1   // Scale speed of left motor.
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
 
-// Calibration values for accelerometer.
-#define ACCEL_X_OFFSET -0.033
-#define ACCEL_Y_OFFSET  0.015
-#define ACCEL_Z_OFFSET -0.999
+// Default trim values.
+#define TRIM_ANGLE_X 0.0383
+#define TRIM_ANGLE_Y 0.0214
 
 // Calibration values for magnetometer. These are what the magnetometer axes
 // see as "zero".
