@@ -41,13 +41,10 @@ void sendArmStatus() {
     queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
 
-/*! Report target rotation vector (in BODY frame). TODO: targetRot is a
- *  misleading name because this is dwB (delta omega BODY), so to speak (i.e.,
- *  an update to the DCM). There is a target DCM we could calculate but is
- *  unneeded at this moment.
+/*! Report trim values.
  */
-void sendTargetRotation() {
-    queueByte(ROT_SER_TAG);
+void sendTrimValues() {
+    queueByte(TRIM_SER_TAG);
     for (int i=0; i<2; i++) {
         queueByte((uint8_t) (trimAngle[i]*20/PI * 125) + 125);   // Hopefully the magnitude of wAOffset will remain under PI/20.
     }

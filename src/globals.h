@@ -89,13 +89,13 @@ struct PIDdata {
 #define SER_WRITE_CHUNK_LEN 15   // Number of bytes to send per loop.
 
 #define SEND_ARM_STATUS
-#define SEND_TARGET_ROTATION
+#define SEND_TRIM_VALUES
 #define SEND_MOTOR_VALUES
 #define SEND_DCM
 #define SEND_PID_DATA
 
 #define DCM_SER_TAG 0xfb
-#define ROT_SER_TAG 0xfc
+#define TRIM_SER_TAG 0xfc
 #define MOT_SER_TAG 0xfd
 #define PID_SER_TAG 0xfe
 #define FIELD_SER_TAG 0xff

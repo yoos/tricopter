@@ -32,8 +32,8 @@ dcm = [[1.0, 0.0, 0.0],
        [0.0, 1.0, 0.0],
        [0.0, 0.0, 1.0]]
 
-# Target rotation values
-targetRot = [0.0, 0.0, 0.0]
+# Trim values
+trimVal = [0.0, 0.0]
 
 # Motor/servo values (MT, MR, ML, ST)
 motorVal = [0.0, 0.0, 0.0, 0.0]
@@ -91,9 +91,9 @@ def transmit():
 # RX
 # =============================================================================
 def telemetry():
-    global dcm, targetRot, motorVal, pidData, loopTime, serBuffer, serLines
+    global dcm, trimVal, motorVal, pidData, loopTime, serBuffer, serLines
     dcmDataIndex = 0       # Do I see IMU data?
-    rotationDataIndex = 0       # Do I see rotation data?
+    trimDataIndex = 0       # Do I see trim values?
     motorDataIndex = 0     # Do I see motor data?
     pidDataIndex = 0     # Do I see PID data?
 
@@ -123,8 +123,8 @@ def telemetry():
             for i in range(1, len(fields)):
                 if not dcmDataIndex and fields[i][0] == cfg.dcmSerTag:
                     dcmDataIndex = i
-                elif not rotationDataIndex and fields[i][0] == cfg.rotationSerTag:
-                    rotationDataIndex = i
+                elif not trimDataIndex and fields[i][0] == cfg.trimSerTag:
+                    trimDataIndex = i
                 elif not motorDataIndex and fields[i][0] == cfg.motorSerTag:
                     motorDataIndex = i
                 elif not pidDataIndex and fields[i][0] == cfg.pidSerTag:
@@ -154,13 +154,13 @@ def telemetry():
                         print "DCM:", str(e)
 
             # =========================================================
-            # Check if we're receiving target rotation data.
+            # Check if we're receiving trim values.
             # =========================================================
-            if rotationDataIndex:
+            if trimDataIndex:
                 try:
-                    for i in range(3):
-                        targetRot[i] = (float(int(fields[rotationDataIndex][i+1:i+2].encode('hex'), 16)) - 125) / 250 * pi/20   # Trim angle in radians.
-                        #targetRot[i] = struct.unpack('f', fields[rotationDataIndex][3+i*4:3+i*4+4])[0]
+                    for i in range(2):
+                        trimVal[i] = (float(int(fields[trimDataIndex][i+1:i+2].encode('hex'), 16)) - 125) / 250 * pi/20   # Trim angle in radians.
+                        #trimVal[i] = struct.unpack('f', fields[trimDataIndex][3+i*4:3+i*4+4])[0]
                 except Exception, e:
                     dataIsGood = False
                     if cfg.debug:
@@ -207,7 +207,7 @@ def telemetry():
             # =========================================================
             if dataIsGood:
                 print "Arm:", int(fields[0].encode('hex'), 16)
-                print "Trim:", targetRot
+                print "Trim:", trimVal
                 print "Mot:", motorVal
                 print "PID:", pidData
                 print "Loop:", loopTime
@@ -215,7 +215,7 @@ def telemetry():
                 pub.publish(Telemetry(dcm[0][0], dcm[0][1], dcm[0][2],
                                       dcm[1][0], dcm[1][1], dcm[1][2],
                                       dcm[2][0], dcm[2][1], dcm[2][2],
-                                      targetRot[0], targetRot[1], targetRot[2],
+                                      trimVal[0], trimVal[1],
                                       motorVal[0], motorVal[1], motorVal[2], motorVal[3],
                                       pidData[0], pidData[1], pidData[2], pidData[3], pidData[4], pidData[5],
                                       loopTime))

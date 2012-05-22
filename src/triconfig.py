@@ -21,7 +21,7 @@ rxInterval = 1   # 200 Hz / 1 = 200 Hz.
 newlineSerTag  = '\xde\xad\xbe\xef'
 fieldSerTag    = '\xff\xff'
 dcmSerTag      = '\xfb'
-rotationSerTag = '\xfc'
+trimSerTag     = '\xfc'
 motorSerTag    = '\xfd'
 pidSerTag      = '\xfe'
 

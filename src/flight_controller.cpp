@@ -115,8 +115,8 @@ int main(void) {
                 #endif
             }
             else if (loopCount % COMM_LOOP_INTERVAL == 2) {
-                #ifdef SEND_TARGET_ROTATION
-                sendTargetRotation();
+                #ifdef SEND_TRIM_VALUES
+                sendTrimValues();
                 #endif
 
                 #ifdef SEND_MOTOR_VALUES

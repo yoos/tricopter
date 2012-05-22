@@ -17,10 +17,9 @@ float32 dcmZX
 float32 dcmZY
 float32 dcmZZ
 
-# Rotation data
-float32 targetRotX
-float32 targetRotY
-float32 targetRotZ
+# Trim values
+float32 trimX
+float32 trimY
 
 # Motor values
 float32 motorT
