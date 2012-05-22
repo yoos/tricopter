@@ -295,9 +295,9 @@ void IMU::update() {
 
     #ifdef ACC_WEIGHT
     trimDCM[0][0] =             1;
-    trimDCM[0][1] =             1;
+    trimDCM[0][1] =             0;
     trimDCM[0][2] = -trimAngle[1];
-    trimDCM[1][0] =            -1;
+    trimDCM[1][0] =             0;
     trimDCM[1][1] =             1;
     trimDCM[1][2] =  trimAngle[0];
     trimDCM[2][0] =  trimAngle[1];
