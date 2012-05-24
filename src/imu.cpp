@@ -115,7 +115,7 @@ void IMU::update() {
         // disregaring acceleration input can be more accurately determined.
         #ifdef ACC_SCALE_WEIGHT
         // For some reason, 1 gravity has magnitude of 1.05.
-        accScale = (1.05 - MIN(1.05, ACC_SCALE_WEIGHT * ABS(accScale - 1.05)));
+        accScale = (1.0 - MIN(1.0, ACC_SCALE_WEIGHT * ABS(accScale - 1.0)));
         accWeight = ACC_WEIGHT * accScale;
         #else
         accWeight = ACC_WEIGHT;

@@ -109,6 +109,12 @@ void BMA180::poll() {
     for (int i=0; i<3; i++) {
         aVec[i] = (float) (aRaw[i] / res);
     }
+
+    // TODO: Decide if this is worth the extra computational cost and define
+    // offsets and gains in globals.h.
+    aVec[0] = (aVec[0] + 0.0345) / 1.0365;
+    aVec[1] = (aVec[1] - 0.0100) / 1.0300;
+    aVec[2] = (aVec[2] + 0.0185) / 1.0285;
 }
 
 float* BMA180::get() {
