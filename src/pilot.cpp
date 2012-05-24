@@ -194,7 +194,7 @@ void Pilot::fly() {
     angular_velocity_controller(targetAngVel, gVec, pwmShift);
 
     // Increase throttle based on chassis tilt, but not past around 37 degrees.
-    throttle = (0.9*joy.axes[ST1] + 0.1*joy.axes[ST0]) * (TMAX-TMIN) / MAX(bodyDCM[2][2], 0.8);
+    throttle = (0.8*joy.axes[ST1] + 0.2*joy.axes[ST0]) * (TMAX-TMIN) / MAX(bodyDCM[2][2], 0.8);
 
     calculate_pwm_outputs(throttle, pwmShift, pwmOut);
 }
