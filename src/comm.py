@@ -159,7 +159,7 @@ def telemetry():
             if trimDataIndex:
                 try:
                     for i in range(2):
-                        trimVal[i] = (float(int(fields[trimDataIndex][i+1:i+2].encode('hex'), 16)) - 125) / 250 * pi/20   # Trim angle in radians.
+                        trimVal[i] = (float(int(fields[trimDataIndex][i+1:i+2].encode('hex'), 16)) - 125) / 125 * pi/20   # Trim angle in radians.
                         #trimVal[i] = struct.unpack('f', fields[trimDataIndex][3+i*4:3+i*4+4])[0]
                 except Exception, e:
                     dataIsGood = False
