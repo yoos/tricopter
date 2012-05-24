@@ -115,10 +115,10 @@ struct PIDdata {
 // is around 1200 us.
 #define TMIN   432   // Minimum throttle PWM duty cycle. At 400 kHz, 2500 * 432/1023 = 1055 us. Although simonk's firmware should register 1060 us as the minimum throttle, one of my ESCs will not arm until it is this low.
 #define THOVER 480   // Hover throttle PWM duty cycle
-#define TMAX   761   // Maximum throttle PWM duty cycle (at 400 kHz, 2500 * 761/1023 = 1860 us).
+#define TMAX   600   // Maximum throttle PWM duty cycle (at 400 kHz, 2500 * 761/1023 = 1860 us).
 
-#define SERVO_MIN 1000   // Servo "zero" position (i.e., level to chassis).
-#define SERVO_NEUTRAL 1330   // Servo neutral position (i.e., net Z torque = 0). 1280 if reverse prop. 1330 otherwise.
+#define SERVO_MIN 800   // Servo "zero" position (i.e., level to chassis).
+#define SERVO_NEUTRAL 1100   // Servo neutral position (i.e., net Z torque = 0). 1280 if reverse prop. 1330 otherwise.
 #define SERVO_MAX 2000   // Microseconds per radian of servo rotation.
 
 #define TIME_TO_ARM 2000000   // This divided by MASTER_DT determines how long it takes to arm the system.
@@ -162,8 +162,8 @@ struct PIDdata {
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
 
 // Default trim values.
-#define TRIM_ANGLE_X 0.0383
-#define TRIM_ANGLE_Y 0.0214
+#define TRIM_ANGLE_X 0.0378
+#define TRIM_ANGLE_Y 0.0515
 
 // Calibration values for magnetometer. These are what the magnetometer axes
 // see as "zero".
