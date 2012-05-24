@@ -55,10 +55,10 @@ void sendTrimValues() {
  */
 void sendMotorValues() {
     queueByte(MOT_SER_TAG);
-    queueByte((uint8_t) (pwmOut[MOTOR_T]-TMIN)*250/329);   // 761 - 432 = 329.
-    queueByte((uint8_t) (pwmOut[MOTOR_R]-TMIN)*250/329);   // 761 - 432 = 329.
-    queueByte((uint8_t) (pwmOut[MOTOR_L]-TMIN)*250/329);   // 761 - 432 = 329.
-    queueByte((uint8_t) (pwmOut[SERVO_T]-SERVO_MIN) * 250 / (SERVO_MAX - SERVO_MIN));
+    queueByte((uint8_t) ((pwmOut[MOTOR_T]-TMIN)*250/329));   // 761 - 432 = 329.
+    queueByte((uint8_t) ((pwmOut[MOTOR_R]-TMIN)*250/329));   // 761 - 432 = 329.
+    queueByte((uint8_t) ((pwmOut[MOTOR_L]-TMIN)*250/329));   // 761 - 432 = 329.
+    queueByte((uint8_t) ((pwmOut[SERVO_T]-SERVO_MIN) * 250 / (SERVO_MAX - SERVO_MIN)));
     queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
 
