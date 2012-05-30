@@ -78,12 +78,12 @@ void sendDCM() {
  */
 void sendPIDData() {
     queueByte(PID_SER_TAG);   // Index tag 'PID'.
-    queueByte((uint8_t) (  10*PID[PID_ANG_POS_X].P));
-    queueByte((uint8_t) (  10*PID[PID_ANG_VEL_X].P));
-    queueByte((uint8_t) (-100*PID[PID_ANG_VEL_X].D));
-    queueByte((uint8_t) (  10*PID[PID_ANG_POS_Z].P));
-    queueByte((uint8_t) (  10*PID[PID_ANG_VEL_Z].P));
-    queueByte((uint8_t) (-100*PID[PID_ANG_VEL_Z].D));
+    queueByte((uint8_t) ((int) (  10*PID[PID_ANG_POS_X].P) % 250));
+    queueByte((uint8_t) ((int) (  10*PID[PID_ANG_VEL_X].P) % 250));
+    queueByte((uint8_t) ((int) (-100*PID[PID_ANG_VEL_X].D) % 250));
+    queueByte((uint8_t) ((int) (  10*PID[PID_ANG_POS_Z].P) % 250));
+    queueByte((uint8_t) ((int) (   1*PID[PID_ANG_VEL_Z].P) % 250));
+    queueByte((uint8_t) ((int) (-100*PID[PID_ANG_VEL_Z].D) % 250));
     queueByte(FIELD_SER_TAG); queueByte(FIELD_SER_TAG);
 }
 

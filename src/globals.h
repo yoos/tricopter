@@ -48,16 +48,16 @@ struct PIDdata {
 #define XY_ANG_VEL_I_GAIN  0.0
 #define XY_ANG_VEL_D_GAIN -0.14
 
-#define Z_ANG_POS_P_GAIN  6.0
+#define Z_ANG_POS_P_GAIN  3.5
 #define Z_ANG_POS_I_GAIN  0.0
 #define Z_ANG_POS_D_GAIN  0.0
-#define Z_ANG_VEL_P_GAIN 30.0
+#define Z_ANG_VEL_P_GAIN 70.0
 #define Z_ANG_VEL_I_GAIN  0.0
-#define Z_ANG_VEL_D_GAIN  0.0
+#define Z_ANG_VEL_D_GAIN  0.15
 
 #define ANG_POS_XY_CAP_LOW  PI/12   // Low angular position cap.
 #define ANG_POS_XY_CAP_HIGH PI/6    // High angular position cap.
-#define ANG_VEL_XY_CAP 2*PI   // Angular velocity cap.
+#define ANG_VEL_XY_CAP 4*PI   // Angular velocity cap.
 #define ANG_VEL_Z_CAP  2.0
 
 
@@ -162,8 +162,8 @@ struct PIDdata {
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
 
 // Default trim values.
-#define TRIM_ANGLE_X 0.0378
-#define TRIM_ANGLE_Y 0.0515
+#define TRIM_ANGLE_X 0.0478
+#define TRIM_ANGLE_Y 0.0264
 
 // Calibration values for magnetometer. These are what the magnetometer axes
 // see as "zero".

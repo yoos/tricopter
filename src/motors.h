@@ -48,12 +48,14 @@ void angular_velocity_controller (float* desired_vel, float* current_vel, int16_
         }
     }
 
-    // Cap desired_vel for Z axis.
-    if (desired_vel[2] > ANG_VEL_Z_CAP) {
-        desired_vel[2] = ANG_VEL_Z_CAP;
+    // Cap desired_vel for Z axis. The cap on the desired velocity should be
+    // greater than the cap on the rate of change of the desired position
+    // commanded by the Pilot.
+    if (desired_vel[2] > ANG_VEL_Z_CAP*2) {
+        desired_vel[2] = ANG_VEL_Z_CAP*2;   // Arbitrary multiplication by 2.
     }
-    else if (desired_vel[2] < -ANG_VEL_Z_CAP) {
-        desired_vel[2] = -ANG_VEL_Z_CAP;
+    else if (desired_vel[2] < -ANG_VEL_Z_CAP*2) {
+        desired_vel[2] = -ANG_VEL_Z_CAP*2;
     }
 
     // Calculate intermediate PID values that will be used later to calculate

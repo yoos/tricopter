@@ -192,7 +192,7 @@ def telemetry():
                     pidData[1] /= 10    # XY velocity P
                     pidData[2] /= 100   # XY velocity D
                     pidData[3] /= 10    # Z position P
-                    pidData[4] /= 10    # Z velocity P
+                    pidData[4] /= 1     # Z velocity P
                     pidData[5] /= 100   # Z velocity D
                 except Exception, e:
                     dataIsGood = False
