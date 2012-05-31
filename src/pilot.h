@@ -16,11 +16,10 @@
 class Pilot {
     uint8_t serRead;
     float throttle;
+    int throttleEnabled;
 
     int flightMode;
 
-    float mapLower, mapUpper;
-//  double dir;   // Direction in radians
     bool okayToFly;
     long numGoodComm;
     long numBadComm;

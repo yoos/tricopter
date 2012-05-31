@@ -16,11 +16,11 @@
 void angular_position_controller (float* desired_pos, float* current_pos, float* desired_vel) {
     // Cap desired_pos for X and Y axes.
     for (int i=0; i<2; i++) {
-        if (desired_pos[i] > ang_pos_cap) {
-            desired_pos[i] = ang_pos_cap;
+        if (desired_pos[i] > ang_pos_xy_cap) {
+            desired_pos[i] = ang_pos_xy_cap;
         }
-        else if (desired_pos[i] < -ang_pos_cap) {
-            desired_pos[i] = -ang_pos_cap;
+        else if (desired_pos[i] < -ang_pos_xy_cap) {
+            desired_pos[i] = -ang_pos_xy_cap;
         }
     }
 
@@ -40,11 +40,11 @@ void angular_position_controller (float* desired_pos, float* current_pos, float*
 void angular_velocity_controller (float* desired_vel, float* current_vel, int16_t* pwmShift) {
     // Cap desired_vel for X and Y axes.
     for (int i=0; i<2; i++) {
-        if (desired_vel[i] > ANG_VEL_XY_CAP) {
-            desired_vel[i] = ANG_VEL_XY_CAP;
+        if (desired_vel[i] > ang_vel_xy_cap) {
+            desired_vel[i] = ang_vel_xy_cap;
         }
-        else if (desired_vel[i] < -ANG_VEL_XY_CAP) {
-            desired_vel[i] = -ANG_VEL_XY_CAP;
+        else if (desired_vel[i] < -ang_vel_xy_cap) {
+            desired_vel[i] = -ang_vel_xy_cap;
         }
     }
 

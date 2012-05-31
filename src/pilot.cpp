@@ -12,6 +12,8 @@ Pilot::Pilot() {
     hasFood = false;
     okayToFly = false;
 
+    serRead = 0;
+
     // Assume serial inputs, all axes zeroed.
     serInput[SX] = 125;
     serInput[SY] = 125;
@@ -32,7 +34,10 @@ Pilot::Pilot() {
         pidAngVel[i] = 0;
         currentAngPos[i] = 0;
     }
-    ang_pos_cap = 0;
+    ang_pos_xy_cap = 0;
+    ang_vel_xy_cap = 0;
+    throttle = 0;
+    throttleEnabled = 0;
 
     // Set PID data ID so the PID function can apply appropriate caps, etc.
     PID[PID_ANG_POS_X].id = PID_ANG_POS_X;
@@ -137,8 +142,8 @@ void Pilot::fly() {
         // TODO: The first two are approximations! Need to figure out how to
         // properly use the DCM.
         // ====================================================================
-        targetAngPos[0] = -joy.axes[SY] * ang_pos_cap;
-        targetAngPos[1] =  joy.axes[SX] * ang_pos_cap;
+        targetAngPos[0] = -joy.axes[SY] * ang_pos_xy_cap;
+        targetAngPos[1] =  joy.axes[SX] * ang_pos_xy_cap;
         targetAngPos[2] += joy.axes[SZ] * ANG_VEL_Z_CAP * CONTROL_LOOP_INTERVAL * MASTER_DT / 1000000;
 
         // Keep targetAngPos within [-PI, PI].
@@ -185,8 +190,8 @@ void Pilot::fly() {
 
     // ANGULAR VELOCITY CONTROL FLIGHT MODE
     else if (flightMode == ACRO) {
-        targetAngVel[0] = -joy.axes[SY] * ANG_VEL_XY_CAP;
-        targetAngVel[1] =  joy.axes[SX] * ANG_VEL_XY_CAP;
+        targetAngVel[0] = -joy.axes[SY] * ang_vel_xy_cap;
+        targetAngVel[1] =  joy.axes[SX] * ang_vel_xy_cap;
         targetAngVel[2] =  joy.axes[SZ] * ANG_VEL_Z_CAP;
     }
 
@@ -194,7 +199,7 @@ void Pilot::fly() {
     angular_velocity_controller(targetAngVel, gVec, pwmShift);
 
     // Increase throttle based on chassis tilt, but not past around 37 degrees.
-    throttle = (0.8*joy.axes[ST1] + 0.2*joy.axes[ST0]) * (TMAX-TMIN) / MAX(bodyDCM[2][2], 0.8);
+    throttle = throttleEnabled * (0.8*joy.axes[ST1] + 0.2*joy.axes[ST0]) * (TMAX-TMIN) / MAX(bodyDCM[2][2], 0.8);
 
     calculate_pwm_outputs(throttle, pwmShift, pwmOut);
 }
@@ -238,12 +243,38 @@ void Pilot::update_joystick_input(void) {
 }
 
 void Pilot::process_joystick_buttons(void) {
-    // Enable acro mode (velocity control).
-    if (joy.buttons[BUTTON_ACRO_MODE]) {
+    // Disable throttle.
+    if (joy.buttons[BUTTON_ZERO_THROTTLE]) {
+        throttleEnabled = 0;
+    }
+    else {
+        throttleEnabled = 1;
+    }
+
+    // Determine flight mode.
+    if (joy.buttons[BUTTON_SOFT_ACRO_MODE] ||
+            joy.buttons[BUTTON_HARD_ACRO_MODE]) {
         flightMode = ACRO;
     }
     else {
         flightMode = HOVER;
+    }
+
+    // Soft acro mode (using low angular velocity cap).
+    if (joy.buttons[BUTTON_SOFT_ACRO_MODE]) {
+        ang_vel_xy_cap = ANG_VEL_XY_CAP_LOW;
+    }
+    // Hard acro mode (using high angular velocity cap) or normal operation.
+    else {
+        ang_vel_xy_cap = ANG_VEL_XY_CAP_HIGH;
+    }
+
+    // Increase the angular position cap.
+    if (joy.buttons[BUTTON_INC_ANG_POS_CAP]) {
+        ang_pos_xy_cap = ANG_POS_XY_CAP_HIGH;
+    }
+    else {
+        ang_pos_xy_cap = ANG_POS_XY_CAP_LOW;
     }
 
     // "Reset" targetAngPos[2] to currentAngPos[2] if thumb button is pressed.
@@ -252,14 +283,7 @@ void Pilot::process_joystick_buttons(void) {
         targetAngPos[2] += joy.axes[SZ] * ANG_VEL_Z_CAP;
     }
 
-    // Increase the angular position cap.
-    if (joy.buttons[BUTTON_INC_ANG_POS_CAP]) {
-        ang_pos_cap = ANG_POS_XY_CAP_HIGH;
-    }
-    else {
-        ang_pos_cap = ANG_POS_XY_CAP_LOW;
-    }
-
+    #ifdef SEND_PID_DATA
     // Adjust gains on-the-fly.
     if (joy.buttons[BUTTON_INCREMENT_GAIN]) {
         if (joy.buttons[BUTTON_ANG_POS_XY_P_GAIN]) {
@@ -307,5 +331,6 @@ void Pilot::process_joystick_buttons(void) {
             PID[PID_ANG_VEL_Z].D = MIN(PID[PID_ANG_VEL_Z].D + 0.01, 0);
         }
     }
+    #endif // SEND_PID_DATA
 }
 

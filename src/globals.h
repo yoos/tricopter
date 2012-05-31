@@ -20,7 +20,7 @@ float trimAngle[2];   // Trim.
 float bodyDCM[3][3];   // Current body orientation calculated by IMU.
 float targetAngPos[3], targetAngVel[3], pidAngPos[3], pidAngVel[3], currentAngPos[3];
 float gVec[3];   // This used to be part of ITG3200, but is now global so the PID controller can have direct access to the gyro measurements. This is a hack, and I am a bad programmer.
-float ang_pos_cap;
+float ang_pos_xy_cap, ang_vel_xy_cap;
 
 // ============================================================================
 // PID
@@ -57,7 +57,8 @@ struct PIDdata {
 
 #define ANG_POS_XY_CAP_LOW  PI/12   // Low angular position cap.
 #define ANG_POS_XY_CAP_HIGH PI/6    // High angular position cap.
-#define ANG_VEL_XY_CAP 4*PI   // Angular velocity cap.
+#define ANG_VEL_XY_CAP_LOW  PI/4    // Low angular velocity cap.
+#define ANG_VEL_XY_CAP_HIGH 4*PI    // High angular velocity cap.
 #define ANG_VEL_Z_CAP  2.0
 
 
@@ -86,12 +87,12 @@ struct PIDdata {
 // SERIAL OUT
 // ============================================================================
 #define SER_WRITE_BUF_LEN 150   // Number of bytes of serial data in TX buffer.
-#define SER_WRITE_CHUNK_LEN 15   // Number of bytes to send per loop.
+#define SER_WRITE_CHUNK_LEN 10   // Number of bytes to send per loop.
 
 #define SEND_ARM_STATUS
 #define SEND_TRIM_VALUES
 #define SEND_MOTOR_VALUES
-#define SEND_DCM
+//#define SEND_DCM
 #define SEND_PID_DATA
 
 #define DCM_SER_TAG 0xfb
@@ -105,7 +106,7 @@ struct PIDdata {
 // Software configuration: any parameter that is purely code-related or is
 // relatively frequently changed.
 // ============================================================================
-#define MASTER_DT            8000   // 8000 us interval = 125 Hz master loop.
+#define MASTER_DT            7000   // 8000 us interval = 125 Hz master loop.
 #define CONTROL_LOOP_INTERVAL   1   // 1x master = 125 Hz.
 #define ACC_READ_INTERVAL       5   // Read accelerometer every 5th loop.
 #define COMM_LOOP_INTERVAL      5   // 1/5 master = 25 Hz.
@@ -133,11 +134,11 @@ struct PIDdata {
 // ============================================================================
 // Buttons
 // ============================================================================
-#define BUTTON_UNDEFINED           0
-#define BUTTON_ACRO_MODE           1
-#define BUTTON_RESET_YAW           2
-#define BUTTON_UNDEFINED           3
-#define BUTTON_INC_ANG_POS_CAP     4
+#define BUTTON_ZERO_THROTTLE       0
+#define BUTTON_SOFT_ACRO_MODE      1
+#define BUTTON_INC_ANG_POS_CAP     2
+#define BUTTON_HARD_ACRO_MODE      3
+#define BUTTON_RESET_YAW           4
 #define BUTTON_ANG_POS_XY_P_GAIN   5
 #define BUTTON_ANG_VEL_XY_P_GAIN   6
 #define BUTTON_ANG_VEL_XY_D_GAIN   7
