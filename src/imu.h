@@ -50,6 +50,7 @@ class IMU {
     float errDCM;   // DCM error for which we need orthonormalization.
 
     void orthonormalize(float[3][3]);
+    int counter;   // Counter for orthonormalize().
 
 public:
     IMU();

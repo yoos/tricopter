@@ -75,6 +75,8 @@ void IMU::init() {
     }
     //accVar = 100.;
     #endif // ACC_WEIGHT
+
+    counter = 0;
 }
 
 void IMU::update() {
@@ -325,13 +327,18 @@ void IMU::orthonormalize(float inputDCM[3][3]) {
     vAdd(inputDCM[0], dDCM[0], inputDCM[0]);
     vAdd(inputDCM[1], dDCM[1], inputDCM[1]);
 
+    // Normalize all three vectors.
+    if (counter == 0) {
+        vNorm(inputDCM[0]);
+    }
+    else {
+        vNorm(inputDCM[1]);
+        counter = 0;
+    }
+    //vNorm(inputDCM[2]);
+
     // k = i x j
     vCrossP(inputDCM[0], inputDCM[1], inputDCM[2]);
-
-    // Normalize all three vectors.
-    vNorm(inputDCM[0]);
-    vNorm(inputDCM[1]);
-    vNorm(inputDCM[2]);
 }
 
 void IMU::reset() {
