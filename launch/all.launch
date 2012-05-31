@@ -3,10 +3,9 @@
     <include file="$(find tricopter)/launch/comm.launch" />
 
     <node pkg  = "rosbag"
-          type = "rosbag"
+          type = "record"
           name = "tricopter_rosbag"
-          args = "record
-                  --output-prefix=$(find tricopter)/bagfiles/tricopter
+          args = "--output-prefix=$(find tricopter)/bagfiles/tricopter
                   -a" />
 </launch>
 <!-- %EndTag(FULL)%-->
