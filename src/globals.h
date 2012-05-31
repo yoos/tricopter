@@ -90,10 +90,10 @@ struct PIDdata {
 #define SER_WRITE_CHUNK_LEN 10   // Number of bytes to send per loop.
 
 #define SEND_ARM_STATUS
-#define SEND_TRIM_VALUES
+//#define SEND_TRIM_VALUES
 #define SEND_MOTOR_VALUES
-//#define SEND_DCM
-#define SEND_PID_DATA
+#define SEND_DCM
+//#define SEND_PID_DATA
 
 #define DCM_SER_TAG 0xfb
 #define TRIM_SER_TAG 0xfc
@@ -106,7 +106,7 @@ struct PIDdata {
 // Software configuration: any parameter that is purely code-related or is
 // relatively frequently changed.
 // ============================================================================
-#define MASTER_DT            7000   // 8000 us interval = 125 Hz master loop.
+#define MASTER_DT            8000   // 8000 us interval = 125 Hz master loop.
 #define CONTROL_LOOP_INTERVAL   1   // 1x master = 125 Hz.
 #define ACC_READ_INTERVAL       5   // Read accelerometer every 5th loop.
 #define COMM_LOOP_INTERVAL      5   // 1/5 master = 25 Hz.
@@ -118,9 +118,9 @@ struct PIDdata {
 #define THOVER 480   // Hover throttle PWM duty cycle
 #define TMAX   600   // Maximum throttle PWM duty cycle (at 400 kHz, 2500 * 761/1023 = 1860 us).
 
-#define SERVO_MIN 800   // Servo "zero" position (i.e., level to chassis).
-#define SERVO_NEUTRAL 1100   // Servo neutral position (i.e., net Z torque = 0). 1280 if reverse prop. 1330 otherwise.
-#define SERVO_MAX 2000   // Microseconds per radian of servo rotation.
+#define SERVO_MIN 660   // Servo minimum position.
+#define SERVO_NEUTRAL 1100   // Servo neutral position (i.e., net Z torque = 0). 1020 if reverse prop. 1100 otherwise.
+#define SERVO_MAX 1460   // Servo maximum position.
 
 #define TIME_TO_ARM 2000000   // This divided by MASTER_DT determines how long it takes to arm the system.
 #define MOTOR_ARM_THRESHOLD 30   // This is added to TMIN to determine whether or not to arm the system.
@@ -157,7 +157,7 @@ struct PIDdata {
 #define MOTOR_T_OFFSET 0   // Speed offset for tail motor.
 #define MOTOR_R_OFFSET 0   // Speed offset for right motor.
 #define MOTOR_L_OFFSET 0   // Speed offset for left motor.
-#define MOTOR_T_SCALE  1   // Scale speed of tail motor.
+#define MOTOR_T_SCALE  0.80   // Scale speed of tail motor.
 #define MOTOR_R_SCALE  1   // Scale speed of right motor.
 #define MOTOR_L_SCALE  1   // Scale speed of left motor.
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
