@@ -11,7 +11,7 @@
 #include "i2c.h"
 #include "globals.h"
 
-#define ACC_LPF_DEPTH 8   // Enable low-pass filter.
+//#define ACC_LPF_DEPTH 8   // Enable low-pass filter.
 
 #define ACC_RANGE 4
 #define ACC_BW 1   // 20 Hz low-pass filter.

@@ -11,7 +11,7 @@
 #include "i2c.h"
 #include "globals.h"
 
-#define GYRO_LPF_DEPTH 8  // Enable low-pass filter.
+//#define GYRO_LPF_DEPTH 8  // Enable low-pass filter.
 
 // ITG-3200 address defines
 #define GYRADDR 0x69
