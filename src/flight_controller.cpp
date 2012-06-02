@@ -98,15 +98,20 @@ int main(void) {
             // ================================================================
             // Communications loop
             // ================================================================
+            pilot.listen();
+
             if (loopCount % COMM_LOOP_INTERVAL == 0) {
                 #ifdef SEND_ARM_STATUS
                 sendArmStatus();
+                #endif
+
+                #ifdef SEND_MOTOR_VALUES
+                sendMotorValues();
                 #endif
             }
             else {
                 /* The pilot communicates with base and updates pwmOut
                  * according to the joystick axis values it receives. */
-                pilot.listen();
             }
 
             if (loopCount % COMM_LOOP_INTERVAL == 1) {
@@ -117,10 +122,6 @@ int main(void) {
             else if (loopCount % COMM_LOOP_INTERVAL == 2) {
                 #ifdef SEND_TRIM_VALUES
                 sendTrimValues();
-                #endif
-
-                #ifdef SEND_MOTOR_VALUES
-                sendMotorValues();
                 #endif
             }
             else if (loopCount % COMM_LOOP_INTERVAL == 3) {

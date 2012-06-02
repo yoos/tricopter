@@ -34,7 +34,8 @@ void sendArmStatus() {
     int len = sprintf(buf, "%d", armCount);
 
     int i;
-    for (i=0; i<len; i++) {
+    //for (i=0; i<len; i++) {
+    for (i=0; i<1; i++) {
         queueByte(buf[i]);
     }
 
@@ -92,7 +93,7 @@ void sendPIDData() {
 void sendTelemetryEnd(int nextRuntime) {
     // Report loop time.
     char buf[10];
-    int len = sprintf(buf, "%d", (unsigned int) (micros() - (nextRuntime - MASTER_DT)));
+    int len = sprintf(buf, "%u", (unsigned long) (micros() - (nextRuntime - MASTER_DT)));
 
     int i;
     for (i=0; i<len; i++) {
