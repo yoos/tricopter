@@ -7,4 +7,8 @@ applet
 /src/tricopter
 /src/tags
 /bagfiles
+*.a
+*.o
+*.bin
+*.elf
 
