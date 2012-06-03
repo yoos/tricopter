@@ -69,7 +69,7 @@ struct PIDdata {
 #define SERHEAD    255   // Serial header byte. Pilot interprets the four bytes following this header byte as motor commands.
 #define SER_PACKET_LEN 9     // Each packet contains (excluding header) X, Y, Z, T0, T1, H0, H1, and two bytes for button values.
 #define SER_READ_BUF_LEN 200   // Number of bytes of serial data in buffer (used by Pilot).
-#define SER_READ_CHUNK_LEN 5   // Number of bytes to read off serial bus every loop.
+#define SER_READ_CHUNK_LEN 4   // Number of bytes to read off serial bus every loop.
 
 #define INPUT_MIN  0     // Minimum integer input value from joystick.
 #define INPUT_MAX  250   // Maximum integer input value from joystick.
@@ -90,7 +90,7 @@ struct PIDdata {
 #define SER_WRITE_CHUNK_LEN 10   // Number of bytes to send per loop.
 
 #define SEND_ARM_STATUS
-//#define SEND_TRIM_VALUES
+#define SEND_TRIM_VALUES
 #define SEND_MOTOR_VALUES
 #define SEND_DCM
 //#define SEND_PID_DATA
@@ -106,14 +106,12 @@ struct PIDdata {
 // Software configuration: any parameter that is purely code-related or is
 // relatively frequently changed.
 // ============================================================================
-#define MASTER_DT            8000   // 8000 us interval = 125 Hz master loop.
-#define CONTROL_LOOP_INTERVAL   1   // 1x master = 125 Hz.
+#define MASTER_DT            7000   // 7000 us interval = 143 Hz master loop.
+#define CONTROL_LOOP_INTERVAL   1   // 1x master.
 #define ACC_READ_INTERVAL       5   // Read accelerometer every 5th loop.
-#define COMM_LOOP_INTERVAL      5   // 1/5 master = 25 Hz.
+#define COMM_LOOP_INTERVAL      5   // 1/5x master.
 #define DOGLIFE 400   // Watchdog life in milliseconds.
 
-// Throttle stuff. Minimum signal is 750 us. Maximum signal is 2200 us. Hover
-// is around 1200 us.
 #define TMIN   432   // Minimum throttle PWM duty cycle. At 400 kHz, 2500 * 432/1023 = 1055 us. Although simonk's firmware should register 1060 us as the minimum throttle, one of my ESCs will not arm until it is this low.
 #define THOVER 480   // Hover throttle PWM duty cycle
 #define TMAX   600   // Maximum throttle PWM duty cycle (at 400 kHz, 2500 * 761/1023 = 1860 us).
@@ -163,8 +161,8 @@ struct PIDdata {
 #define TAIL_SERVO_SCALE 1   // Scale tail servo rotation.
 
 // Default trim values.
-#define TRIM_ANGLE_X 0.0478
-#define TRIM_ANGLE_Y 0.0264
+#define TRIM_ANGLE_X 0.0289
+#define TRIM_ANGLE_Y 0.0302
 
 // Calibration values for magnetometer. These are what the magnetometer axes
 // see as "zero".
