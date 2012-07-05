@@ -198,8 +198,14 @@ void Pilot::fly() {
 
     angular_velocity_controller(targetAngVel, gVec, pwmShift);
 
-    // Increase throttle based on chassis tilt, but not past around 37 degrees.
-    throttle = throttleEnabled * (0.8*joy.axes[ST1] + 0.2*joy.axes[ST0]) * (TMAX-TMIN) / MAX(bodyDCM[2][2], 0.8);
+    // TODO: throttleEnabled should be implemented in ground station comm.
+    throttle = throttleEnabled * (0.8*joy.axes[ST1] + 0.2*joy.axes[ST0]) * (TMAX-TMIN);
+
+    // If in hover mode, increase throttle based on chassis tilt, but not past
+    // around 37 degrees.
+    if (flightMode == HOVER) {
+        throttle = throttle / MAX(bodyDCM[2][2], 0.8);
+    }
 
     calculate_pwm_outputs(throttle, pwmShift, pwmOut);
 }
