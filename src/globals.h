@@ -56,10 +56,10 @@ struct PIDdata {
 #define Z_ANG_VEL_D_GAIN  0.15
 
 #define ANG_POS_XY_CAP_LOW  PI/12   // Low angular position cap.
-#define ANG_POS_XY_CAP_HIGH PI/6    // High angular position cap.
+#define ANG_POS_XY_CAP_HIGH PI/4    // High angular position cap.
 #define ANG_VEL_XY_CAP_LOW  PI/4    // Low angular velocity cap.
-#define ANG_VEL_XY_CAP_HIGH 4*PI    // High angular velocity cap.
-#define ANG_VEL_Z_CAP  2.0
+#define ANG_VEL_XY_CAP_HIGH 4*PI    // High angular velocity cap.   NOTE: Controller may need to be retuned if this is changed!
+#define ANG_VEL_Z_CAP  1.5
 
 
 // ============================================================================
