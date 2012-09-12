@@ -6,6 +6,7 @@
           type = "record"
           name = "tricopter_rosbag"
           args = "--output-prefix=$(find tricopter)/bagfiles/tricopter
-                  -a" />
+                  -a
+                  -x '/rosout|/rosout_agg|/diagnostics' " />
 </launch>
 <!-- %EndTag(FULL)%-->
