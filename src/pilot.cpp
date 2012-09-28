@@ -202,9 +202,9 @@ void Pilot::fly() {
     throttle = throttleEnabled * (0.8*joy.axes[ST1] + 0.2*joy.axes[ST0]) * (TMAX-TMIN);
 
     // If in hover mode, increase throttle based on chassis tilt, but not past
-    // around 37 degrees.
+    // 45 degrees.
     if (flightMode == HOVER) {
-        throttle = throttle / MAX(bodyDCM[2][2], 0.8);
+        throttle = throttle / MAX(bodyDCM[2][2], 0.707107);
     }
 
     calculate_pwm_outputs(throttle, pwmShift, pwmOut);
