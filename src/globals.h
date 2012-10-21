@@ -112,9 +112,9 @@ struct PIDdata {
 #define COMM_LOOP_INTERVAL      5   // 1/5x master.
 #define DOGLIFE 400   // Watchdog life in milliseconds.
 
-#define TMIN   432   // Minimum throttle PWM duty cycle. At 400 kHz, 2500 * 432/1023 = 1055 us.
+#define TMIN   432   // Minimum throttle PWM duty cycle. At 400 Hz, 2500 * 432/1023 = 1055 us.
 #define THOVER 480   // Hover throttle PWM duty cycle
-#define TMAX   670   // Maximum throttle PWM duty cycle. At 400 kHz, 2500 * 761/1023 = 1860 us.
+#define TMAX   670   // Maximum throttle PWM duty cycle. At 400 Hz, 2500 * 761/1023 = 1860 us).
 
 #define SERVO_MIN 660   // Servo minimum position.
 #define SERVO_NEUTRAL 1100   // Servo neutral position (i.e., net Z torque = 0). 1020 if reverse prop. 1100 otherwise.
