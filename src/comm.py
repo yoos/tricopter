@@ -80,7 +80,7 @@ def transmit():
                  chr(axisValues[cfg.axisH1]) +
                  chr(buttonValues & 0b01111111) +
                  chr(buttonValues >> 7))
-    elif axisValues[cfg.axisT0] == 0 and axisValues[cfg.axisT1] == 0:
+    elif axisValues[cfg.axisT0] < 3 and axisValues[cfg.axisT1] < 3:
         armed = True
         rospy.loginfo("[Comm] Joystick throttle at minimum. Initiating communication!")
     else:
