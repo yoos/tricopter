@@ -42,7 +42,11 @@ struct PIDdata {
 #define PID_ANG_VEL_Z 5
 
 // PID gains. Numbers after double slashes are for the old 12" props at 9.5"
-// center-to-motor distance.
+// center-to-motor distance. Currently, only the following gains are used:
+//     POS_P: Increase for stronger initial response to position input command.
+//     VEL_P: Increase this and decrease POS_P for firm control without
+//            oscillations.
+//     VEL_D: Increase to reduce oscillations caused by velocity overshoot.
 #define XY_ANG_POS_P_GAIN  3.3 // 4.5
 #define XY_ANG_POS_I_GAIN  0.0
 #define XY_ANG_POS_D_GAIN -0.0
