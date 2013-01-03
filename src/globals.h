@@ -41,12 +41,14 @@ struct PIDdata {
 #define PID_ANG_VEL_Y 4
 #define PID_ANG_VEL_Z 5
 
-#define XY_ANG_POS_P_GAIN  4.5
+// PID gains. Numbers after double slashes are for the old 12" props at 9.5"
+// center-to-motor distance.
+#define XY_ANG_POS_P_GAIN  3.3 // 4.5
 #define XY_ANG_POS_I_GAIN  0.0
 #define XY_ANG_POS_D_GAIN -0.0
-#define XY_ANG_VEL_P_GAIN 12.2
+#define XY_ANG_VEL_P_GAIN 21.9 // 12.2
 #define XY_ANG_VEL_I_GAIN  0.0
-#define XY_ANG_VEL_D_GAIN -0.14
+#define XY_ANG_VEL_D_GAIN -0.77 // -0.14
 
 #define Z_ANG_POS_P_GAIN  3.5
 #define Z_ANG_POS_I_GAIN  0.0
@@ -58,7 +60,7 @@ struct PIDdata {
 #define ANG_POS_XY_CAP_LOW  PI/12   // Low angular position cap.
 #define ANG_POS_XY_CAP_HIGH PI/4    // High angular position cap.
 #define ANG_VEL_XY_CAP_LOW  PI/4    // Low angular velocity cap.
-#define ANG_VEL_XY_CAP_HIGH 4*PI    // High angular velocity cap.   NOTE: Controller may need to be retuned if this is changed!
+#define ANG_VEL_XY_CAP_HIGH 3*PI    // High angular velocity cap.   NOTE: Controller may need to be retuned if this is changed! The harder it is for the motors to spin up the propellers, the lower this should be.
 #define ANG_VEL_Z_CAP  1.5
 
 
@@ -87,7 +89,7 @@ struct PIDdata {
 // SERIAL OUT
 // ============================================================================
 #define SER_WRITE_BUF_LEN 150   // Number of bytes of serial data in TX buffer.
-#define SER_WRITE_CHUNK_LEN 10   // Number of bytes to send per loop.
+#define SER_WRITE_CHUNK_LEN 7   // Number of bytes to send per loop.
 
 #define SEND_ARM_STATUS
 #define SEND_TRIM_VALUES
