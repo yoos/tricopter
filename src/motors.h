@@ -82,7 +82,7 @@ void calculate_pwm_outputs(float pwmThrottle, int16_t* pwmShift, int16_t* pwmOut
     // corresponding arm is heavier.
     // TODO: The last term for each pwmOutput is INACCURATE. Fix this.
     // ====================================================================
-    pwmOutput[SERVO_T] = SERVO_NEUTRAL + pwmShift[2];
+    pwmOutput[SERVO_T] = SERVO_NEUTRAL - pwmShift[2];
 
     pwmOutput[MOTOR_T] = (pwmThrottle + -pwmShift[0]) / cos(((float) pwmOutput[SERVO_T] - SERVO_NEUTRAL) * PI / (SERVO_MAX - SERVO_MIN));
     pwmOutput[MOTOR_R] =  pwmThrottle +  pwmShift[0] - pwmShift[1]*sqrt(3);
