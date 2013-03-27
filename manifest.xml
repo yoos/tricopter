@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/tricopter</url>
   <depend package="rospy"/>
   <depend package="sensor_msgs"/>
+  <depend package="joy"/>
 
 </package>
 
